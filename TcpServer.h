@@ -24,6 +24,8 @@ namespace tinyWS {
         TcpServer(tinyWS::EventLoop *loop, const tinyWS::InternetAddress &address, const std::string &name);
         ~TcpServer();
 
+        EventLoop* getLoop() const;
+
         void setThreadNumber(int threadNumber);
         void start();
 

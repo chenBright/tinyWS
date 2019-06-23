@@ -17,6 +17,7 @@ Socket::Socket(int sockfd) : sockfd_(sockfd) {}
 
 Socket::~Socket() {
     if (isValid()) {
+        std::cout << "Socket::~Socket() fd = " << sockfd_ << std::endl;
         ::close(sockfd_);
     }
 }

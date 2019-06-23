@@ -6,7 +6,7 @@
 #include <cstring>
 #include <sys/epoll.h>
 #include <unistd.h> // close
-#include <strings.h> // bzero
+#include <strings.h> // bzero()
 
 #include <iostream>
 
@@ -57,7 +57,7 @@ Timer::TimeType Epoll::poll(int timeoutMs, Epoll::ChannelList *activeChannels)  
 
 void Epoll::updateChannel(Channel *channel) {
     assertInLoopThread();
-    std::cout << "fd = " << channel->fd() << " event = " << channel->events() << std::endl;
+    std::cout << "Epoll::updateChannel() fd = " << channel->fd() << " event = " << channel->events() << std::endl;
     const int index = channel->statusInEpoll();
     int fd = channel->fd();
     if (index == kNew || index == kDeleted) {

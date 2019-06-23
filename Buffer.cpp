@@ -5,7 +5,11 @@
 #include <cstring> // memcpy
 #include <sys/uio.h> // iovec
 
+#include <algorithm>
+
 using namespace tinyWS;
+
+const char Buffer::kCRLF[] = "\r\n";
 
 Buffer::Buffer()
     : buffer_(kCheapPrepend + kInitialSize),
@@ -38,6 +42,32 @@ const char* Buffer::peek() const {
     return begin() + readerIndex_;
 }
 
+const char* Buffer::findCRLF() const {
+    // FIXME: replace with memmem()?
+    const char *crlf = std::search(peek(), beginWrite(), kCRLF, kCRLF + 2);
+    return crlf == beginWrite() ? nullptr : crlf;
+}
+
+const char* Buffer::findCRLF(const char *start) const {
+    assert(peek() <= start);
+    assert(start <= beginWrite());
+
+    const char *crlf = std::search(start, beginWrite(), kCRLF, kCRLF + 2);
+    return crlf == beginWrite() ? nullptr : crlf;
+}
+
+const char* Buffer::findEOL() const {
+    const void *eol = memchr(peek(), '\n', readableBytes());
+    return static_cast<const char*>(eol);
+}
+
+const char* Buffer::findEOL(const char *start) const {
+    assert(peek() <= start);
+    assert(start <= beginWrite());
+
+    const void *eol = memchr(start, '\n', beginWrite() - start);
+    return static_cast<const char*>(eol);
+}
 
 void Buffer::retrieve(size_t len) {
     assert(len <= readableBytes());
@@ -225,6 +255,8 @@ ssize_t Buffer::readFd(int fd, int *savedErrno) {
         writerIndex_ = buffer_.size();
         append(extrabuf, n - writable);
     }
+
+    return n;
 }
 
 char* Buffer::begin() {

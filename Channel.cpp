@@ -24,11 +24,14 @@ Channel::Channel(EventLoop *loop, int fdArg)
 Channel::~Channel() {
     // 事件处理期间，不会析构
     assert(!eventHandling_);
+    std::cout << "Channel:~Channel()" << std::endl;
 }
 
 void Channel::handleEvent(Timer::TimeType receiveTime) {
     eventHandling_ = true;
     if ((revents_ & EPOLLHUP) && !(revents_ & EPOLLIN)) {
+//    if (revents_ & EPOLLHUP) {
+        std::cout << "Channel::handleEvent() EPOLLHUP" << std::endl;
         if (closeCallback_) {
             closeCallback_();
         }

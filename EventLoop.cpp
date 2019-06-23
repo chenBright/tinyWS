@@ -59,6 +59,7 @@ EventLoop::EventLoop()
 
 EventLoop::~EventLoop() {
     assert(!looping_);
+    std::cout << "EventLoop::~EventLoop destructing" << std::endl;
     t_loopInThisThread = nullptr;
 }
 

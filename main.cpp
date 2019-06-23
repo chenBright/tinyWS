@@ -1,7 +1,12 @@
+#include <unistd.h>
+#include <strings.h> // bzero()
+#include <cstdio> // fopen()、fread()
+#include <fcntl.h>
+#include <sys/stat.h> // struct stat
+#include <sys/mman.h>
+
 #include <iostream>
 #include <functional>
-
-#include <unistd.h>
 
 #include "EventLoop.h"
 #include "base/Thread.h"
@@ -9,80 +14,83 @@
 #include "Buffer.h"
 #include "Timer.h"
 #include "TcpServer.h"
+#include "HttpServer.h"
+#include "HttpRequest.h"
+#include "HttpResponse.h"
 
 using namespace std::placeholders;
 using namespace tinyWS;
 
-int threadNums = 0;
-
-class EchoServer {
-public:
-    EchoServer(EventLoop *loop, const InternetAddress &listenAddress)
-        : loop_(loop),
-          server_(loop_, listenAddress, "EchoServer") {
-        server_.setConnectionCallback(
-                std::bind(&EchoServer::onConnection, this, _1));
-        server_.setMessageCallback(
-                std::bind(&EchoServer::onMessage, this, _1, _2, _3));
-        server_.setThreadNumber(threadNums);
-    }
-
-    void start() {
-        server_.start();
-    }
-
-private:
-    EventLoop *loop_;
-    TcpServer server_;
-
-    void onConnection(const TcpConnectionPtr &connection) {
-        std::cout << connection->peerAddress().toIpPort() << " -> "
-            << connection->localAddress().toIpPort() << " is "
-            << (connection->connected() ? "UP" : "DOWN") << std::endl;
-        connection->send("hello\n");
-    }
-
-    void onMessage(const TcpConnectionPtr &connection, Buffer *buffer, Timer::TimeType time) {
-        std::string message(buffer->retrieveAllAsString());
-        std::cout << connection->name() << " recv " << message.size() << " bytes at " << time << std::endl;
-        if (message == "exit\n") {
-            connection->send("bye\n");
-            connection->shutdown();
-        }
-        if (message == "quit\n") {
-            loop_->quit();
-        }
-        connection->send(message);
-    }
-
-};
-
-EventLoop *g_loop;
-
-void threadFunction() {
-    printf("new thread\n");
-    g_loop->loop();
-}
+void httpCallback(const HttpRequest &request, HttpResponse &response);
+void set404NotFound(HttpResponse &response);
 
 int main(int argc, char *argv[]) {
-//    EventLoop loop;
-//    g_loop = &loop;
-//    Thread t(threadFunction);
-//    t.start();
-//    t.join();
-
     std::cout  << "pid = " << ::getpid() << ", tid = " << Thread::gettid() << std::endl;
-    std::cout << "sizeof TcpConnection = " << sizeof(TcpConnection) << std::endl;
 
+    int threadNums = 0;
     if (argc > 1) {
         threadNums = ::atoi(argv[1]);
     }
 
     EventLoop loop;
-    InternetAddress listenAddress(2000);
-    EchoServer server(&loop, listenAddress);
+    InternetAddress listenAddress(8888);
+    HttpServer server(&loop, listenAddress, "tinyWS");
 
+    server.setThreadNum(threadNums);
     server.start();
+    server.setHttpCallback(std::bind(&httpCallback, _1, _2));
+    loop.loop();
 
     return 0;
+}
+
+void httpCallback(const HttpRequest &request, HttpResponse &response) {
+    std::cout << "httpCallback() " << std::endl;
+    const std::string &path = request.path();
+    const std::string prefix = "/tmp/tmp.epZ6PWHYhj/web";
+    std::string filename;
+    if (path  == "/") {
+        filename = prefix + "/index.html";
+        response.setContentType("text/html");
+    } else if (path == "/favicon.ico") {
+        filename = prefix + "/favicon.ico";
+        response.setContentType("image/x-icon");
+    }
+
+    // 使用 mmap 读取文件
+    struct stat fileBuffer{};
+    int fd;
+    if (filename.empty() || stat(filename.c_str(), &fileBuffer) < 0
+        || (fd = ::open(filename.c_str(), O_RDONLY, 0)) < 0) {
+
+        set404NotFound(response);
+        return;
+    }
+
+    void *mmapResult = ::mmap(nullptr,
+            static_cast<size_t>(fileBuffer.st_size),
+            PROT_READ, MAP_PRIVATE, fd, 0);
+    close(fd);
+
+    if (mmapResult == (void*)-1) { // TODO 使用 C++ 类型转换
+        munmap(mmapResult, static_cast<size_t>(fileBuffer.st_size));
+        set404NotFound(response);
+        return;
+    }
+
+    char *srcAddress = static_cast<char*>(mmapResult);
+    response.setBody(std::string(srcAddress, srcAddress + fileBuffer.st_size));
+    munmap(mmapResult, static_cast<size_t>(fileBuffer.st_size));
+
+    response.setStatusCode(HttpResponse::k200OK);
+    response.setStatusMessage("OK");
+    response.addHeader("server", "tinyWS");
+    response.addHeader("User-Agent", request.getHeader("User-Agent"));
+}
+
+void set404NotFound(HttpResponse &response) {
+    response.setStatusCode(HttpResponse::k404NotFound);
+    response.setStatusMessage("Not Found");
+    response.setBody("Not Found");
+    response.setCloseConnection(true);
 }

@@ -1,7 +1,7 @@
 #include "InternetAddress.h"
 
 #include <cstring>
-#include <strings.h> // bzero
+#include <strings.h> // bzero()
 #include <arpa/inet.h>
 
 #include <iostream>

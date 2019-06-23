@@ -33,6 +33,10 @@ TcpServer::~TcpServer() {
     }
 }
 
+EventLoop* TcpServer::getLoop() const {
+    return loop_;
+}
+
 void TcpServer::setThreadNumber(int threadNumber) {
     assert(threadNumber >= 0);
     threadPool_->setThreadNum(threadNumber);
@@ -77,7 +81,7 @@ void TcpServer::newConnection(Socket socket, const InternetAddress &peerAddress)
     TcpConnectionPtr connection(
             new TcpConnection(ioLoop,
                               connectionName,
-                              socket.fd(),
+                              std::move(socket),
                               localAddress,
                               peerAddress));
     connectionMap_[connectionName] = connection;

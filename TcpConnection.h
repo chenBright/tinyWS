@@ -5,12 +5,12 @@
 #include <memory>
 #include <string>
 
-
 #include "base/noncopyable.h"
 #include "Timer.h"
 #include "InternetAddress.h"
 #include "Buffer.h"
 #include "CallBack.h"
+#include "HttpContext.h"
 
 namespace tinyWS {
     class EventLoop;
@@ -22,7 +22,7 @@ namespace tinyWS {
     public:
         explicit TcpConnection(EventLoop *loop,
                                const std::string &name,
-                               int sockfd,
+                               Socket socket,
                                const InternetAddress &localAddress,
                                const InternetAddress &peerAddress);
         ~TcpConnection();
@@ -30,6 +30,11 @@ namespace tinyWS {
         void send(const std::string &message);
         void send(const void *message, size_t len);
         void shutdown();
+
+        // TODO moduo 使用 boost::any，因为 muduo 不单单是实现 HTTP 服务器（而且 TcpConnection 也不应该知道 HttpConnection ？）
+        void setContext(const HttpContext &context);
+        const HttpContext& getContext() const;
+        HttpContext* getMutableContext();
 
         /**
          * 禁用 Nagle 算法
@@ -76,6 +81,7 @@ namespace tinyWS {
         InternetAddress peerAddress_;
         Buffer inputBuffer_;
         Buffer outputBuffer_;
+        HttpContext context_; // 接收到的请求的内容
 
         ConnectionCallback connectionCallback_;
         MessageCallback messageCallback_;
