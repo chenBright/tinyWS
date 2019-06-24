@@ -13,16 +13,17 @@ using namespace std::placeholders;
 
 TcpConnection::TcpConnection(EventLoop *loop,
                              const std::string &name,
-                             int sockfd,
+                             Socket socket,
                              const InternetAddress &localAddress,
                              const InternetAddress &peerAddress)
                              : loop_(loop),
                                name_(name),
                                state_(kConnecting),
-                               socket_(new Socket(sockfd)),
-                               channel_(new Channel(loop, sockfd)),
+                               socket_(new Socket(std::move(socket))),
+                               channel_(new Channel(loop, socket_->fd())),
                                localAddress_(localAddress),
                                peerAddress_(peerAddress) {
+    std::cout << "move fd = " << socket_->fd() << std::endl;
     // 设置回调函数
     channel_->setReadCallback(
             std::bind(&TcpConnection::handleRead, this, _1));
@@ -58,6 +59,18 @@ void TcpConnection::shutdown() {
         // FIXME: shared_from_this()?
         loop_->runInLoop(std::bind(&TcpConnection::shutdownInLoop, this));
     }
+}
+
+void TcpConnection::setContext(const HttpContext &context) {
+    context_ = context;
+}
+
+const HttpContext& TcpConnection::getContext() const {
+    return context_;
+}
+
+HttpContext* TcpConnection::getMutableContext() {
+    return &context_;
 }
 
 void TcpConnection::setTcpNoDelay(bool on) {
@@ -107,11 +120,13 @@ void TcpConnection::connectionEstablished() {
 
 void TcpConnection::connectionDestoryed() {
     loop_->assertInLoopThread();
-    assert(state_ == kConnected);
-    setState(kDisconnected);
-    channel_->disableAll();
-    connectionCallback_(shared_from_this());
-    loop_->removeChannel(channel_.get());
+    // TODO 对于此处的处理，muduo源码与书上不同，应该是用多种情况
+    if (state_ == kConnected) {
+        setState(kDisconnected);
+        channel_->disableAll();
+        connectionCallback_(shared_from_this());
+    }
+    channel_->remove();
 }
 
 std::string TcpConnection::name() {
@@ -203,7 +218,6 @@ void TcpConnection::handleError() {
     std::cout << "TcpConnection::handleError [" << name_
               << "] - SO_ERROR = " << err << std::endl;
 }
-
 
 void TcpConnection::sendInLoop(const std::string &message) {
     loop_->assertInLoopThread();

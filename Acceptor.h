@@ -12,7 +12,7 @@ namespace tinyWS {
     class EventLoop;
 
     /**
-     * 内部类，供 TcpServer 使用，生命周期有 TcpServer 控制
+     * 内部类，供 TcpServer 使用，生命周期由 TcpServer 控制
      * 用于 accept(2) 新 TCP 连接，并通过回调函数通知使用者
      */
     class Acceptor : noncopyable {

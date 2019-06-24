@@ -32,8 +32,9 @@ void EventLoopThreadPool::start(const EventLoopThreadPool::EventLoopThreadPoolCa
     started_ = true;
 
     for (int i = 0; i < numThreads_; ++i) {
-        threads_.push_back(std::unique_ptr<EventLoopThread>(new EventLoopThread(cb)));
-        loops_.push_back(threads_[i]->startThread());
+        EventLoopThread *t = new EventLoopThread(cb);
+        threads_.push_back(std::unique_ptr<EventLoopThread>(t));
+        loops_.push_back(t->startThread());
     }
     // 如果线程池为空，则在主线程执行
     if (numThreads_ == 0 && cb) {

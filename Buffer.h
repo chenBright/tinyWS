@@ -7,7 +7,7 @@
 #include "base/noncopyable.h"
 
 namespace tinyWS {
-    class Buffer : public tinyWS::noncopyable {
+    class Buffer : public noncopyable {
     public:
         static const size_t kCheapPrepend = 8;
         static const size_t kInitialSize = 1024;
@@ -23,6 +23,10 @@ namespace tinyWS {
         size_t prependableBytes() const;
         const char* peek() const;
 
+        const char* findCRLF() const;
+        const char* findCRLF(const char *start) const;
+        const char* findEOL() const;
+        const char* findEOL(const char* start) const;
 
         void retrieve(size_t len);
         void retrieveUntil(const char *end);
@@ -79,6 +83,9 @@ namespace tinyWS {
         std::vector<char> buffer_;
         size_t readerIndex_;
         size_t writerIndex_;
+
+        // CRLF = "\r\n"，HTTP 以 CRLF 结尾
+        static const char kCRLF[];
 
         char * begin();
         const char* begin() const;

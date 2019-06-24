@@ -59,3 +59,8 @@ Timer::TimeType Timer::now() {
     return static_cast<int64_t >(tv->tv_sec * Timer::kMicroSecondsPerSecond + tv->tv_usec);
 }
 
+void Timer::swapTime(TimeType &a, TimeType &b) {
+    TimeType tmp = a;
+    a = b;
+    b = tmp;
+}
