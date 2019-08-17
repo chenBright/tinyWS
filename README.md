@@ -11,9 +11,10 @@ A C++ Tiny Web Server
 - Channel tie，用于延长 Channel 的生命周期
 - 弄懂每一行代码，补全注释
 - 解决代码中的TODO
-- 时间轮
+- 使用定时器（如超时处理）
 - 日志
 - ~~HTTP服务器~~，完善HTTP服务器，使其能像Nginx一样，通过简单的配置，作为静态服务器运行
+- http超时处理，并使用时间轮盘管理定时器
 - BlockingQueue
 - 编写文档，解释核心原理
 - 单元测试

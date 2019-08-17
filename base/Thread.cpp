@@ -52,6 +52,11 @@ const std::string& Thread::name() const {
     return name_;
 }
 
+
+pid_t Thread::gettid() {
+    ::syscall(__NR_gettid);
+}
+
 void* Thread::startThread(void *obj) {
     auto *thread = static_cast<Thread*>(obj);
     thread->runInThread();
@@ -70,8 +75,4 @@ void Thread::runInThread() {
     } catch (...) {
         throw; // rethrow
     }
-}
-
-pid_t Thread::gettid() {
-    ::syscall(__NR_gettid);
 }
