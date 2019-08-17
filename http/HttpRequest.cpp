@@ -118,6 +118,6 @@ void HttpRequest::swap(HttpRequest &that) {
     std::swap(method_, that.method_);
     path_.swap(that.path_);
     query_.swap(that.query_);
-    Timer::swapTime(receiveTime_, that.receiveTime_);
+    std::swap(receiveTime_, that.receiveTime_);
     headers_.swap(that.headers_);
 }
