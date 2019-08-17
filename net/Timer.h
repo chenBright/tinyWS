@@ -75,8 +75,6 @@ namespace tinyWS {
          */
         static TimeType now();
 
-        static void swapTime(TimeType &a, TimeType &b); // 用于 HttpRequest 对象中的 swap 函数
-
     private:
         const TimeCallback timeCallback_;   // 定时器回调函数
         TimeType expiredTime_;              // 到期时间
