@@ -8,15 +8,15 @@
 #include <iostream>
 #include <functional>
 
-#include "EventLoop.h"
+#include "net/EventLoop.h"
 #include "base/Thread.h"
-#include "TcpConnection.h"
-#include "Buffer.h"
-#include "Timer.h"
-#include "TcpServer.h"
-#include "HttpServer.h"
-#include "HttpRequest.h"
-#include "HttpResponse.h"
+#include "net/TcpConnection.h"
+#include "net/Buffer.h"
+#include "net/Timer.h"
+#include "net/TcpServer.h"
+#include "http/HttpServer.h"
+#include "http/HttpRequest.h"
+#include "http/HttpResponse.h"
 
 using namespace std::placeholders;
 using namespace tinyWS;

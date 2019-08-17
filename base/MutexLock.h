@@ -8,11 +8,7 @@
 #include "noncopyable.h"
 
 namespace tinyWS {
-    /**
-     * TODO
-     * 这段代码没有达到工业强度，详见书 P46
-     */
-
+    // 这段代码没有达到工业强度，详见 《Linux多线程服务端编程》P46
     class MutexLock : noncopyable {
     public:
         MutexLock() : holder_(0) {
@@ -24,10 +20,17 @@ namespace tinyWS {
             assert(pthread_mutex_destroy(&mutex_) == 0);
         }
 
+        /**
+         * 当前线程是否为加锁线程
+         * @return true / false
+         */
         bool isLockedByThisThread() {
             return holder_ == Thread::gettid();
         }
 
+        /**
+         * 断言，当前线程是否为加锁线程
+         */
         void assertLocked() {
             assert(isLockedByThisThread());
         }
@@ -36,7 +39,7 @@ namespace tinyWS {
          * 加锁（仅供 MutexLockGuard 调用，严禁用户调用）
          */
         void lock() {
-            pthread_mutex_lock(&mutex_); // 必须先上锁，才能修改holder_
+            pthread_mutex_lock(&mutex_); // 必须先加锁，才能修改holder_
             holder_ = Thread::gettid();
         }
 
@@ -57,10 +60,13 @@ namespace tinyWS {
             return &mutex_;
         }
     private:
-        pthread_mutex_t mutex_;
-        pid_t holder_;
+        pthread_mutex_t mutex_; // 互斥量
+        pid_t holder_;          // 存储持有锁的线程 ID
     };
 
+    // 自动维护互斥量加锁和解锁：
+    // 1 创建对象的时候，加锁；
+    // 2 离开作用域，销毁对象时，解锁
     class MutexLockGuard : noncopyable {
     public:
         explicit MutexLockGuard(MutexLock &mutex) : mutex_(mutex) {

@@ -9,8 +9,13 @@
 #include "noncopyable.h"
 
 namespace tinyWS {
+    // 条件变量对象
     class Condition : noncopyable {
     public:
+        /**
+         * 构造函数
+         * @param mutex 互斥量
+         */
         explicit Condition(MutexLock &mutex) : mutex_(mutex) {
             assert(pthread_cond_init(&cond_, nullptr) == 0);
         }
@@ -29,7 +34,7 @@ namespace tinyWS {
          * @return 如果超时，则返回true；否则，返回false
          */
         bool waitForSecond(int second) {
-            struct timespec timeout;
+            struct timespec timeout{};
             clock_getres(CLOCK_REALTIME, &timeout);
             timeout.tv_sec += second;
             return pthread_cond_timedwait(&cond_, mutex_.getPthreadMutexPtr(), &timeout) == ETIMEDOUT;
@@ -45,7 +50,7 @@ namespace tinyWS {
 
     private:
         MutexLock &mutex_;
-        pthread_cond_t cond_;
+        pthread_cond_t cond_{};
     };
 }
 

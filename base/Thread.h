@@ -11,8 +11,7 @@
 namespace tinyWS {
     class Thread : noncopyable {
     public:
-        // 线程执行函数
-        typedef std::function<void()> ThreadFunction;
+        typedef std::function<void()> ThreadFunction; // // 线程执行函数的类型
 
         /**
          * 构造函数
@@ -53,21 +52,21 @@ namespace tinyWS {
 
         /**
          * 获取线程 id
-         * TODO
-         * 函数内部使用了系统调用，每次都陷入内核。优化：可使用 __thread 修饰的变量缓存线程 id
-         * @return
+         * @return 线程 ID
          */
+        // TODO 函数内部使用了系统调用，每次都陷入内核。优化：可使用 __thread 修饰的变量缓存线程 id
         static pid_t gettid();
 
     private:
-        bool started_; // 线程是否启动
-        pthread_t pthreadId_; // pthread库返回的线程id
-        pid_t tid_; // 系统调用返回的线程id
-        ThreadFunction func_; // 线程执行函数
-        std::string name_; // 线程名
+        bool started_;          // 线程是否启动
+        pthread_t pthreadId_;   // pthread库返回的线程id
+        pid_t tid_;             // 系统调用返回的线程id
+        ThreadFunction func_;   // 线程执行函数
+        std::string name_;      // 线程名
 
         /**
          * 启动线程
+         * 实际执行的是 Thread::runInThread() 函数
          * @param obj 线程对象
          * @return nullptr
          */
