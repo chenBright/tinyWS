@@ -27,7 +27,7 @@ namespace tinyWS {
     class TcpServer : noncopyable,
                       std::enable_shared_from_this<TcpServer> {
     public:
-        typedef std::function<void(EventLoop*)> ThreadInitCallback; // 回调函数类型
+        using ThreadInitCallback = std::function<void(EventLoop*)>; // 回调函数类型
 
         /**
          * 构造函数
@@ -84,7 +84,7 @@ namespace tinyWS {
 
     private:
         // <连接名，TcpConnection 对象的智能指针> 类型
-        typedef std::map<std::string, TcpConnectionPtr> ConnectionMap;
+        using ConnectionMap = std::map<std::string, TcpConnectionPtr>;
 
         EventLoop *loop_;                                   // Accept EventLoop
         const std::string name_;                            // TcpServer 名字，方便打印日志

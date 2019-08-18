@@ -15,7 +15,7 @@
 namespace tinyWS {
     class ThreadPool : noncopyable {
     public:
-        typedef std::function<void()> Task;                             // 任务函数类型
+        using Task = std::function<void()>;                             // 任务函数类型
 
         /**
          * 构造函数
@@ -42,7 +42,7 @@ namespace tinyWS {
         void run(const Task &task);
 
     private:
-        typedef  std::vector<std::unique_ptr<Thread> > ThreadList;      // 线程列表类型
+        using ThreadList = std::vector<std::unique_ptr<Thread> >;       // 线程列表类型
         MutexLock mutex_;                                               // 互斥锁
         Condition cond_;                                                // 条件变量
         std::string name_;                                              // 线程池名

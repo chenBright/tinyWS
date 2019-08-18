@@ -16,8 +16,8 @@ namespace tinyWS {
     // 但它并不拥有这个 fd，也不会在析构的时候关闭它。
     class Channel : noncopyable {
     public:
-        typedef std::function<void()> EventCallback;                    // 事件回调函数
-        typedef std::function<void(Timer::TimeType)> ReadEventCallback; // 读事件回调函数
+        using EventCallback = std::function<void()>;                    // 事件回调函数
+        using ReadEventCallback = std::function<void(Timer::TimeType)>; // 读事件回调函数
 
         /**
          * 构造函数

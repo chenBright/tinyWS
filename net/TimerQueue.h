@@ -42,13 +42,13 @@ namespace tinyWS {
         void cancel(TimerId timerId);
 
     private:
-        typedef std::pair<Timer::TimeType , std::shared_ptr<Timer> > Entry; // <时间，Timer 智能指针> pair
+        using Entry = std::pair<Timer::TimeType , std::shared_ptr<Timer>>;      // <时间，Timer 智能指针> pair 类型
 
         // set 默认升序排序（按照定时器过期时间排序），
         // 方便 insert 函数判断插入定时器是否为最早到期的和获取到期定时器
-        typedef std::set<Entry> TimerList;
+        using TimerList = std::set<Entry>;                                      // <时间，Timer 智能指针> pair 的集合的类型
 
-        EventLoop *loop_; // 所属事件循环
+        EventLoop *loop_;                                                       // 所属事件循环
 
         // TimerQueue 只关注最早到期时间，所以只使用一个 timerfd 即可。
         // 当最早的定时器到期后，获取所有到期的定时器并处理。
@@ -56,13 +56,13 @@ namespace tinyWS {
         // 1. 定时器队列中，可能有多个定时器的到期时间都等于最早到期时间；
         // 2. 可能存在周期处理的定时器；
         // 3. 由于调用函数或者陷入内核需要时间，在此段时间内，也有定时器到期了，尽早处理到期定时器
-        const int timerfd_; // 时间描述符
-        Channel timerfdChannel;
-        TimerList timers_; // 定时器集合，定时器根据过期时间升序排序
+        const int timerfd_;                                                     // 时间描述符
+        Channel timerfdChannel;                                                 // timerfd Channel
+        TimerList timers_;                                                      // 定时器集合，定时器根据过期时间升序排序
 
         // 用于防止定时器"自注销"
-        bool callingExpiredTimers_; // 是否在处理到期定时器
-        TimerList cancelingTimers_; // "自注销"定时器集合
+        bool callingExpiredTimers_;                                             // 是否在处理到期定时器
+        TimerList cancelingTimers_;                                             // "自注销"定时器集合
 
         /**
          * 在 EventLoop 中往定时器队列添加定时器

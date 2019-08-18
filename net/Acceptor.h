@@ -16,7 +16,7 @@ namespace tinyWS {
     class Acceptor : noncopyable {
     public:
         // 新连接到来时的回调函数的类型
-        typedef std::function<void(Socket, const InternetAddress&)> NewConnectionCallback;
+        using NewConnectionCallback = std::function<void(Socket, const InternetAddress&)>;
 
         /**
          * 构造函数

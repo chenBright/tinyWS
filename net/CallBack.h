@@ -8,22 +8,22 @@ namespace tinyWS {
     class TcpConnection;
 
     // TcpConnection 对象的智能指针类型
-    typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
+    using TcpConnectionPtr = std::shared_ptr<TcpConnection>;
 
     // 连接建立的回调函数的类型
-    typedef std::function<void(const TcpConnectionPtr&)> ConnectionCallback;
+    using ConnectionCallback = std::function<void(const TcpConnectionPtr&)>;
 
     // 消息到来的回调函数的类型
-    typedef std::function<void (const TcpConnectionPtr&, Buffer*, Timer::TimeType)> MessageCallback;
+    using MessageCallback = std::function<void (const TcpConnectionPtr&, Buffer*, Timer::TimeType)>;
 
     // 连接断开的的回调函数的类型
-    typedef std::function<void(const TcpConnectionPtr&)> CloseCallback;
+    using CloseCallback = std::function<void(const TcpConnectionPtr&)>;
 
     // 写完成的回调函数的类型
-    typedef std::function<void(const TcpConnectionPtr&)> WriteCompleteCallback;
+    using WriteCompleteCallback = std::function<void(const TcpConnectionPtr&)>;
 
     // "高水位"回调函数的类型
-    typedef std::function<void(const TcpConnectionPtr&)> HighWaterMarkCallback;
+    using HighWaterMarkCallback = std::function<void(const TcpConnectionPtr&)>;
 }
 
 

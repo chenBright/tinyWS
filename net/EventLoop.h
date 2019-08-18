@@ -22,7 +22,7 @@ namespace tinyWS {
     // EventLoop 对象的生命周期和 IO 线程一样长，它不必是 heap 对象
     class EventLoop : noncopyable {
     public:
-        typedef std::function<void()> Functor; // pending functor 的类型
+        using Functor = std::function<void()>; // pending functor 的类型
 
         EventLoop();
         ~EventLoop();
@@ -142,7 +142,7 @@ namespace tinyWS {
         static EventLoop* getEventLoopOfCurrentThread();
 
     private:
-        typedef std::vector<Channel*> ChannelList;
+        using ChannelList = std::vector<Channel*>;  // Channel 列表类型
 
         bool looping_;                              // 是否在事件循环中
         bool quit_;                                 // 是否退出事件循环

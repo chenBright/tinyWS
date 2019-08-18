@@ -29,7 +29,7 @@ namespace tinyWS {
     // Epoll 采用的是 level trigger。
     class Epoll : noncopyable {
     public:
-        typedef std::vector<Channel*> ChannelList;  // Channel 列表类型
+        using ChannelList = std::vector<Channel*>;  // Channel 列表类型
 
         explicit Epoll(EventLoop *loop);
         ~Epoll();
@@ -64,8 +64,8 @@ namespace tinyWS {
         void assertInLoopThread();
 
     private:
-        typedef std::vector<epoll_event> EventList; // epoll 事件列表类型
-        typedef std::map<int, Channel*> ChannelMap; // <文件描述符, Channel> 映射
+        using EventList = std::vector<epoll_event>; // epoll 事件列表类型
+        using ChannelMap = std::map<int, Channel*>; // <文件描述符, Channel> 映射
 
         static const int kInitEventListSize = 16;   // 事件数组（EventList）的默认大小
 

@@ -16,8 +16,7 @@ namespace tinyWS{
 
     class HttpServer : noncopyable {
     public:
-        typedef std::function<void(const HttpRequest&,
-                HttpResponse&)> HttpCallback;
+        using HttpCallback = std::function<void(const HttpRequest&, HttpResponse&)>;
 
         HttpServer(EventLoop *loop,
                    const InternetAddress& listenAddress,
