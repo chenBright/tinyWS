@@ -20,7 +20,7 @@ namespace tinyWS {
     // 当前选择 EventLoop 的策略是 Round-robin。
     class EventLoopThreadPool : noncopyable {
     public:
-        typedef std::function<void(EventLoop*)> EventLoopThreadPoolCallback;    // 线程池回调函数类型
+        using EventLoopThreadPoolCallback = std::function<void(EventLoop*)>; // 线程池回调函数类型
 
         /**
          * 构造函数
@@ -48,12 +48,12 @@ namespace tinyWS {
         EventLoop *getNextLoop();
 
     private:
-        EventLoop *baseLoop_;                                               // 主 EventLoop
-        bool started_;                                                      // 线程池是否启动
-        int numThreads_;                                                    // 线程数
-        int next_;                                                          // 用于获取下一线程
-        std::vector<std::unique_ptr<EventLoopThread> > threads_;            // 线程列表
-        std::vector<EventLoop*> loops_;                                     // EventLoop 列表
+        EventLoop *baseLoop_;                                       // 主 EventLoop
+        bool started_;                                              // 线程池是否启动
+        int numThreads_;                                            // 线程数
+        int next_;                                                  // 用于获取下一线程
+        std::vector<std::unique_ptr<EventLoopThread> > threads_;    // 线程列表
+        std::vector<EventLoop*> loops_;                             // EventLoop 列表
     };
 }
 

@@ -11,8 +11,8 @@ namespace tinyWS {
     // 非线程安全，不暴露给用户，只向用户提供 TdmerId 对象，用于识别定时器。
     class Timer : noncopyable {
     public:
-        typedef std::function<void()> TimeCallback;                 // 定时器回调函数类型
-        typedef int64_t TimeType;                                   // 时间数据类型
+        using TimeCallback = std::function<void()>;                 // 定时器回调函数类型
+        using TimeType = int64_t;                                   // 时间数据类型
 
         const static TimeType kMicroSecondsPerSecond = 1000 * 1000; // 一秒有 1000 * 1000 微秒
 

@@ -11,7 +11,7 @@
 namespace tinyWS {
     class Thread : noncopyable {
     public:
-        typedef std::function<void()> ThreadFunction; // // 线程执行函数的类型
+        using ThreadFunction = std::function<void()>; // 线程执行函数的类型
 
         /**
          * 构造函数
