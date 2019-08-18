@@ -54,7 +54,7 @@ const std::string& Thread::name() const {
 
 
 pid_t Thread::gettid() {
-    ::syscall(__NR_gettid);
+    return static_cast<pid_t>(::syscall(__NR_gettid));
 }
 
 void* Thread::startThread(void *obj) {
@@ -65,7 +65,6 @@ void* Thread::startThread(void *obj) {
 
 void Thread::runInThread() {
     tid_ = Thread::gettid();
-    // TODO 处理异常
     try {
         func_();
     } catch (const std::exception &ex) {
