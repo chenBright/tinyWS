@@ -51,10 +51,9 @@ namespace tinyWS {
         const std::string& name() const;
 
         /**
-         * 获取线程 id
+         * 使用系统调用获取线程 id
          * @return 线程 ID
          */
-        // TODO 函数内部使用了系统调用，每次都陷入内核。优化：可使用 __thread 修饰的变量缓存线程 id
         static pid_t gettid();
 
     private:
