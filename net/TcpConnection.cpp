@@ -68,11 +68,9 @@ void TcpConnection::send(const void *message, size_t len) {
 }
 
 void TcpConnection::shutdown() {
-    // FIXME: use compare and swap
     if (state_ == kConnected) {
         setState(kDisconnecting);
-        // FIXME: shared_from_this()?
-        loop_->runInLoop(std::bind(&TcpConnection::shutdownInLoop, this));
+        loop_->runInLoop(std::bind(&TcpConnection::shutdownInLoop, shared_from_this()));
     }
 }
 
