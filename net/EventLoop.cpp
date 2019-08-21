@@ -227,6 +227,6 @@ void EventLoop::doPendingFunctors() {
 
 void EventLoop::printActiveChannels() const {
     for (const auto &channel : activeChannels_) {
-//        std::cout << "{" << channel->reventsToString() << "} " << std::endl;
+        std::cout << "{" << channel->reventsToString() << "} " << std::endl;
     }
 }

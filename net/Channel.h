@@ -133,13 +133,18 @@ namespace tinyWS {
          */
         void remove();
 
+        // for debug
+        std::string reventsToString() const;
+
+        std::string eventsToString() const;
+
     private:
         static const int kNoneEvent;        // 无事件
         static const int kReadEvent;        // 读事件
         static const int kWriteEvent;       // 写事件
 
         EventLoop *loop_;                   // 所属事件循环
-        const int fd_;                      // 负责的文件描述符
+        int fd_;                      // 负责的文件描述符
         int events_;                        // IO事件，由用户设置。bit pattern
         int revents_;                       // 目前活动事件，由 EventLoop / Epoll 设置。bit pattern
 
@@ -165,6 +170,8 @@ namespace tinyWS {
          * 后者会转而调用 Epoll::updateChannel。
          */
         void update();
+
+        std::string eventsToString(int fd, int event) const;
     };
 }
 
