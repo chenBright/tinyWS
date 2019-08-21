@@ -3,6 +3,7 @@
 #include <sys/epoll.h>
 
 #include <iostream>
+#include <sstream>
 
 #include "EventLoop.h"
 
@@ -30,6 +31,10 @@ Channel::~Channel() {
 // TODO 处理 receiveTime
 void Channel::handleEvent(Timer::TimeType receiveTime) {
     eventHandling_ = true;
+
+    // 位操作的的编译器警告：Use of a signed integer operand with a binary bitwise operator
+    // 参考 https://succlz123.wordpress.com/2018/04/12/undefined-behavior-warning-in-c/
+
     // 连接断开事件
     if ((revents_ & EPOLLHUP) && !(revents_ & EPOLLIN)) {
 //    if (revents_ & EPOLLHUP) {
@@ -139,8 +144,40 @@ void Channel::remove() {
     loop_->removeChannel(this);
 }
 
+std::string Channel::reventsToString() const {
+    return eventsToString(fd_, revents_);
+}
+
+std::string Channel::eventsToString() const {
+    return eventsToString(fd_, events_);
+}
 
 void Channel::update() {
     loop_->updateChannel(this);
+}
+
+std::string Channel::eventsToString(int fd, int event) const {
+    std::ostringstream oss;
+    oss << fd << ": ";
+    if (event & EPOLLIN) {
+        oss << "IN ";
+    }
+    if (event & EPOLLPRI) {
+        oss << "PRI ";
+    }
+    if (event & EPOLLOUT) {
+        oss << "OUT ";
+    }
+    if (event & EPOLLHUP) {
+        oss << "HUP ";
+    }
+    if (event & EPOLLRDHUP) {
+        oss << "RDHUP ";
+    }
+    if (event & EPOLLERR) {
+        oss << "ERR ";
+    }
+
+    return oss.str();
 }
 
