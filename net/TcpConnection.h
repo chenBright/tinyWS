@@ -18,7 +18,7 @@ namespace tinyWS {
     class Channel;
 
     // 由于 TcpConnection 模糊的生命周期，所以需要继承自 enable_shared_from_this。
-    // TODO 原因见 《Linux多线程服务端编程》P100
+    // TODO 学习 原因见 《Linux多线程服务端编程》P100
     //
     // TcpConnection 表示的是"一次 TCP 连接"，它是不可再生的，
     // 一旦连接断开，这个 TcpConnection 对象就没有用了。
