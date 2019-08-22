@@ -173,7 +173,7 @@ namespace tinyWS {
         void doPendingFunctors();
 
         /**
-         * TODO 打印"活跃"的 Channel 的信息
+         * 打印"活跃"的 Channel 的信息
          */
         void printActiveChannels() const; // for DEBUG
     };

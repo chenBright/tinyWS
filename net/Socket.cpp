@@ -57,24 +57,22 @@ void Socket::bindAddress(const InternetAddress &localAddress) {
 }
 
 void Socket::listen() {
-    // TODO 最大连接数
     if (::listen(sockfd_, 128) < 0) {
         std::cout << "Socket::listen" << std::endl;
     }
 }
 
 int Socket::accept(InternetAddress *peerAddress) {
-    // TODO 检验 {} 初始化会不会影响结果
     sockaddr_in address{};
     auto addressLen = static_cast<socklen_t>(sizeof(address));
     bzero(&address, sizeof(address));
-    // TODO Linux 新增的系统调用，直接 accept4() 得到非阻塞的 socket
+    // TODO 学习 Linux 新增的系统调用，直接 accept4() 得到非阻塞的 socket
     int connectionFd = ::accept4(sockfd_, reinterpret_cast<sockaddr*>(&address), &addressLen, SOCK_NONBLOCK | SOCK_CLOEXEC);
     if (connectionFd >= 0) {
         peerAddress->setSockAddrInternet(address);
         return connectionFd;
     } else {
-        // TODO 错误处理
+        // TODO 学习错误处理
         int savedErrno = errno;
         std::cout << "Socket::accept" << std::endl;
         switch (savedErrno)

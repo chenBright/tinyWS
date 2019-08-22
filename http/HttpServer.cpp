@@ -66,7 +66,6 @@ void HttpServer::onRequest(const TcpConnectionPtr &connection,
 
     Buffer buffer;
     response.appendToBuffer(&buffer);
-    // TODO muduo 中有一个接收 Buffer 参数的重载版本 send 函数
     connection->send(buffer.toString());
     if (response.closeConnection()) {
         connection->shutdown();

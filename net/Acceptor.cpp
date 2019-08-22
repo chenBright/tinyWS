@@ -45,7 +45,6 @@ void Acceptor::listen() {
 }
 
 int Acceptor::createNonblocking() {
-    // TODO socket 直接得到无阻塞 IO 文件描述符
     int sockfd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
     if (sockfd < 0) {
         std::cout << "sockets::createNonblockingOrDie" << std::endl;
