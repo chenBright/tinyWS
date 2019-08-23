@@ -44,12 +44,17 @@ void HttpServer::onMessage(const TcpConnectionPtr &connection, Buffer *buffer,
                            Timer::TimeType receiveTime) {
     HttpContext *context = connection->getMutableContext();
     if (!context->parseRequest(buffer, receiveTime)) {
+        // 404
         connection->send("HTTP/1.1 400 Bad Request\r\n\r\n");
         connection->shutdown();
     }
 
+    // 解析失败 跟 解析完成 互斥
+
     if (context->gotAll()) {
+        // 解析完成，响应请求
         onRequest(connection, context->request());
+        // 重置 HttpContext
         context->reset();
     }
 }
@@ -67,6 +72,8 @@ void HttpServer::onRequest(const TcpConnectionPtr &connection,
     Buffer buffer;
     response.appendToBuffer(&buffer);
     connection->send(buffer.toString());
+    // TODO 如果 isClose 为 true，即将要关闭连接，但是数据还没发送完，将会怎样？
+    //  在 TcpConnection::handleWrite() 和 TcpConnection::shutdown()
     if (response.closeConnection()) {
         connection->shutdown();
     }
