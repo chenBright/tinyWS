@@ -15,12 +15,13 @@ bool HttpContext::parseRequest(Buffer *buffer, Timer::TimeType receiveTime) {
     bool hasMore = true;
     while (hasMore) {
         if (state_ == kExpectRequestLine) {
-            // 解析行
+            // 解析请求行
 
             const char *crlf = buffer->findCRLF(); // 查找"r\n"
             if (crlf) {
-                // 查找成功，当前有一行完整的数据
+                // 查找成功，当前请求行完整
                 isOk = processRequestLine(buffer->peek(), crlf);
+
                 if (isOk) {
                     // 行解析成功
                     request_.setReceiveTime(receiveTime);
@@ -29,11 +30,11 @@ bool HttpContext::parseRequest(Buffer *buffer, Timer::TimeType receiveTime) {
                     // 行解析成功，下一步是解析请求头
                     state_ = kExpectHeader;
                 } else {
-                    // 行解析失败
+                    // 请求行解析失败
                     hasMore = false;
                 }
             } else {
-                // 没有一行完整的数据
+                // 请求行不完整
                 hasMore = false;
             }
         } else if (state_ == kExpectHeader) {
