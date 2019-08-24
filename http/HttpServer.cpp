@@ -72,8 +72,16 @@ void HttpServer::onRequest(const TcpConnectionPtr &connection,
     Buffer buffer;
     response.appendToBuffer(&buffer);
     connection->send(buffer.toString());
-    // TODO 如果 isClose 为 true，即将要关闭连接，但是数据还没发送完，将会怎样？
-    //  在 TcpConnection::handleWrite() 和 TcpConnection::shutdown()
+    // 如果 isClose 为 true，即将要关闭连接，但是数据还没发送完，连接也会在数据发完才会关闭。
+    //  在 TcpConnection::handleWrite() 和
+    // TcpConnection::send() 只调用了一次 write(2)而不会反复调用直至它返回 EAGAIN，
+    // 因为如果第一次 write(2) 没有能够将数据发送完，第二次调用 write(2) 几乎肯定会将数据发送完，并返回 EAGAIN。
+    // 那么第二次调用 write(2) 会发生在连接关闭之前吗？
+    // 会。
+    // 第一次如果没有将数据发送完，会令 Channel 关注写事件（此时调用 Channel::isWriting() 会返回 true，表示 Channel 处在写数据状态）。
+    // 当写事件到来时，调用 TcpConnection::handleWrite()，其中会第二次调用 write(2) 将数据发送完。
+    // 而 TcpConnection::shutdown() 只有当对应的 CHannel 不处在写数据状态才会关闭连接，而当对应 Channel 处在写数据状态，则不做任何操作。
+    // 所以，数据肯定能发送完，在关闭连接。
     if (response.closeConnection()) {
         connection->shutdown();
     }
