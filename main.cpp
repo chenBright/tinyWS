@@ -1,8 +1,7 @@
 #include <unistd.h>
-#include <strings.h>    // bzero()
 #include <fcntl.h>
 #include <sys/stat.h>   // struct stat
-#include <sys/mman.h>
+#include <sys/mman.h>   // mmap()、munmap()
 
 #include <iostream>
 #include <functional>

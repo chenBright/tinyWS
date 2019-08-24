@@ -4,7 +4,6 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h> // struct tcp_info
 #include <sys/socket.h>
-#include <strings.h> // bzero()
 #include <cerrno>
 
 #include <iostream>
@@ -65,7 +64,6 @@ void Socket::listen() {
 int Socket::accept(InternetAddress *peerAddress) {
     sockaddr_in address{};
     auto addressLen = static_cast<socklen_t>(sizeof(address));
-    bzero(&address, sizeof(address));
     // TODO 学习 Linux 新增的系统调用，直接 accept4() 得到非阻塞的 socket
     int connectionFd = ::accept4(sockfd_, reinterpret_cast<sockaddr*>(&address), &addressLen, SOCK_NONBLOCK | SOCK_CLOEXEC);
     if (connectionFd >= 0) {

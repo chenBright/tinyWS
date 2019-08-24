@@ -1,12 +1,9 @@
 #include "Epoll.h"
 
 #include <assert.h>
-#include <fcntl.h>
-#include <unistd.h>
+#include <unistd.h> // close
 #include <cstring>
 #include <sys/epoll.h>
-#include <unistd.h> // close
-#include <strings.h> // bzero()
 
 #include <iostream>
 
@@ -129,7 +126,6 @@ void Epoll::fillActiveChannels(int numEvents, Epoll::ChannelList *activeChannels
 
 void Epoll::update(int operation, Channel *channel) {
     epoll_event event{};
-    bzero(&event, sizeof(event));
 
     // struct epoll_event {
     //     unit32_t events;
