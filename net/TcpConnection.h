@@ -199,7 +199,7 @@ namespace tinyWS {
 //        void sendInLoop(const void *message, size_t len);
 
         /**
-         * 在 IO 线程中 shutdown write 端
+         * 在 IO 线程中 shutdown write 端（只有当 Channel 不处在写数据的状态才能关闭）
          */
         void shutdownInLoop();
     };
