@@ -76,6 +76,7 @@ void httpCallback(const HttpRequest &request, HttpResponse &response) {
     }
 
     char *srcAddress = static_cast<char*>(mmapResult);
+    // 添加数据到 Response Body
     response.setBody(std::string(srcAddress, srcAddress + fileBuffer.st_size));
     munmap(mmapResult, static_cast<size_t>(fileBuffer.st_size));
 

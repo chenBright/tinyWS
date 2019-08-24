@@ -41,6 +41,7 @@ void HttpResponse::setBody(const std::string &body) {
 }
 
 void HttpResponse::appendToBuffer(Buffer *output) const {
+    // 响应行：请求方法 路径 HTTP/版本
     char buf[32];
     snprintf(buf, sizeof(buf), "HTTP/1.1 %d ", statusCode_);
 
@@ -48,6 +49,7 @@ void HttpResponse::appendToBuffer(Buffer *output) const {
     output->append(statusMessage_);
     output->append("\r\n");
 
+    // 添加响应头
     if (closeConnection_) {
         // 关闭连接
         output->append("Connection: close\r\n");
@@ -57,7 +59,6 @@ void HttpResponse::appendToBuffer(Buffer *output) const {
         output->append("Connection: Keep-Alive\r\n");
     }
 
-    // 添加响应头
     for (const auto &header : headers_) {
         output->append(header.first);
         output->append(": ");
