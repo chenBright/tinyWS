@@ -1,8 +1,7 @@
 #include <unistd.h>
-#include <strings.h> // bzero()
-#include <cstdio> // fopen()、fread()
+#include <strings.h>    // bzero()
 #include <fcntl.h>
-#include <sys/stat.h> // struct stat
+#include <sys/stat.h>   // struct stat
 #include <sys/mman.h>
 
 #include <iostream>
@@ -11,8 +10,6 @@
 #include "net/EventLoop.h"
 #include "base/Thread.h"
 #include "net/TcpConnection.h"
-#include "net/Buffer.h"
-#include "net/Timer.h"
 #include "net/TcpServer.h"
 #include "http/HttpServer.h"
 #include "http/HttpRequest.h"

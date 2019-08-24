@@ -8,7 +8,8 @@
 using namespace tinyWS;
 
 HttpRequest::HttpRequest()
-    : method_(kInvalid) {
+    : method_(kInvalid),
+      receiveTime_(0) {
 
 }
 
@@ -89,6 +90,7 @@ Timer::TimeType HttpRequest::receiveTime() const {
 void HttpRequest::addHeader(const char *start, const char *colon, const char *end) {
     std::string field(start, colon);
     ++colon;
+    // 跳过空格
     while (colon < end && ::isspace(*colon)) {
         ++colon;
     }

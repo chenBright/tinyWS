@@ -49,6 +49,7 @@ void HttpResponse::appendToBuffer(Buffer *output) const {
     output->append("\r\n");
 
     if (closeConnection_) {
+        // 关闭连接
         output->append("Connection: close\r\n");
     } else {
         snprintf(buf, sizeof(buf), "Content-Length: %zd\r\n", body_.size());
@@ -56,6 +57,7 @@ void HttpResponse::appendToBuffer(Buffer *output) const {
         output->append("Connection: Keep-Alive\r\n");
     }
 
+    // 添加响应头
     for (const auto &header : headers_) {
         output->append(header.first);
         output->append(": ");
