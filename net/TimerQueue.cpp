@@ -3,7 +3,6 @@
 #include <sys/timerfd.h>
 #include <unistd.h>
 #include <cassert>
-#include <strings.h> // bzero()
 
 #include <iostream>
 #include <functional>
@@ -65,8 +64,6 @@ namespace Timerfd {
     void resetTimerfd(int timerfd, Timer::TimeType when) {
         itimerspec oldValue{};
         itimerspec newValue{};
-        bzero(&oldValue, sizeof(oldValue));
-        bzero(&newValue, sizeof(newValue));
         newValue.it_value = howMuchTimeFromNow(when);
         // 通过 timerfd_settime 函数唤醒 IO 线程
         int ret = timerfd_settime(timerfd, 0, &newValue, &oldValue);

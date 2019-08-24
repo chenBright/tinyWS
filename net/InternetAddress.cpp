@@ -1,7 +1,6 @@
 #include "InternetAddress.h"
 
 #include <cstring>
-#include <strings.h> // bzero()
 #include <arpa/inet.h>
 
 #include <iostream>
@@ -23,15 +22,13 @@ using namespace tinyWS;
 //         in_addr_t       s_addr;     /* address in network byte order */
 //     };
 
-InternetAddress::InternetAddress(uint16_t port) {
-    bzero(&address_, sizeof(address_));
+InternetAddress::InternetAddress(uint16_t port) : address_({}) {
     address_.sin_family = AF_INET;
     address_.sin_addr.s_addr = INADDR_ANY;
     address_.sin_port = htobe16(port);
 }
 
-InternetAddress::InternetAddress(const std::string &ip, uint16_t port) {
-    bzero(&address_, sizeof(address_));
+InternetAddress::InternetAddress(const std::string &ip, uint16_t port) : address_({}) {
     address_.sin_family = AF_INET;
     address_.sin_port = htobe16(port);
     if (inet_pton(AF_INET, ip.c_str(), &address_.sin_addr) <= 0) {
@@ -78,7 +75,6 @@ uint16_t InternetAddress::portNetEnd() const {
 
 sockaddr_in InternetAddress::getLocalAddress(int sockfd) {
     sockaddr_in localAddress{};
-    bzero(&localAddress, sizeof(localAddress));
     socklen_t addressLen = sizeof(localAddress);
     if (getsockname(sockfd, reinterpret_cast<sockaddr*>(&localAddress), &addressLen) < 0) {
         std::cout << "InternetAddress::getLocalAddress" << std::endl;
@@ -89,7 +85,6 @@ sockaddr_in InternetAddress::getLocalAddress(int sockfd) {
 
 sockaddr_in InternetAddress::getPeerAddress(int sockfd) {
     sockaddr_in peerAddress{};
-    bzero(&peerAddress, sizeof(peerAddress));
     socklen_t addressLen = sizeof(peerAddress);
     if (getpeername(sockfd, reinterpret_cast<sockaddr*>(&peerAddress), &addressLen) < 0) {
         std::cout << "InternetAddress::getPeerAddress" << std::endl;
