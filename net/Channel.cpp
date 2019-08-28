@@ -19,58 +19,39 @@ Channel::Channel(EventLoop *loop, int fdArg)
       events_(0),
       revents_(0),
       statusInEpoll_(-1),
-      eventHandling_(false) {
+      eventHandling_(false),
+      addedToLoop_(false),
+      tied_(false) {
 }
 
 Channel::~Channel() {
     // 事件处理期间，不会析构
     assert(!eventHandling_);
-    std::cout << "Channel:~Channel()" << std::endl;
+    assert(!addedToLoop_);
+    if (loop_->isInLoopThread()) {
+//        assert()
+        std::cout << "Channel:~Channel()" << std::endl;
+    }
+}
+
+void Channel::tie(const std::shared_ptr<void> &obj) {
+    tie_ = obj;
+    tied_ = true;
 }
 
 // TODO 处理 receiveTime
 void Channel::handleEvent(Timer::TimeType receiveTime) {
-    eventHandling_ = true;
-
-    // 位操作的的编译器警告：Use of a signed integer operand with a binary bitwise operator
-    // 参考 https://succlz123.wordpress.com/2018/04/12/undefined-behavior-warning-in-c/
-
-    // 连接断开事件
-    if ((revents_ & EPOLLHUP) && !(revents_ & EPOLLIN)) {
-//    if (revents_ & EPOLLHUP) {
-        std::cout << "Channel::handleEvent() EPOLLHUP" << std::endl;
-        if (closeCallback_) {
-            closeCallback_();
+    std::shared_ptr<void> guard;
+    if (tied_) {
+        guard = tie_.lock();
+        if (guard) {
+            // 如果绑定了对象（TcpConnection），则该对象还"存活"
+            handleEventWithGuard(receiveTime);
         }
+    } else {
+        // 如果没有绑定对象，也可以安全调用该函数。
+        handleEventWithGuard(receiveTime);
     }
-
-    // 可读事件
-    if (revents_ & EPOLLIN) {
-        std::cout << "Channel::handleEvent() EPOLLIN" << std::endl;
-    }
-
-    // 异常事件
-    if (revents_ & EPOLLERR) {
-        if (errorCallback_) {
-            errorCallback_();
-        }
-    }
-
-    // 可读事件
-    if (revents_ & (EPOLLIN | EPOLLPRI | EPOLLRDHUP)) {
-        if (readCallback_) {
-            readCallback_(receiveTime);
-        }
-    }
-
-    // 可写事件
-    if (revents_ & EPOLLOUT) {
-        if (writeCallback_) {
-            writeCallback_();
-        }
-    }
-
-    eventHandling_ = false;
 }
 
 void Channel::setReadCallback(const ReadEventCallback &cb) {
@@ -141,6 +122,8 @@ EventLoop* Channel::ownerLoop() {
 }
 
 void Channel::remove() {
+    assert(isNoneEvent());
+    addedToLoop_ = false;
     loop_->removeChannel(this);
 }
 
@@ -152,7 +135,52 @@ std::string Channel::eventsToString() const {
     return eventsToString(fd_, events_);
 }
 
+void Channel::handleEventWithGuard(tinyWS::Timer::TimeType receiveTime) {
+    eventHandling_ = true;
+
+    // 位操作的的编译器警告：Use of a signed integer operand with a binary bitwise operator
+    // 参考 https://succlz123.wordpress.com/2018/04/12/undefined-behavior-warning-in-c/
+
+    // 连接断开事件
+    if ((revents_ & EPOLLHUP) && !(revents_ & EPOLLIN)) {
+//    if (revents_ & EPOLLHUP) {
+        std::cout << "Channel::handleEvent() EPOLLHUP" << std::endl;
+        if (closeCallback_) {
+            closeCallback_();
+        }
+    }
+
+    // 可读事件
+    if (revents_ & EPOLLIN) {
+        std::cout << "Channel::handleEvent() EPOLLIN" << std::endl;
+    }
+
+    // 异常事件
+    if (revents_ & EPOLLERR) {
+        if (errorCallback_) {
+            errorCallback_();
+        }
+    }
+
+    // 可读事件
+    if (revents_ & (EPOLLIN | EPOLLPRI | EPOLLRDHUP)) {
+        if (readCallback_) {
+            readCallback_(receiveTime);
+        }
+    }
+
+    // 可写事件
+    if (revents_ & EPOLLOUT) {
+        if (writeCallback_) {
+            writeCallback_();
+        }
+    }
+
+    eventHandling_ = false;
+}
+
 void Channel::update() {
+    addedToLoop_ = true;
     loop_->updateChannel(this);
 }
 

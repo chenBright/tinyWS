@@ -2,6 +2,7 @@
 #define TINYWS_CHANNEL_H
 
 #include <functional>
+#include <memory>
 
 #include "../base/noncopyable.h"
 #include "Timer.h"
@@ -28,8 +29,11 @@ namespace tinyWS {
 
         ~Channel();
 
+        void tie(const std::shared_ptr<void> &obj);
+
         /**
          * 处理事件
+         * @param receiveTime 接受时间
          */
         void handleEvent(Timer::TimeType receiveTime);
 
@@ -162,7 +166,26 @@ namespace tinyWS {
         EventCallback closeCallback_;       // 关闭事件回调函数
         EventCallback errorCallback_;       // 异常事件回调函数
 
+        // 详情见《Linux多线程服务端编程》P274
+        // 如果用户在 onClose() 中析构 Channel 对象，这会造成要种的后果。
+        // 即 Channel::handleEvent() 执行到一半，其所属的 Channel 独享本身被销毁了。
+        // 这时程序立即 core dump 就是最好的结果了。
+        // 解决方法：提供接口 Channel::tie()，用于延长某些对象（可以是 Channel，也可以是其 owner 对象）的生命期,
+        // 使之长过 Channel::handleEvent() 函数。
+        // 这也是 TcpConnection 使用 shared_ptr 管理对象生命期的原因之一。
         bool eventHandling_;                // 是否在处理事件，用于调试阶段保证 Channel 不会在处理事件过程中析构
+        bool addedToLoop_;                  // 是否添加到 EventLoop 中
+        std::weak_ptr<void> tie_;           // 绑定对象
+        bool tied_;                         // 是否绑定了对象
+
+        /**
+         * 在安全状态下处理事件。
+         * 安全状态指的是：
+         * 1. 如果绑定了对象（TcpConnection），则该对象还"存活"；
+         * 2. 如果没有绑定对象，也可以安全调用该函数。
+         * @param receiveTime 接受时间
+         */
+        void handleEventWithGuard(Timer::TimeType receiveTime);
 
         /**
          * 更新 Channel 在对应 Epoll 中的信息，包括文件描述符事件、Channel 状态。
