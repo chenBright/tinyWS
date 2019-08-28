@@ -122,21 +122,26 @@ namespace tinyWS {
 
         /**
          * 更新 channel
-         *
          * @param channel
          */
         void updateChannel(Channel *channel);
 
         /**
          * 移除 channel
-         *
          * @param channel
          */
         void removeChannel(Channel *channel);
 
         /**
+         * --- 只能在 IO 线程中调用 ---
+         * channel 是否被 Epoll 监听中。
+         * @param channel Channel
+         * @return true / false
+         */
+        bool hasChannel(Channel *channel);
+
+        /**
          * 获取线程的事件循环
-         *
          * @return EventLoop 对象
          */
         static EventLoop* getEventLoopOfCurrentThread();

@@ -48,14 +48,22 @@ namespace tinyWS {
          * 更新 Channel
          * @param channel
          */
-        void updateChannel(Channel* channel);
+        void updateChannel(Channel *channel);
 
         /**
          * --- 只能在 IO 线程中调用 ---
          * 移除 Channel
          * @param channel
          */
-        void removeChannel(Channel* channel);
+        void removeChannel(Channel *channel);
+
+        /**
+         * --- 只能在 IO 线程中调用 ---
+         * channel 是否被 Epoll 监听中。
+         * @param channel Channel
+         * @return true / false
+         */
+        bool hasChannel(Channel *channel);
 
         /**
          * 断言

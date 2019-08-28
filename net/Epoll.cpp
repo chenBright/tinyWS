@@ -108,6 +108,12 @@ void Epoll::removeChannel(Channel *channel) {
     channel->setStatusInEpoll(kNew); // 设置 Channel 状态为 kNew
 }
 
+bool Epoll::hasChannel(tinyWS::Channel *channel) {
+    assertInLoopThread();
+    auto it = channels_.find(channel->fd());
+    return it != channels_.end() && it->second == channel;
+}
+
 void Epoll::assertInLoopThread() {
     ownerLoop_->assertInLoopThread();
 }

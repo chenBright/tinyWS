@@ -8,7 +8,6 @@ A C++ Tiny Web Server
 
 ## TODO
 
-- Channel tie，用于延长 Channel 的生命周期
 - 使用定时器（如超时处理）
 - 日志
 - http超时处理，并使用时间轮盘管理定时器

@@ -189,6 +189,12 @@ void EventLoop::removeChannel(Channel *channel) {
     epoll_->removeChannel(channel);
 }
 
+bool EventLoop::hasChannel(tinyWS::Channel *channel) {
+    assert(channel->ownerLoop() == this);
+    assertInLoopThread();
+    return epoll_->hasChannel(channel);
+}
+
 EventLoop* EventLoop::getEventLoopOfCurrentThread() {
     return t_loopInThisThread;
 }
