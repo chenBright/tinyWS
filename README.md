@@ -11,7 +11,6 @@ A C++ Tiny Web Server
 - 使用定时器（如超时处理）
 - 日志
 - http超时处理，并使用时间轮盘管理定时器
-- BlockingQueue
 - 编写文档，解释核心原理
 - 单元测试
 - 构建
