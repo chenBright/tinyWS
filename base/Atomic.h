@@ -50,7 +50,7 @@ namespace tinyWS {
         T getAndSet(T newValue) {
             // 可用 C++ 11 atomic 头文件：std::atomic_exchange 代替。
             // 参考 https://zh.cppreference.com/w/cpp/atomic/atomic_exchange
-            return __atomic_exchange_n(&value, newValue, __ATOMIC_SEQ_CST);
+            return __atomic_exchange_n(&value_, newValue, __ATOMIC_SEQ_CST);
         }
     private:
         // volatile 关键字，参考：
