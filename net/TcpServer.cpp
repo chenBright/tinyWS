@@ -15,7 +15,7 @@ TcpServer::TcpServer(EventLoop *loop, const InternetAddress &address, const std:
       name_(name),
       acceptor_(new Acceptor(loop, address)),
       threadPool_(new EventLoopThreadPool(loop)),
-      started_(false),
+      started_(),
       nextConnectionId_(1) {
 
     acceptor_->setNewConnectionCallback(
@@ -41,7 +41,7 @@ void TcpServer::setThreadNumber(int threadNumber) {
 }
 
 void TcpServer::start() {
-    if (!started_) {
+    if (started_.getAndSet(1) == 0) {
         threadPool_->start(threadInitCallback_);
         loop_->runInLoop(
                 std::bind(&Acceptor::listen, acceptor_.get()));

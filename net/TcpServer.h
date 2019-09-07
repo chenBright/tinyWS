@@ -7,6 +7,7 @@
 #include <map>
 
 #include "../base/noncopyable.h"
+#include "../base/Atomic.h"
 #include "TcpConnection.h"
 #include "EventLoopThreadPool.h"
 #include "CallBack.h"
@@ -90,7 +91,7 @@ namespace tinyWS {
         const std::string name_;                            // TcpServer 名字，方便打印日志
         std::unique_ptr<Acceptor> acceptor_;                // Acceptor
         std::unique_ptr<EventLoopThreadPool> threadPool_;   // EventLoop 线程池
-        bool started_;                                      // 是否启动 TODO 原子类型
+        AtomicInt32 started_;                                      // 是否启动
         int nextConnectionId_;                              // 下一连接 ID，只会在 IO 线程中操作该值
         ConnectionMap connectionMap_;                       // <连接名，TcpConnection 对象的智能指针>
 
