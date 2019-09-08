@@ -39,7 +39,7 @@ namespace tinyWS {
          * 注销定时器
          * @param timerId 定时器 ID
          */
-        void cancel(TimerId timerId);
+        void cancel(const TimerId& timerId);
 
     private:
         using Entry = std::pair<Timer::TimeType , std::shared_ptr<Timer>>;      // <时间，Timer 智能指针> pair 类型
@@ -47,6 +47,9 @@ namespace tinyWS {
         // set 默认升序排序（按照定时器过期时间排序），
         // 方便 insert 函数判断插入定时器是否为最早到期的和获取到期定时器
         using TimerList = std::set<Entry>;                                      // <时间，Timer 智能指针> pair 的集合的类型
+
+        using ActiveTimer = std::pair<std::shared_ptr<Timer>, int64_t>;
+        using ActiveTimerSet = std::set<ActiveTimer>;
 
         EventLoop *loop_;                                                       // 所属事件循环
 
@@ -60,21 +63,26 @@ namespace tinyWS {
         Channel timerfdChannel;                                                 // timerfd Channel
         TimerList timers_;                                                      // 定时器集合，定时器根据过期时间升序排序
 
+        // 用于 cancel 操作
+
+        // 保存目前有效的 Timer 的智能指针，满足 timers_.size() == activeTimers_.size()。
+        // 两个容器保存相同的定时器，只是 timers_ 是按到期时间排序，activeTimers_ 按对象地址排序。
+        ActiveTimerSet activeTimers_;
         // 用于防止定时器"自注销"
-        bool callingExpiredTimers_;                                             // 是否在处理到期定时器
-        TimerList cancelingTimers_;                                             // "自注销"定时器集合
+        bool callingExpiredTimers_{};                                             // 是否在处理到期定时器
+        ActiveTimerSet cancelingTimers_;                                        // "自注销"定时器集合
 
         /**
          * 在 EventLoop 中往定时器队列添加定时器
          * @param timer 定时器
          */
-        void addTimerInLoop(std::shared_ptr<Timer> timer);
+        void addTimerInLoop(const std::shared_ptr<Timer>& timer);
 
         /**
          * 在 EventLoop 中注销定时器
          * @param timer
          */
-        void cancelInLoop(std::shared_ptr<Timer> timer);
+        void cancelInLoop(const TimerId& timerId);
 
         /**
          * 定时器到期，timerfd 可写，则会唤醒 IO 线程，在 IO 线程中，处理到期的定时器。
@@ -101,7 +109,7 @@ namespace tinyWS {
          * @param timer 定时器智能指针
          * @return 被插入的定时器是否为最早到期的定时器
          */
-        bool insert(std::shared_ptr<Timer> timer);
+        bool insert(const std::shared_ptr<Timer>& timer);
     };
 }
 

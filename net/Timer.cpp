@@ -6,11 +6,14 @@
 
 using namespace tinyWS;
 
+AtomicInt64 Timer::s_numCreated_;
+
 Timer::Timer(const Timer::TimeCallback &cb, TimeType timeout, TimeType interval)
     : timeCallback_(cb),
       expiredTime_(timeout),
       interval_(interval),
-      repeat_(interval > 0) {
+      repeat_(interval > 0),
+      sequence_(s_numCreated_.incrementAndGet()) {
 
 }
 
@@ -28,6 +31,10 @@ void Timer::updateExpiredTime(TimeType timeout) {
 
 bool Timer::repeat() const {
     return repeat_;
+}
+
+int64_t Timer::getSequence() const {
+    return sequence_;
 }
 
 bool Timer::isVaild() {
@@ -61,4 +68,8 @@ Timer::TimeType Timer::now() {
     gettimeofday(tv.get(), nullptr);
 
     return static_cast<int64_t >(tv->tv_sec * Timer::kMicroSecondsPerSecond + tv->tv_usec);
+}
+
+int64_t Timer::createNum() {
+    return s_numCreated_.get();
 }

@@ -77,7 +77,8 @@ TimerQueue::TimerQueue(EventLoop *loop)
     : loop_(loop),
       timerfd_(Timerfd::createTimerfd()),
       timerfdChannel(loop, timerfd_),
-      timers_() {
+      timers_(),
+      callingExpiredTimers_(false) {
 
     // 设置"读"回调函数和可读
     timerfdChannel.setReadCallback(std::bind(&TimerQueue::handleRead, this));
@@ -97,16 +98,16 @@ TimerId TimerQueue::addTimer(const Timer::TimeCallback &cb, Timer::TimeType time
     return *new TimerId(std::weak_ptr<Timer>(timer));
 }
 
-void TimerQueue::cancel(TimerId timerId) {
+void TimerQueue::cancel(const TimerId &timerId) {
     // TimerQueue 是 TimerId 的友元类
     auto timer = timerId.timer_.lock();
     if (timer) {
         // 将注销定时器的实际工作转移到 IO 线程，使得不加锁也能保证线程安全性
-        loop_->runInLoop(std::bind(&TimerQueue::cancelInLoop, this, timer));
+        loop_->runInLoop(std::bind(&TimerQueue::cancelInLoop, this, timerId));
     }
 }
 
-void TimerQueue::addTimerInLoop(std::shared_ptr<Timer> timer) {
+void TimerQueue::addTimerInLoop(const std::shared_ptr<Timer> &timer) {
     loop_->assertInLoopThread();
     Timer::TimeType expiredTime = timer->getExpiredTime();
     bool isEarliest = insert(timer); // 插入的定时器是否是最早到期的定时器
@@ -115,12 +116,20 @@ void TimerQueue::addTimerInLoop(std::shared_ptr<Timer> timer) {
     }
 }
 
-void TimerQueue::cancelInLoop(std::shared_ptr<Timer> timer) {
+void TimerQueue::cancelInLoop(const TimerId &timerId) {
     loop_->isInLoopThread();
-    Entry timerEntry(timer->getExpiredTime(), timer);
-    auto it = timers_.find(timerEntry);
-    if (it != timers_.end()) {
-        auto n = timers_.erase(timerEntry);
+    assert(timers_.size() == activeTimers_.size());
+
+    auto cancelTimer = timerId.timer_.lock();
+    assert(cancelTimer);
+    ActiveTimer timer(cancelTimer, cancelTimer->getSequence());
+    auto it = activeTimers_.find(timer);
+    if (it != activeTimers_.end()) {
+        // 删除两个容器中的定时器
+        auto n = timers_.erase(Entry(it->first->getExpiredTime(), it->first));
+        assert(n == 1);
+        (void)(n);
+        activeTimers_.erase(it);
     } else if (callingExpiredTimers_) {
         // 防止定时器"自注销"，即定时器在自己的回调函数中注销自己。
         // callingExpiredTimers_ 为 true，即当前为处理到期定时器期间。
@@ -128,8 +137,10 @@ void TimerQueue::cancelInLoop(std::shared_ptr<Timer> timer) {
         // 记录在处理到期定时器期间，有哪些定时器请求"自注销"（cancel）。
         // 处理完定时器后，更新定时器（reset）时，不再把"自注销"的定时器添加到 timers_ 中。
         // 等到下次处理到期定时器时，清理该集合，释放定时器资源。
-        cancelingTimers_.insert(timerEntry);
+        cancelingTimers_.insert(timer);
     }
+
+    assert(timers_.size() == activeTimers_.size());
 }
 
 void TimerQueue::handleRead() {
@@ -149,6 +160,8 @@ void TimerQueue::handleRead() {
 }
 
 std::vector<TimerQueue::Entry> TimerQueue::getExpired(Timer::TimeType now) {
+    assert(timers_.size() == activeTimers_.size());
+
     std::vector<Entry> expired;
     // UINTPTR_MAX 是 uintptr_t 的最大值，使用最大值，避免冲突
     Entry sentry = std::make_pair(now, std::shared_ptr<Timer>(reinterpret_cast<Timer*>(UINTPTR_MAX)));
@@ -158,13 +171,23 @@ std::vector<TimerQueue::Entry> TimerQueue::getExpired(Timer::TimeType now) {
     std::copy(timers_.begin(), it, std::back_inserter(expired));
     timers_.erase(timers_.begin(), it);
 
+    // 从 activeTimers_ 中删除过期定时器
+    for (const auto &activated : expired) {
+        ActiveTimer timer(activated.second, activated.second->getSequence());
+        auto n = activeTimers_.erase(timer);
+        assert(n == 1);
+        (void)n;
+    }
+
+    assert(timers_.size() == activeTimers_.size());
+
     // ROV优化，此处不会拷贝 vector
     return expired;
 }
 
 void TimerQueue::reset(const std::vector<Entry> &expired, Timer::TimeType now) {
     for (const auto &entry : expired) {
-        Entry timer(entry.second->getExpiredTime(), entry.second);
+        ActiveTimer timer(entry.second, entry.second->getSequence());
         // 更新周期执行且不是"自注销"定时器的到期时间，并且重新插入到定时器集合中
         if (entry.second->repeat() && cancelingTimers_.find(timer) == cancelingTimers_.end()) {
             entry.second->restart(now);
@@ -183,8 +206,10 @@ void TimerQueue::reset(const std::vector<Entry> &expired, Timer::TimeType now) {
 
 }
 
-bool TimerQueue::insert(std::shared_ptr<Timer> timer) {
+bool TimerQueue::insert(const std::shared_ptr<Timer>& timer) {
     loop_->assertInLoopThread();
+    assert(timers_.size() == activeTimers_.size());
+
     bool isEarliest = false; // 定时器插入后是否为最早到期的定时器
     auto it = timers_.begin();
     // timers_ 没有定时器或者 timer 的到期时间比第一个定时器（timers_ 中最早到期的定时器）的到期时间早
@@ -192,12 +217,26 @@ bool TimerQueue::insert(std::shared_ptr<Timer> timer) {
         isEarliest = true;
     }
 
-    // std::pair<iterator,bool> insert( const value_type& value );
-    // 使用该版本的 insert 函数
-    // T1 为插入后的迭代器，T2 为是否插入成功
-    std::pair<TimerList::iterator, bool> result
-        = timers_.insert(std::make_pair(timer->getExpiredTime(), timer));
-    assert(result.second);
+    // 将定时器插入到两个容器中
+    {
+        // std::pair<iterator,bool> insert( const value_type& value );
+        // 使用该版本的 insert 函数
+        // T1 为插入后的迭代器，T2 为是否插入成功
+        std::pair<TimerList::iterator, bool> result
+            = timers_.insert(std::make_pair(timer->getExpiredTime(), timer));
+        assert(result.second);
+        (void)result;
+    }
+
+    {
+        // 同上
+        std::pair<ActiveTimerSet::iterator, bool> result
+                = activeTimers_.insert(std::make_pair(timer, timer->getSequence()));
+        assert(result.second);
+        (void)result;
+    }
+
+    assert(timers_.size() == activeTimers_.size());
 
     return isEarliest;
 }
