@@ -6,6 +6,7 @@
 #include <functional>
 
 #include "../base/noncopyable.h"
+#include "../base/Atomic.h"
 
 namespace tinyWS {
     // 非线程安全，不暴露给用户，只向用户提供 TdmerId 对象，用于识别定时器。
@@ -48,6 +49,12 @@ namespace tinyWS {
         bool repeat() const;
 
         /**
+         * 获取定时器序列号
+         * @return 序列号
+         */
+        int64_t getSequence() const;
+
+        /**
          * 是否有效
          * @return true / false
          */
@@ -75,11 +82,16 @@ namespace tinyWS {
          */
         static TimeType now();
 
+        static int64_t createNum();
+
     private:
         const TimeCallback timeCallback_;   // 定时器回调函数
         TimeType expiredTime_;              // 到期时间
         const TimeType interval_;           // 执行周期
         const bool repeat_;                 // 是否周期执行
+        const int64_t sequence_;            // 定时器序列号
+
+        static AtomicInt64 s_numCreated_;   // 序列号生成器
     };
 }
 
