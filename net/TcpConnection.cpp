@@ -45,7 +45,7 @@ TcpConnection::~TcpConnection() {
     debug() << "TcpConnection::dtor[" <<  name_ << "] at " << this
             << " fd=" << channel_->fd()
             << " state=" << stateToString();
-    
+
     assert(state_ == kDisconnected);
 }
 
