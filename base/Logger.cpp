@@ -13,7 +13,7 @@ using namespace tinyWS;
 ConsoleLogger tinyWS::debug;
 //FileLogger tinyWS::record("test.log");
 
-static const std::map<LogLevel, const char*> LogLevelStr =
+static const std::map<LogLevel, const std::string> LogLevelStr =
         {
             {LogLevel::TRACE, "TRACE"},
             {LogLevel::DEBUG, "DEBUG"},
@@ -47,7 +47,7 @@ const tm* BaseLogger::getLocalTime() {
 
 void BaseLogger::endine(LogLevel level, const std::string &message) {
     MutexLockGuard lock(mutex_);
-    output(getLocalTime(), LogLevelStr.find(level)->second, message.c_str());
+    output(getLocalTime(), LogLevelStr.find(level)->second, message);
 }
 
 BaseLogger::LogStream::LogStream(BaseLogger &logger, tinyWS::LogLevel level)
@@ -67,7 +67,7 @@ BaseLogger::LogStream::~LogStream() {
     logger_.endine(level_, static_cast<std::string>(std::move(str())));
 }
 
-void ConsoleLogger::output(const tm *tmPtr, const char *levelStr, const char *messageStr) {
+void ConsoleLogger::output(const tm *tmPtr, const std::string &levelStr, const std::string &messageStr) {
     std::cout << '[' << tmPtr << ']'
               << '[' << levelStr << ']'
               << '\t' << messageStr << std::endl;
@@ -87,7 +87,7 @@ FileLogger::~FileLogger() {
     file_.close();
 }
 
-void FileLogger::output(const tm *tmPtr, const char *levelStr, const char *messageStr) {
+void FileLogger::output(const tm *tmPtr, const std::string &levelStr, const std::string &messageStr) {
     file_ << '[' << tmPtr << ']'
           << '[' << levelStr << ']'
           << '\t' << messageStr << std::endl;

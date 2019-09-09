@@ -55,7 +55,7 @@ namespace tinyWS {
          * @param level 日志等级
          * @param message 打印的信息
          */
-        void endine(LogLevel level, const std::string& message);
+        void endine(LogLevel level, const std::string &message);
 
         /**
          * 纯虚函数，打印日志。
@@ -63,7 +63,7 @@ namespace tinyWS {
          * @param levelStr 日志等级
          * @param messageStr 打印的信息
          */
-        virtual void output(const tm *tmPtr, const char *levelStr, const char *messageStr) = 0;
+        virtual void output(const tm *tmPtr, const std::string &levelStr, const std::string &messageStr) = 0;
     };
 
     class BaseLogger::LogStream : public std::ostringstream {
@@ -79,7 +79,7 @@ namespace tinyWS {
     // 控制台日志类
     class ConsoleLogger : public BaseLogger {
         using BaseLogger::BaseLogger;
-        void output(const tm *tmPtr, const char *levelStr, const char *messageStr) override;
+        void output(const tm *tmPtr, const std::string &levelStr, const std::string &messageStr) override;
     };
 
     // 文档日志类
@@ -93,7 +93,7 @@ namespace tinyWS {
     private:
         std::ofstream file_;
 
-        void output(const tm *tmPtr, const char *levelStr, const char *messageStr) override;
+        void output(const tm *tmPtr, const std::string &levelStr, const std::string &messageStr) override;
     };
 
     // 全局实例
