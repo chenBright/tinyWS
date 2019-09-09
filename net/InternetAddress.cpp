@@ -1,9 +1,10 @@
-#include "InternetAddress.h"
-
 #include <cstring>
 #include <arpa/inet.h>
 
 #include <iostream>
+
+#include "InternetAddress.h"
+#include "../base/Logger.h"
 
 using namespace tinyWS;
 
@@ -32,7 +33,9 @@ InternetAddress::InternetAddress(const std::string &ip, uint16_t port) : address
     address_.sin_family = AF_INET;
     address_.sin_port = htobe16(port);
     if (inet_pton(AF_INET, ip.c_str(), &address_.sin_addr) <= 0) {
-        std::cout << "InternetAddress::InternetAddress(const std::string &ip, uint16_t port)" << std::endl;
+        debug(LogLevel::ERROR)
+            << "InternetAddress::InternetAddress(const std::string &ip, uint16_t port)"
+            << std::endl;
     }
 }
 
@@ -77,7 +80,7 @@ sockaddr_in InternetAddress::getLocalAddress(int sockfd) {
     sockaddr_in localAddress{};
     socklen_t addressLen = sizeof(localAddress);
     if (getsockname(sockfd, reinterpret_cast<sockaddr*>(&localAddress), &addressLen) < 0) {
-        std::cout << "InternetAddress::getLocalAddress" << std::endl;
+        debug(LogLevel::ERROR) << "InternetAddress::getLocalAddress" << std::endl;
     }
 
     return localAddress;
@@ -87,7 +90,7 @@ sockaddr_in InternetAddress::getPeerAddress(int sockfd) {
     sockaddr_in peerAddress{};
     socklen_t addressLen = sizeof(peerAddress);
     if (getpeername(sockfd, reinterpret_cast<sockaddr*>(&peerAddress), &addressLen) < 0) {
-        std::cout << "InternetAddress::getPeerAddress" << std::endl;
+        debug(LogLevel::ERROR) << "InternetAddress::getPeerAddress" << std::endl;
     }
 
     return peerAddress;

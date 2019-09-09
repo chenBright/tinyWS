@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "../base/Logger.h"
 #include "EventLoop.h"
 
 using namespace tinyWS;
@@ -19,7 +20,7 @@ namespace Timerfd {
     int createTimerfd() {
         int timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
         if (timerfd < 0) {
-            std::cout << "Failed in timerfd_create" << std::endl;
+            debug(LogLevel::ERROR) << "Failed in timerfd_create" << std::endl;
         }
 
         return timerfd;
@@ -33,9 +34,11 @@ namespace Timerfd {
     void readTimerfd(int timerfd, Timer::TimeType now) {
         uint64_t howmany;
         ssize_t n = read(timerfd, &howmany, sizeof(howmany));
-        std::cout << "TimerQueue::handleRead() " << howmany << " at " << now << std::endl;
+        debug(LogLevel::ERROR) << "TimerQueue::handleRead() "
+                                     << howmany << " at " << now << std::endl;
         if (n != sizeof(howmany)) {
-            std::cout << "TimerQueue::handleRead() reads " << n << " bytes instead of 8" << std::endl;
+            debug(LogLevel::ERROR) << "TimerQueue::handleRead() reads "
+                                         << n << " bytes instead of 8" << std::endl;
         }
     }
 
@@ -68,7 +71,7 @@ namespace Timerfd {
         // 通过 timerfd_settime 函数唤醒 IO 线程
         int ret = timerfd_settime(timerfd, 0, &newValue, &oldValue);
         if (ret) {
-            std::cout << "timerfd_settime()" << std::endl;
+            debug(LogLevel::ERROR) << "timerfd_settime()" << std::endl;
         }
     }
 };

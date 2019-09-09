@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "../base/Logger.h"
 #include "EventLoop.h"
 
 using namespace tinyWS;
@@ -29,8 +30,7 @@ Channel::~Channel() {
     assert(!eventHandling_);
     assert(!addedToLoop_);
     if (loop_->isInLoopThread()) {
-//        assert()
-        std::cout << "Channel:~Channel()" << std::endl;
+        debug() << "Channel:~Channel()" << std::endl;
     }
 }
 
@@ -144,7 +144,7 @@ void Channel::handleEventWithGuard(tinyWS::Timer::TimeType receiveTime) {
     // 连接断开事件
     if ((revents_ & EPOLLHUP) && !(revents_ & EPOLLIN)) {
 //    if (revents_ & EPOLLHUP) {
-        std::cout << "Channel::handleEvent() EPOLLHUP" << std::endl;
+        debug() << "Channel::handleEvent() EPOLLHUP" << std::endl;
         if (closeCallback_) {
             closeCallback_();
         }
@@ -152,7 +152,7 @@ void Channel::handleEventWithGuard(tinyWS::Timer::TimeType receiveTime) {
 
     // 可读事件
     if (revents_ & EPOLLIN) {
-        std::cout << "Channel::handleEvent() EPOLLIN" << std::endl;
+        debug() << "Channel::handleEvent() EPOLLIN" << std::endl;
     }
 
     // 异常事件

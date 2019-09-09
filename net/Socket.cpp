@@ -8,6 +8,7 @@
 
 #include <iostream>
 
+#include "../base/Logger.h"
 #include "InternetAddress.h"
 
 using namespace tinyWS;
@@ -17,7 +18,7 @@ Socket::Socket(int sockfd) : sockfd_(sockfd) {}
 Socket::~Socket() {
     // 只有当 socketfd_ 是有效的描述符时，才关闭 socketfd_。
     if (isValid()) {
-        std::cout << "Socket::~Socket() fd = " << sockfd_ << std::endl;
+        debug(LogLevel::ERROR) << "Socket::~Socket() fd = " << sockfd_ << std::endl;
         ::close(sockfd_);
     }
 }
@@ -51,13 +52,13 @@ void Socket::bindAddress(const InternetAddress &localAddress) {
     // TODO 学习 reinterpret_cast 和 static_cast 的区别
     int result = bind(sockfd_, reinterpret_cast<sockaddr*>(&address), sizeof(address));
     if (result < 0) {
-        std::cout << "Socket::bindAddress" << std::endl;
+        debug(LogLevel::ERROR) << "Socket::bindAddress" << std::endl;
     }
 }
 
 void Socket::listen() {
     if (::listen(sockfd_, 128) < 0) {
-        std::cout << "Socket::listen" << std::endl;
+        debug(LogLevel::ERROR) << "Socket::listen" << std::endl;
     }
 }
 
@@ -70,9 +71,8 @@ int Socket::accept(InternetAddress *peerAddress) {
         peerAddress->setSockAddrInternet(address);
         return connectionFd;
     } else {
-        // TODO 学习错误处理
         int savedErrno = errno;
-        std::cout << "Socket::accept" << std::endl;
+        debug(LogLevel::ERROR) << "Socket::accept" << std::endl;
         switch (savedErrno)
         {
             case EAGAIN:
@@ -93,10 +93,12 @@ int Socket::accept(InternetAddress *peerAddress) {
             case ENOTSOCK:
             case EOPNOTSUPP:
                 // unexpected errors
-                std::cout << "unexpected error of ::accept " << savedErrno << std::endl;
+                debug(LogLevel::ERROR) << "unexpected error of ::accept "
+                                             << savedErrno << std::endl;
                 break;
             default:
-                std::cout << "unknown error of ::accept " << savedErrno << std::endl;
+                debug(LogLevel::ERROR) << "unknown error of ::accept "
+                                             << savedErrno << std::endl;
                 break;
         }
     }
@@ -104,7 +106,7 @@ int Socket::accept(InternetAddress *peerAddress) {
 
 void Socket::shutdownWrite() {
     if (shutdown(sockfd_, SHUT_RD) < 0) {
-        std::cout << "Socket::shutdownWrite" << std::endl;
+        debug(LogLevel::ERROR) << "Socket::shutdownWrite" << std::endl;
     }
 }
 

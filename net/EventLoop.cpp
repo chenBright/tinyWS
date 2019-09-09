@@ -7,6 +7,7 @@
 #include <iostream>
 #include <functional>
 
+#include "../base/Logger.h"
 #include "../base/Thread.h"
 #include "Channel.h"
 #include "Epoll.h"
@@ -24,7 +25,7 @@ int createEventfd() {
     // TODO 学习 eventfd
     int evfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
     if (evfd < 0) {
-        std::cout << "Failed in eventfd" << std::endl;
+        debug(LogLevel::ERROR) << "Failed in eventfd" << std::endl;
         abort();
     }
 
@@ -40,13 +41,13 @@ EventLoop::EventLoop()
       wakeupFd_(createEventfd()),
       wakeupChannel_(new Channel(this, wakeupFd_)) {
 
-    std::cout << "EventLoop created "
-        << this << " in thread "
-        << threadId_ << std::endl;
+    debug() << "EventLoop created "
+            << this << " in thread "
+            << threadId_ << std::endl;
 
     if (t_loopInThisThread) { // 已创建 EventLoop
-        std::cout << "Another EventLoop " << t_loopInThisThread
-                  << " exists in this thread " << threadId_ << std::endl;
+        debug(LogLevel::TRACE) << "Another EventLoop " << t_loopInThisThread
+                                     << " exists in this thread " << threadId_ << std::endl;
     } else {
         t_loopInThisThread = this;
     }
@@ -59,7 +60,7 @@ EventLoop::EventLoop()
 
 EventLoop::~EventLoop() {
     assert(!looping_); // 确保 EventLoop 对象析构的时候，已经退出事件循环
-    std::cout << "EventLoop::~EventLoop destructing" << std::endl;
+    debug() << "EventLoop::~EventLoop destructing" << std::endl;
 
     // 清除 wakeupfd_ 相关资源
     wakeupChannel_->disableAll();
@@ -87,7 +88,7 @@ void EventLoop::loop() {
     looping_ = true;
     quit_ = false;
 
-    std::cout << "EventLoop " << this << "start looping" << std::endl;
+    debug() << "EventLoop " << this << "start looping" << std::endl;
 
     while (!quit_) {
         activeChannels_.clear(); // 清空 Channel 列表，以获取新的 Channel 列表
@@ -98,7 +99,7 @@ void EventLoop::loop() {
         doPendingFunctors();
     }
 
-    std::cout << "EVentLoop " << this << " stop looping" << std::endl;
+    debug() << "EVentLoop " << this << " stop looping" << std::endl;
     looping_ = false;
 }
 
@@ -170,7 +171,7 @@ void EventLoop::wakeup() {
     // 往 wakeupfd_ 写入一个字节的数据，唤醒 IO 线程
     ssize_t n = write(wakeupFd_, &one, sizeof(one));
     if (n != sizeof(one)) {
-        std::cout << "EventLoop::wakeup() writes " << n << " bytes instead of 8" << std::endl;
+        debug(LogLevel::TRACE) << "EventLoop::wakeup() writes " << n << " bytes instead of 8" << std::endl;
     }
 }
 
@@ -200,9 +201,9 @@ EventLoop* EventLoop::getEventLoopOfCurrentThread() {
 }
 
 void EventLoop::abortNotInLoopThread() {
-    std::cout << "Error: EventLoop::abortNotInLoopThread - EventLoop " << this
-              << " was created in threadId_ = " << threadId_
-              << ", current thread id = " <<  Thread::gettid() << std::endl;
+    debug(LogLevel::ERROR) << "Error: EventLoop::abortNotInLoopThread - EventLoop " << this
+                                 << " was created in threadId_ = " << threadId_
+                                 << ", current thread id = " <<  Thread::gettid() << std::endl;
 }
 
 
@@ -210,7 +211,9 @@ void EventLoop::handleRead() {
     uint64_t one = 1;
     ssize_t n = read(wakeupFd_, &one, sizeof(one));
     if (n != sizeof(n)) {
-        std::cout << "EventLoop::handleRead() reads " << n << " bytes instead of 8" << std::endl;
+        debug(LogLevel::TRACE) << "EventLoop::handleRead() reads "
+                                     << n << " bytes instead of 8"
+                                     << std::endl;
     }
 }
 
@@ -233,6 +236,6 @@ void EventLoop::doPendingFunctors() {
 
 void EventLoop::printActiveChannels() const {
     for (const auto &channel : activeChannels_) {
-        std::cout << "{" << channel->reventsToString() << "} " << std::endl;
+        debug() << "{" << channel->reventsToString() << "} " << std::endl;
     }
 }

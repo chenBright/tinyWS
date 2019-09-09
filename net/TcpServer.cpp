@@ -3,6 +3,7 @@
 #include <iostream>
 #include <functional>
 
+#include "../base/Logger.h"
 #include "Acceptor.h"
 #include "InternetAddress.h"
 #include "EventLoop.h"
@@ -24,7 +25,7 @@ TcpServer::TcpServer(EventLoop *loop, const InternetAddress &address, const std:
 
 TcpServer::~TcpServer() {
     loop_->assertInLoopThread();
-    std::cout << "TcpServer::~TcpServer [" << name_ << "] destructing" << std::endl;
+    debug() << "TcpServer::~TcpServer [" << name_ << "] destructing" << std::endl;
     for (const auto &connection : connectionMap_) {
         connection.second->getLoop()->runInLoop(
                 std::bind(&TcpConnection::connectionDestroyed, connection.second.get()));
@@ -67,9 +68,9 @@ void TcpServer::newConnection(Socket socket, const InternetAddress &peerAddress)
     ++nextConnectionId_;
     std::string connectionName = name_ + buf;
 
-    std::cout << "TcpServer::newConnection [" << name_
-              << "] - new connection [" << connectionName
-              << "] from " << peerAddress.toIpPort() << std::endl;
+    debug() << "TcpServer::newConnection [" << name_
+            << "] - new connection [" << connectionName
+            << "] from " << peerAddress.toIpPort() << std::endl;
 
     InternetAddress localAddress(InternetAddress::getLocalAddress(socket.fd()));
 
@@ -101,8 +102,8 @@ void TcpServer::removeConnection(const TcpConnectionPtr &connection) {
 
 void TcpServer::removeConnectionInLoop(const TcpConnectionPtr &connection) {
     loop_->assertInLoopThread(); // 确保在 IO 线程中
-    std::cout << "TcpServer::removeConnectionInLoop [" << name_
-              << "] - connection " << connection->name() << std::endl;
+    debug() << "TcpServer::removeConnectionInLoop [" << name_
+            << "] - connection " << connection->name() << std::endl;
     size_t n = connectionMap_.erase(connection->name());
 
     assert(n == 1);
