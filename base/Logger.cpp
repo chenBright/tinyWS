@@ -11,7 +11,7 @@
 using namespace tinyWS;
 
 ConsoleLogger tinyWS::debug;
-FileLogger tinyWS::record("test.log");
+//FileLogger tinyWS::record("test.log");
 
 static const std::map<LogLevel, const char*> LogLevelStr =
         {

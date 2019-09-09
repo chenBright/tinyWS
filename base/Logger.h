@@ -98,7 +98,7 @@ namespace tinyWS {
 
     // 全局实例
     extern ConsoleLogger debug;
-    extern FileLogger record;
+//    extern FileLogger record;
 }
 
 
