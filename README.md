@@ -15,6 +15,7 @@ A C++ Tiny Web Server
 - 构建
 - 压测
 - 解决代码中的TODO
+- actor模式和reactor模式区别
 
 ## 参考
 
