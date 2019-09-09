@@ -13,6 +13,7 @@
 #include "http/HttpServer.h"
 #include "http/HttpRequest.h"
 #include "http/HttpResponse.h"
+#include "base/Logger.h"
 
 using namespace std::placeholders;
 using namespace tinyWS;
@@ -21,7 +22,7 @@ void httpCallback(const HttpRequest &request, HttpResponse &response);
 void set404NotFound(HttpResponse &response);
 
 int main(int argc, char *argv[]) {
-    std::cout  << "pid = " << ::getpid() << ", tid = " << Thread::gettid() << std::endl;
+     debug() << "pid = " << ::getpid() << ", tid = " << Thread::gettid() << std::endl;
 
     int threadNums = 0;
     if (argc > 1) {
@@ -41,7 +42,7 @@ int main(int argc, char *argv[]) {
 }
 
 void httpCallback(const HttpRequest &request, HttpResponse &response) {
-    std::cout << "httpCallback() " << std::endl;
+    debug() << "httpCallback() " << std::endl;
     const std::string &path = request.path();
     const std::string prefix = "/tmp/tmp.epZ6PWHYhj/web";
     std::string filename;

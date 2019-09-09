@@ -9,6 +9,8 @@
 #include <iostream>
 #include <exception>
 
+#include "Logger.h"
+
 using namespace tinyWS;
 
 Thread::Thread(const Thread::ThreadFunction &func, const std::string &name)
@@ -30,7 +32,7 @@ void Thread::start() {
     started_ = true;
     errno = pthread_create(&pthreadId_, nullptr, &startThread, this);
     if (errno != 0) {
-        std::cout << "Failed in pthread_create" << std::endl;
+        debug(LogLevel::ERROR) << "Failed in pthread_create" << std::endl;
     }
 }
 

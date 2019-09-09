@@ -4,6 +4,7 @@
 
 #include <iostream>
 
+#include "../base/Logger.h"
 #include "EventLoop.h"
 #include "Channel.h"
 #include "Socket.h"
@@ -23,7 +24,7 @@ TcpConnection::TcpConnection(EventLoop *loop,
                                channel_(new Channel(loop, socket_->fd())),
                                localAddress_(localAddress),
                                peerAddress_(peerAddress) {
-    std::cout << "move fd = " << socket_->fd() << std::endl;
+    debug() << "move fd = " << socket_->fd() << std::endl;
     // 设置回调函数
     channel_->setReadCallback(
             std::bind(&TcpConnection::handleRead, this, _1));
@@ -34,16 +35,16 @@ TcpConnection::TcpConnection(EventLoop *loop,
     channel_->setErrorCallback(
             std::bind(&TcpConnection::handleError, this));
 
-    std::cout << "TcpConnection::ctor[" <<  name_ << "] at " << this
-              << " fd=" << socket_->fd();
+    debug() << "TcpConnection::ctor[" <<  name_ << "] at " << this
+            << " fd=" << socket_->fd();
 
     socket_->setKeepAlive(true);
 }
 
 TcpConnection::~TcpConnection() {
-    std::cout << "TcpConnection::dtor[" <<  name_ << "] at " << this
-              << " fd=" << channel_->fd()
-              << " state=" << state_;
+    debug() << "TcpConnection::dtor[" <<  name_ << "] at " << this
+            << " fd=" << channel_->fd()
+            << " state=" << state_;
     // TODO stateToString()：将状态转成字符串信息
 
     assert(state_ == kDisconnected);
@@ -175,7 +176,7 @@ void TcpConnection::handleRead(Timer::TimeType receiveTime) {
         handleClose();
     } else {
         errno = savedErrno;
-        std::cout << "TcpConnection::handleRead" << std::endl;
+        debug(LogLevel::ERROR) << "TcpConnection::handleRead" << std::endl;
         handleError();
     }
 }
@@ -205,19 +206,19 @@ void TcpConnection::handleWrite() {
                     shutdownInLoop();
                 }
             } else {
-                std::cout << "I am going to write more data" << std::endl;
+                debug() << "I am going to write more data" << std::endl;
             }
         } else {
-            std::cout << "TcpConnection::handleWrite" << std:: endl;
+            debug() << "TcpConnection::handleWrite" << std:: endl;
         }
     } else {
-        std::cout << "Connection is down, no more writing" << std::endl;
+        debug(LogLevel::ERROR) << "Connection is down, no more writing" << std::endl;
     }
 }
 
 void TcpConnection::handleClose() {
     loop_->assertInLoopThread();
-    std::cout << "TcpConnection::handleClose state = " << state_ << std::endl;
+    debug() << "TcpConnection::handleClose state = " << state_ << std::endl;
     assert(state_ == kConnected || state_ == kDisconnecting);
     setState(kDisconnected);
     // 不关闭 socket fd，让它（Socket 对象）自己析构，从而我们可以轻松地定位到内存泄漏。
@@ -228,8 +229,8 @@ void TcpConnection::handleClose() {
 
 void TcpConnection::handleError() {
     int err = socket_->getSocketError();
-    std::cout << "TcpConnection::handleError [" << name_
-              << "] - SO_ERROR = " << err << std::endl;
+    debug(LogLevel::ERROR) << "TcpConnection::handleError [" << name_
+                                 << "] - SO_ERROR = " << err << std::endl;
 }
 
 void TcpConnection::sendInLoop(const std::string &message) {
@@ -241,7 +242,7 @@ void TcpConnection::sendInLoop(const std::string &message) {
         if (n >= 0) {
             if (static_cast<size_t>(n) < message.size()) {
                 // 只发送了一部分数据
-                std::cout << "I am going to write more data" << std::endl;
+                debug() << "I am going to write more data" << std::endl;
             } else {
                 if (writeCompleteCallback_) {
                     loop_->queueInLoop(
@@ -252,7 +253,7 @@ void TcpConnection::sendInLoop(const std::string &message) {
             // 发送数据出错
             n = 0;
             if (errno != EWOULDBLOCK) {
-                std::cout << "TcpConnection::sendInLoop" << std::endl;
+                debug(LogLevel::ERROR) << "TcpConnection::sendInLoop" << std::endl;
             }
         }
 

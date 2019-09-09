@@ -7,6 +7,7 @@
 
 #include <iostream>
 
+#include "../base/Logger.h"
 #include "Channel.h"
 
 using namespace tinyWS;
@@ -25,7 +26,7 @@ Epoll::Epoll(EventLoop *loop)
       events_(kInitEventListSize) {
 
     if (epollfd_ < 0) {
-        std::cout << "EPollPoller::EPollPoller" << std::endl;
+        debug(LogLevel::ERROR) << "EPollPoller::EPollPoller" << std::endl;
     }
 }
 
@@ -43,7 +44,7 @@ Timer::TimeType Epoll::poll(int timeoutMs, Epoll::ChannelList *activeChannels)  
     Timer::TimeType now = Timer::now();
 
     if (eventNums > 0) {
-        std::cout << eventNums << " events happen" << std::endl;
+        debug() << eventNums << " events happen" << std::endl;
         fillActiveChannels(eventNums, activeChannels);
         // 当向epoll中注册的事件过多，导致返回的活动事件可能越來越多，
         // events_ 裝不下时，events_ 扩容为2倍
@@ -51,9 +52,9 @@ Timer::TimeType Epoll::poll(int timeoutMs, Epoll::ChannelList *activeChannels)  
             events_.resize(events_.size() * 2);
         }
     } else if (eventNums == 0) {
-        std::cout << "nothing happended" << std::endl;
+        debug() << "nothing happended" << std::endl;
     } else {
-        std::cout << "EPollPoller::poll()" << std::endl;
+        debug() << "EPollPoller::poll()" << std::endl;
     }
 
     return now; // 返回 epoll return 的时刻
@@ -62,8 +63,8 @@ Timer::TimeType Epoll::poll(int timeoutMs, Epoll::ChannelList *activeChannels)  
 void Epoll::updateChannel(Channel *channel) {
     assertInLoopThread();
 
-    std::cout << "Epoll::updateChannel() fd = " << channel->fd()
-        << " event = " << channel->getEvents() << std::endl;
+    debug() << "Epoll::updateChannel() fd = " << channel->fd()
+            << " event = " << channel->getEvents() << std::endl;
 
     const int status = channel->getStatusInEpoll();
     int fd = channel->fd();
@@ -151,8 +152,8 @@ void Epoll::update(int operation, Channel *channel) {
     event.data.ptr = channel;
     int fd = channel->fd();
     if (epoll_ctl(epollfd_, operation, fd, &event) < 0) {
-        std::cout << "epoll_ctl op=" << operationToString(operation)
-            << " fd=" << fd;
+        debug(LogLevel::ERROR) << "epoll_ctl op=" << operationToString(operation)
+                                     << " fd=" << fd;
     }
 }
 

@@ -8,6 +8,7 @@
 #include <functional>
 #include <utility>
 
+#include "../base/Logger.h"
 #include "EventLoop.h"
 #include "InternetAddress.h"
 
@@ -47,7 +48,7 @@ void Acceptor::listen() {
 int Acceptor::createNonblocking() {
     int sockfd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
     if (sockfd < 0) {
-        std::cout << "sockets::createNonblockingOrDie" << std::endl;
+        debug(LogLevel::ERROR) << "sockets::createNonblockingOrDie" << std::endl;
     }
     return sockfd;
 }
