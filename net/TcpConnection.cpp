@@ -44,9 +44,8 @@ TcpConnection::TcpConnection(EventLoop *loop,
 TcpConnection::~TcpConnection() {
     debug() << "TcpConnection::dtor[" <<  name_ << "] at " << this
             << " fd=" << channel_->fd()
-            << " state=" << state_;
-    // TODO stateToString()：将状态转成字符串信息
-
+            << " state=" << stateToString();
+    
     assert(state_ == kDisconnected);
 }
 
@@ -218,7 +217,7 @@ void TcpConnection::handleWrite() {
 
 void TcpConnection::handleClose() {
     loop_->assertInLoopThread();
-    debug() << "TcpConnection::handleClose state = " << state_ << std::endl;
+    debug() << "TcpConnection::handleClose state = " << stateToString() << std::endl;
     assert(state_ == kConnected || state_ == kDisconnecting);
     setState(kDisconnected);
     // 不关闭 socket fd，让它（Socket 对象）自己析构，从而我们可以轻松地定位到内存泄漏。
@@ -277,5 +276,20 @@ void TcpConnection::shutdownInLoop() {
     loop_->assertInLoopThread();
     if (!channel_->isWriting()) {
         socket_->shutdownWrite();
+    }
+}
+
+std::string TcpConnection::stateToString() const {
+    switch (state_) {
+        case kDisconnected:
+            return "kDisconnected";
+        case kConnecting:
+            return "kConnecting";
+        case kConnected:
+            return "kConnected";
+        case kDisconnecting:
+            return "kDisconnecting";
+        default:
+            return "unknown state";
     }
 }
