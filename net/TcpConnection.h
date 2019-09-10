@@ -202,6 +202,12 @@ namespace tinyWS {
          * 在 IO 线程中 shutdown write 端（只有当 Channel 不处在写数据的状态才能关闭）
          */
         void shutdownInLoop();
+
+        /**
+         * 获取状态字符串信息。
+         * @return
+         */
+        std::string stateToString() const;
     };
 }
 
