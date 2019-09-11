@@ -20,7 +20,6 @@ EventLoopThreadPool::~EventLoopThreadPool() {
     // Don't delete loop, it's stack variable
 }
 
-// TODO 直接在构造函数中设置线程数量，会更好吗？
 void EventLoopThreadPool::setThreadNum(int numThreads) {
     assert(numThreads >= 0);
     numThreads_ = numThreads;
