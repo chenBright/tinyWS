@@ -74,7 +74,7 @@ void TcpServer::newConnection(Socket socket, const InternetAddress &peerAddress)
 
     InternetAddress localAddress(InternetAddress::getLocalAddress(socket.fd()));
 
-    // ioLoop 和 loop_ 线程切换都发生在连接建立和断开的时刻，则不影响正常业务的性能
+    // ioLoop 和 loop_ 线程切换都发生在连接建立和断开的时刻，则不影响正常业务的性能。
     EventLoop *ioLoop = threadPool_->getNextLoop();
     TcpConnectionPtr connection(
             new TcpConnection(ioLoop,
