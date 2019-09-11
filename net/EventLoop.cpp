@@ -92,9 +92,9 @@ void EventLoop::loop() {
 
     while (!quit_) {
         activeChannels_.clear(); // 清空 Channel 列表，以获取新的 Channel 列表
-        epoll_->poll(kEpollTimeMs, &activeChannels_); // 阻塞，等待事件的"到来"
+        auto receiveTime = epoll_->poll(kEpollTimeMs, &activeChannels_); // 阻塞，等待事件的"到来"
         for (const auto &channel : activeChannels_) {
-            channel->handleEvent(0);
+            channel->handleEvent(receiveTime);
         }
         doPendingFunctors();
     }

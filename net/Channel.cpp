@@ -39,7 +39,6 @@ void Channel::tie(const std::shared_ptr<void> &obj) {
     tied_ = true;
 }
 
-// TODO 处理 receiveTime
 void Channel::handleEvent(Timer::TimeType receiveTime) {
     std::shared_ptr<void> guard;
     if (tied_) {
@@ -61,6 +60,7 @@ void Channel::setReadCallback(const ReadEventCallback &cb) {
 void Channel::setWriteCallback(const Channel::EventCallback &cb) {
     writeCallback_ = cb;
 }
+
 void Channel::setCloseCallback(const Channel::EventCallback &cb) {
     closeCallback_ = cb;
 }
