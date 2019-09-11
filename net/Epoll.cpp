@@ -40,7 +40,6 @@ Timer::TimeType Epoll::poll(int timeoutMs, Epoll::ChannelList *activeChannels)  
     // 也可以通过 &*event_.begin() 获取
     int eventNums = epoll_wait(epollfd_, events_.data(),
             static_cast<int>(events_.size()), timeoutMs);
-    // TODO 此处暴露了 Timer
     Timer::TimeType now = Timer::now();
 
     if (eventNums > 0) {
