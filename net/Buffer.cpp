@@ -51,7 +51,7 @@ const char* Buffer::beginWrite() const {
 }
 
 const char* Buffer::findCRLF() const {
-    // FIXME: replace with memmem()?
+    // 可使用 memmem() 代替 std::search()
     const char *crlf = std::search(peek(), beginWrite(), kCRLF, kCRLF + 2);
     return crlf == beginWrite() ? nullptr : crlf;
 }
@@ -279,7 +279,6 @@ const char* Buffer::begin() const {
 
 void Buffer::makeSpace(size_t len) {
     if (writableBytes() + prependableBytes() < len + kCheapPrepend) {
-        // FIXME: move readable data
         buffer_.resize(writerIndex_ + len);
     } else {
         // move readable data to the front, make space inside buffer
