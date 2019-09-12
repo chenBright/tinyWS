@@ -9,12 +9,11 @@ A C++ Tiny Web Server
 ## TODO
 
 - 为了获取 TimeType 而暴露了 Timer（内部对象），应调整结构，隐藏 Timer 对象
-- http超时处理，并使用时间轮盘管理定时器
-- 编写文档，解释核心原理
 - 构建
 - 压测
 - 解决代码中的TODO
 - Preactor模式、actor模式和reactor模式等模式的区别
+- 编写文档，解释核心原理
 
 ## 参考
 
