@@ -14,17 +14,18 @@
 namespace tinyWS {
 
     // 循环队列，元素范围为 [front_, rear_)，
-    // 即实际的空间大小为 capcaity + 1，
+    // 即逻辑上的队列容量为 capacity，而实际的空间大小为 capcaity + 1，
     // 其中 rear_ 指向的位置为空或者已经不是循环队列中的元素（被覆盖了）。
     template <class T>
     class circular_buffer {
     public:
         explicit circular_buffer(int capacity)
-            : data_(capacity + 1),
-              front_(data_.begin()),
-              rear_(data_.begin()) {
-            // TODO vector 会实际分配的内存比申请的空间多，浪费内存。所以改用数组。
-            data_.shrink_to_fit();
+            : size_(0),
+              capacity_(capacity + 1), // 预留一个空位置
+              data_(new T[capacity]),
+              front_(0),
+              rear_(0) {
+            assert(capacity > 0);
         }
 
         /**
@@ -32,7 +33,7 @@ namespace tinyWS {
          * @return 元素个数
          */
         size_t size() const {
-            return rear_ > front_ ? rear_ - front_ : size() - (front_ - rear_);
+            return size_;
         }
 
         /**
@@ -40,7 +41,7 @@ namespace tinyWS {
          * @return 队列容量
          */
         size_t capacity() const {
-            return data_.size() - 1;
+            return capacity_;
         }
 
         /**
@@ -48,8 +49,7 @@ namespace tinyWS {
          * @return true / false
          */
         bool full() const {
-            return (rear_ == data_.back() && front_ == data_.begin())
-                || rear_ + 1 == front_;
+            return size_ == capacity_;
         }
 
         /**
@@ -57,7 +57,7 @@ namespace tinyWS {
          * @return
          */
         bool empty() {
-            return front_ == rear_;
+            return size_ == 0;
         }
 
         /**
@@ -70,7 +70,7 @@ namespace tinyWS {
                 throw std::bad_exception();
             }
 
-            return *front_;
+            return data_[front_];
         }
 
         /**
@@ -83,7 +83,8 @@ namespace tinyWS {
                 throw std::bad_exception();
             }
 
-            return *(rear_ - 1);
+            int backIndex = rear_ == 0 ? capacity_ : rear_ - 1;
+            return data_[backIndex];
         }
 
         /**
@@ -95,30 +96,23 @@ namespace tinyWS {
                 throw std::bad_exception();
             }
 
-            ++front_;
+            front_ = (front_ + 1) % (capacity_ + 1);
         }
 
         void push_back(T value) {
-            *rear_ = value;
-            if ((rear_ == data_.back() && front_ == data_.begin()) || rear_ + 1 == front_) {
-                // 队列已满，覆盖队头元素，并移动队头指针
-
-                rear_ = front_;
-                if (front_ == data_.back()) {
-                    front_ = data_.begin();
-                } else {
-                    ++front_;
-                }
-            } else {
-                ++rear_;
+            data_[rear_] = value;
+            rear_ = (rear_ + 1) % (capacity_ + 1);
+            if (full()) {
+                front_ = (front_ + 1) % (capacity_ + 1);
             }
-
         }
 
     private:
-        std::vector<T> data_; // 使用 vector 存储数据
-        typename std::vector<T>::iterator front_; // 队头指针
-        typename std::vector<T>::iterator rear_; // 队尾指针，指向的位置是空的。
+        size_t size_;       // 元素个数
+        size_t capacity_;   // 队列容量
+        T *data_;           // 数据数组
+        int front_;         // 队头指针
+        int rear_;          // 队尾指针，指向的位置是空的。
     };
 
     template<class T>
