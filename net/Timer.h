@@ -64,7 +64,7 @@ namespace tinyWS {
          * 返回无效时间
          * @return 0
          */
-        Timer::TimeType invaild();
+        Timer::TimeType invaild() const;
 
         /**
          * 重设定时器到期时间

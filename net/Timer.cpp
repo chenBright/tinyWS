@@ -41,7 +41,7 @@ bool Timer::isVaild() {
     return expiredTime_ >= Timer::now();
 }
 
-Timer::TimeType Timer::invaild() {
+Timer::TimeType Timer::invaild() const {
     return 0;
 }
 

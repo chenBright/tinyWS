@@ -34,6 +34,7 @@ int createEventfd() {
 
 EventLoop::EventLoop()
     : looping_(false),
+      quit_(false),
       callingPendingFuntors_(false),
       threadId_(Thread::gettid()),
       epoll_(new Epoll(this)),
@@ -162,7 +163,7 @@ TimerId EventLoop::runEvery(Timer::TimeType interval, const Timer::TimeCallback 
     return timerQueue_->addTimer(cb, Timer::now(), interval);
 }
 
-void EventLoop::cancle(TimerId timerId) {
+void EventLoop::cancle(const TimerId &timerId) {
     timerQueue_->cancel(timerId);
 }
 
