@@ -107,7 +107,7 @@ namespace tinyWS {
          * 注销定时任务
          * @param timerId 定时器 id
          */
-        void cancle(TimerId timerId);
+        void cancle(const TimerId& timerId);
 
         /**
          * 内部使用

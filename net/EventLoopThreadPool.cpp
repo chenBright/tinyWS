@@ -16,9 +16,7 @@ EventLoopThreadPool::EventLoopThreadPool(EventLoop *baseLoop)
 
 }
 
-EventLoopThreadPool::~EventLoopThreadPool() {
-    // Don't delete loop, it's stack variable
-}
+// Don't delete loop, it's stack variable
 
 void EventLoopThreadPool::setThreadNum(int numThreads) {
     assert(numThreads >= 0);

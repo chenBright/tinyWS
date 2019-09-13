@@ -60,7 +60,7 @@ namespace tinyWS {
             return &mutex_;
         }
     private:
-        pthread_mutex_t mutex_; // 互斥量
+        pthread_mutex_t mutex_{}; // 互斥量
         pid_t holder_;          // 存储持有锁的线程 ID
     };
 

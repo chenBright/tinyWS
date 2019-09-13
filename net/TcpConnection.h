@@ -140,9 +140,16 @@ namespace tinyWS {
         EventLoop *loop_;                               // 所属 EventLoop
         std::string name_;                              // 连接名
         StateE state_;                                  // 当前连接状态
-        std::unique_ptr<Socket> socket_;                // Socket 对象的只能指针，为 TcpConnection 独享
-        // TODO 考虑清楚 channel_ 的所有权，loop 中的 Channel ？
-        std::unique_ptr<Channel> channel_;              // socket fd 的 Channel 对象的只能指针，为 TcpConnection 独享
+        std::unique_ptr<Socket> socket_;                // Socket 对象的只能指针，为 TcpConnection 独享。
+
+        // socket fd 的 Channel 对象的智能指针，为 TcpConnection 独享。
+        // 虽然 Epoll 对象持有 Channel 的指针，但已确保在连接关闭时，
+        // 调用 TcpConnection::connectionDestroyed()，
+        // 转而调用 Channel::remove() 来移除 Epoll 中持有的 Channel 指针。
+        // 当有事件到来时，IO 线程被唤醒，EventLoop 从 Epoll 中获得 Channel 的指针。
+        // 但 EventLoop 只是短暂持有，在下一事件循环之前，持有的 Channel 指针一杯销毁。
+        std::unique_ptr<Channel> channel_;
+
         InternetAddress localAddress_;                  // 本地地址对象
         InternetAddress peerAddress_;                   // 客户端地址对象
         Buffer inputBuffer_;                            // 输入缓冲区

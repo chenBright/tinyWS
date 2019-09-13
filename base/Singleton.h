@@ -22,8 +22,8 @@ namespace tinyWS {
         static pthread_once_t ponce_;
         static T *value_;
 
-        Singleton();
-        ~Singleton();
+        Singleton() = default;
+        ~Singleton() = default;
 
         static void init() {
             value_ = new T();
