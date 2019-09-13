@@ -1,8 +1,3 @@
-//
-// Created by 陈光明 on 2019-04-05.
-//
-
-
 #include "ThreadPool.h"
 
 #include <cerrno>
