@@ -8,7 +8,6 @@
 
 using namespace tinyWS;
 
-// TODO 学习 socket 地址相关的知识点
 
 //     // Structure describing an Internet socket address.
 //     struct sockaddr_in {

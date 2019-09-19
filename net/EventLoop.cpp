@@ -22,7 +22,6 @@ __thread EventLoop *t_loopInThisThread = nullptr; // IO 线程
 const int kEpollTimeMs = 10000;
 
 int createEventfd() {
-    // TODO 学习 eventfd
     int evfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
     if (evfd < 0) {
         debug(LogLevel::ERROR) << "Failed in eventfd" << std::endl;

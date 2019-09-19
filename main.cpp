@@ -69,7 +69,7 @@ void httpCallback(const HttpRequest &request, HttpResponse &response) {
             PROT_READ, MAP_PRIVATE, fd, 0);
     close(fd);
 
-    if (mmapResult == (void*)-1) { // TODO 学习 (void*)-1
+    if (mmapResult == (void*)-1) {
         munmap(mmapResult, static_cast<size_t>(fileBuffer.st_size));
         set404NotFound(response);
         return;
