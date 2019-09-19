@@ -16,7 +16,6 @@ using namespace tinyWS;
 
 // timerfd 操作函数集合
 namespace Timerfd {
-    // TODO 学习 timerfd
     int createTimerfd() {
         int timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
         if (timerfd < 0) {

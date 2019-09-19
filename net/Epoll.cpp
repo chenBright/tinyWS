@@ -22,7 +22,7 @@ const int kDeleted = 2;
 
 Epoll::Epoll(EventLoop *loop)
     : ownerLoop_(loop),
-      epollfd_(epoll_create1(EPOLL_CLOEXEC)), // TODO 学习 epoll_create1 和 EPOLL_CLOEXEC
+      epollfd_(epoll_create1(EPOLL_CLOEXEC)),
       events_(kInitEventListSize) {
 
     if (epollfd_ < 0) {

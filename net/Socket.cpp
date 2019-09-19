@@ -49,7 +49,6 @@ inline bool Socket::isValid() const {
 
 void Socket::bindAddress(const InternetAddress &localAddress) {
     sockaddr_in address = localAddress.getSockAddrInternet();
-    // TODO 学习 reinterpret_cast 和 static_cast 的区别
     int result = bind(sockfd_, reinterpret_cast<sockaddr*>(&address), sizeof(address));
     if (result < 0) {
         debug(LogLevel::ERROR) << "Socket::bindAddress" << std::endl;
@@ -65,7 +64,6 @@ void Socket::listen() {
 int Socket::accept(InternetAddress *peerAddress) {
     sockaddr_in address{};
     auto addressLen = static_cast<socklen_t>(sizeof(address));
-    // TODO 学习 Linux 新增的系统调用，直接 accept4() 得到非阻塞的 socket
     int connectionFd = ::accept4(sockfd_, reinterpret_cast<sockaddr*>(&address), &addressLen, SOCK_NONBLOCK | SOCK_CLOEXEC);
     if (connectionFd >= 0) {
         peerAddress->setSockAddrInternet(address);
