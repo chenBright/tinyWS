@@ -13,7 +13,7 @@ namespace tinyWS {
          * 构造函数
          * @param port 端口号
          */
-        explicit InternetAddress(uint16_t port);
+        explicit InternetAddress(uint16_t port = 0);
 
         /**
          * 构造函数

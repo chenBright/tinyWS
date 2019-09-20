@@ -55,7 +55,7 @@ int Acceptor::createNonblocking() {
 
 void Acceptor::hadleRead() {
     loop_->assertInLoopThread();
-    InternetAddress peerAddress(0);
+    InternetAddress peerAddress;
     // FIXME loop until no more
     Socket connectionSocket(acceptSocket_.accept(&peerAddress));
     if (connectionSocket.fd() >= 0) {
