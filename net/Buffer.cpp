@@ -247,7 +247,6 @@ ssize_t Buffer::readFd(int fd, int *savedErrno) {
     //      2.1 Epoll 采用的是 level trigger，这样做不会丢失数据或者消息；
     //      2.2 对于追求低延迟的程序来说，这么做是高效的，因为每次读数据只需要一次系统调用；
     //      2.3 这样做照顾了多个连接的公平性，不会因为某个连接上数据过大而影响其他连接处理数据。
-    //  TODO 如果 n == writable + sizeof(extrabuf)，就再读一次。
     char extrabuf[65536];
     iovec vec[2];
     const size_t writable = writableBytes();
@@ -255,15 +254,20 @@ ssize_t Buffer::readFd(int fd, int *savedErrno) {
     vec[0].iov_len = writable;
     vec[1].iov_base = extrabuf;
     vec[1].iov_len = sizeof(extrabuf);
-    const ssize_t n = ::readv(fd, vec, 2);
+    ssize_t n = ::readv(fd, vec, 2);
     if (n < 0) {
         *savedErrno = errno;
-    } else if (static_cast<size_t>(n) <= writable) { // TODO muduo用的是boost::implicit_cast
+    } else if (static_cast<size_t>(n) <= writable) {
         writerIndex_ += n;
     } else {
         // 使用了额外的缓冲区，将数据 append 到 buffer_ 上
         writerIndex_ = buffer_.size(); // 此时 buffer_ 已满，更新 writerIndex_ 到缓冲区末尾。
         append(extrabuf, n - writable);
+
+        // 如果 n == writable + sizeof(extrabuf)，可能还有数据没读完，就再读一次。
+        if (n == writable + sizeof(extrabuf)) {
+            n += readFd(fd, savedErrno);
+        }
     }
 
     return n;
