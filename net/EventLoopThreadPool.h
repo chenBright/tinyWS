@@ -28,7 +28,7 @@ namespace tinyWS {
          */
         explicit EventLoopThreadPool(EventLoop *baseLoop);
 
-        ~EventLoopThreadPool() = default;
+        ~EventLoopThreadPool();
 
         /**
          * 设置线程池线程数目
