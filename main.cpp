@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 
     EventLoop loop;
     InternetAddress listenAddress(8888);
-//    InternetAddress listenAddress(std::string("127.0.0.1"),8888);
+//    InternetAddress listenAddress(std::string("127.0.0.1"),8888); // for test
     HttpServer server(&loop, listenAddress, "tinyWS");
 
     server.setThreadNum(threadNums);
@@ -43,6 +43,7 @@ int main(int argc, char *argv[]) {
 
 void httpCallback(const HttpRequest &request, HttpResponse &response) {
     debug() << "httpCallback() " << std::endl;
+
     const std::string &path = request.path();
     const std::string prefix = "/tmp/tmp.epZ6PWHYhj/web";
     std::string filename;
@@ -80,7 +81,8 @@ void httpCallback(const HttpRequest &request, HttpResponse &response) {
     response.setBody(std::string(srcAddress, srcAddress + fileBuffer.st_size));
     munmap(mmapResult, static_cast<size_t>(fileBuffer.st_size));
 
-//    response.setBody("Hello World!");
+//    response.setBody("Hello World!"); // for test
+
     response.setStatusCode(HttpResponse::k200OK);
     response.setStatusMessage("OK");
     response.addHeader("server", "tinyWS");
