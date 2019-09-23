@@ -1,8 +1,5 @@
 #include "ThreadPool.h"
 
-#include <cerrno>
-
-#include <iostream>
 #include <cassert>
 #include <functional>
 #include <algorithm>

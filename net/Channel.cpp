@@ -2,7 +2,6 @@
 
 #include <sys/epoll.h>
 
-#include <iostream>
 #include <sstream>
 
 #include "../base/Logger.h"

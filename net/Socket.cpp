@@ -6,8 +6,6 @@
 #include <sys/socket.h>
 #include <cerrno>
 
-#include <iostream>
-
 #include "../base/Logger.h"
 #include "InternetAddress.h"
 

@@ -3,7 +3,6 @@
 #include <sys/stat.h>   // struct stat
 #include <sys/mman.h>   // mmap()、munmap()
 
-#include <iostream>
 #include <functional>
 
 #include "net/EventLoop.h"
@@ -31,6 +30,7 @@ int main(int argc, char *argv[]) {
 
     EventLoop loop;
     InternetAddress listenAddress(8888);
+//    InternetAddress listenAddress(std::string("127.0.0.1"),8888);
     HttpServer server(&loop, listenAddress, "tinyWS");
 
     server.setThreadNum(threadNums);
@@ -80,6 +80,7 @@ void httpCallback(const HttpRequest &request, HttpResponse &response) {
     response.setBody(std::string(srcAddress, srcAddress + fileBuffer.st_size));
     munmap(mmapResult, static_cast<size_t>(fileBuffer.st_size));
 
+//    response.setBody("Hello World!");
     response.setStatusCode(HttpResponse::k200OK);
     response.setStatusMessage("OK");
     response.addHeader("server", "tinyWS");

@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <cassert>
 
-#include <iostream>
 #include <functional>
 #include <algorithm>
 #include <utility>

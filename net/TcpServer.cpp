@@ -1,6 +1,5 @@
 #include "TcpServer.h"
 
-#include <iostream>
 #include <functional>
 
 #include "../base/Logger.h"

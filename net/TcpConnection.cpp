@@ -2,8 +2,6 @@
 
 #include <unistd.h> // read
 
-#include <iostream>
-
 #include "../base/Logger.h"
 #include "EventLoop.h"
 #include "Channel.h"
