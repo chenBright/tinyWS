@@ -29,7 +29,8 @@ int main(int argc, char *argv[]) {
     }
 
     EventLoop loop;
-    InternetAddress listenAddress(std::string("127.0.0.1"),8888);
+    InternetAddress listenAddress(8888);
+//    InternetAddress listenAddress(std::string("127.0.0.1"),8888);
     HttpServer server(&loop, listenAddress, "tinyWS");
 
     server.setThreadNum(threadNums);
