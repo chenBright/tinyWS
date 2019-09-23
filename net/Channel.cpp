@@ -81,7 +81,7 @@ void Channel::setRevents(int revt) {
 }
 
 bool Channel::isNoneEvent() const {
-    return revents_ == kNoneEvent;
+    return events_ == kNoneEvent;
 }
 
 void Channel::enableReading() {
