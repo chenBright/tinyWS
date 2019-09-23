@@ -1,8 +1,6 @@
 #include <cstring>
 #include <arpa/inet.h>
 
-#include <iostream>
-
 #include "InternetAddress.h"
 #include "../base/Logger.h"
 

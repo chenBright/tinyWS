@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include <syscall.h>
 
-#include <iostream>
 #include <exception>
 
 #include "Logger.h"

@@ -1,11 +1,9 @@
 #include "Epoll.h"
 
-#include <assert.h>
+#include <cassert>
 #include <unistd.h> // close
 #include <cstring>
 #include <sys/epoll.h>
-
-#include <iostream>
 
 #include "../base/Logger.h"
 #include "Channel.h"

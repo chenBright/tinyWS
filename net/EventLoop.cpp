@@ -4,7 +4,6 @@
 #include <sys/eventfd.h>
 #include <unistd.h>
 
-#include <iostream>
 #include <functional>
 
 #include "../base/Logger.h"
