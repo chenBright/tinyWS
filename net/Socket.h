@@ -68,7 +68,7 @@ namespace tinyWS {
         void shutdownWrite();
 
         /**
-         * 设置无阻塞
+         * 禁用 Nagle 算法
          * @param on
          */
         void setTcpNoDelay(bool on);
