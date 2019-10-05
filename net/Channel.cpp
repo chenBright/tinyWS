@@ -29,7 +29,7 @@ Channel::~Channel() {
     assert(!eventHandling_);
     assert(!addedToLoop_);
     if (loop_->isInLoopThread()) {
-        debug() << "Channel:~Channel()" << std::endl;
+//        debug() << "Channel:~Channel()" << std::endl;
     }
 }
 
@@ -151,7 +151,7 @@ void Channel::handleEventWithGuard(tinyWS::Timer::TimeType receiveTime) {
 
     // 可读事件
     if (revents_ & EPOLLIN) {
-        debug() << "Channel::handleEvent() EPOLLIN" << std::endl;
+//        debug() << "Channel::handleEvent() EPOLLIN" << std::endl;
     }
 
     // 异常事件

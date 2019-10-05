@@ -16,7 +16,7 @@ Socket::Socket(int sockfd) : sockfd_(sockfd) {}
 Socket::~Socket() {
     // 只有当 socketfd_ 是有效的描述符时，才关闭 socketfd_。
     if (isValid()) {
-        debug(LogLevel::ERROR) << "Socket::~Socket() fd = " << sockfd_ << std::endl;
+//        debug() << "Socket::~Socket() fd = " << sockfd_ << std::endl;
         ::close(sockfd_);
     }
 }

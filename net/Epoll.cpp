@@ -41,7 +41,7 @@ Timer::TimeType Epoll::poll(int timeoutMs, Epoll::ChannelList *activeChannels)  
     Timer::TimeType now = Timer::now();
 
     if (eventNums > 0) {
-        debug() << eventNums << " events happen" << std::endl;
+//        debug() << eventNums << " events happen" << std::endl;
         fillActiveChannels(eventNums, activeChannels);
         // 当向epoll中注册的事件过多，导致返回的活动事件可能越來越多，
         // events_ 裝不下时，events_ 扩容为2倍
@@ -49,9 +49,9 @@ Timer::TimeType Epoll::poll(int timeoutMs, Epoll::ChannelList *activeChannels)  
             events_.resize(events_.size() * 2);
         }
     } else if (eventNums == 0) {
-        debug() << "nothing happended" << std::endl;
+//        debug() << "nothing happended" << std::endl;
     } else {
-        debug() << "EPollPoller::poll()" << std::endl;
+//        debug() << "EPollPoller::poll()" << std::endl;
     }
 
     return now; // 返回 epoll return 的时刻
@@ -60,8 +60,8 @@ Timer::TimeType Epoll::poll(int timeoutMs, Epoll::ChannelList *activeChannels)  
 void Epoll::updateChannel(Channel *channel) {
     assertInLoopThread();
 
-    debug() << "Epoll::updateChannel() fd = " << channel->fd()
-            << " event = " << channel->getEvents() << std::endl;
+//    debug() << "Epoll::updateChannel() fd = " << channel->fd()
+//            << " event = " << channel->getEvents() << std::endl;
 
     const int status = channel->getStatusInEpoll();
     int fd = channel->fd();

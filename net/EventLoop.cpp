@@ -40,9 +40,9 @@ EventLoop::EventLoop()
       wakeupFd_(createEventfd()),
       wakeupChannel_(new Channel(this, wakeupFd_)) {
 
-    debug() << "EventLoop created "
-            << this << " in thread "
-            << threadId_ << std::endl;
+//    debug() << "EventLoop created "
+//            << this << " in thread "
+//            << threadId_ << std::endl;
 
     if (t_loopInThisThread) { // 已创建 EventLoop
         debug(LogLevel::TRACE) << "Another EventLoop " << t_loopInThisThread
@@ -59,7 +59,7 @@ EventLoop::EventLoop()
 
 EventLoop::~EventLoop() {
     assert(!looping_); // 确保 EventLoop 对象析构的时候，已经退出事件循环
-    debug() << "EventLoop::~EventLoop destructing" << std::endl;
+//    debug() << "EventLoop::~EventLoop destructing" << std::endl;
 
     // 清除 wakeupfd_ 相关资源
     wakeupChannel_->disableAll();
@@ -87,7 +87,7 @@ void EventLoop::loop() {
     looping_ = true;
     quit_ = false;
 
-    debug() << "EventLoop " << this << "start looping" << std::endl;
+//    debug() << "EventLoop " << this << "start looping" << std::endl;
 
     while (!quit_) {
         activeChannels_.clear(); // 清空 Channel 列表，以获取新的 Channel 列表
@@ -98,7 +98,7 @@ void EventLoop::loop() {
         doPendingFunctors();
     }
 
-    debug() << "EVentLoop " << this << " stop looping" << std::endl;
+//    debug() << "EVentLoop " << this << " stop looping" << std::endl;
     looping_ = false;
 }
 
@@ -235,6 +235,6 @@ void EventLoop::doPendingFunctors() {
 
 void EventLoop::printActiveChannels() const {
     for (const auto &channel : activeChannels_) {
-        debug() << "{" << channel->reventsToString() << "} " << std::endl;
+//        debug() << "{" << channel->reventsToString() << "} " << std::endl;
     }
 }

@@ -22,7 +22,7 @@ TcpConnection::TcpConnection(EventLoop *loop,
                                channel_(new Channel(loop, socket_->fd())),
                                localAddress_(localAddress),
                                peerAddress_(peerAddress) {
-    debug() << "move fd = " << socket_->fd() << std::endl;
+//    debug() << "move fd = " << socket_->fd() << std::endl;
     // 设置回调函数
     channel_->setReadCallback(
             std::bind(&TcpConnection::handleRead, this, _1));
@@ -33,16 +33,16 @@ TcpConnection::TcpConnection(EventLoop *loop,
     channel_->setErrorCallback(
             std::bind(&TcpConnection::handleError, this));
 
-    debug() << "TcpConnection::ctor[" <<  name_ << "] at " << this
-            << " fd=" << socket_->fd();
+//    debug() << "TcpConnection::ctor[" <<  name_ << "] at " << this
+//            << " fd=" << socket_->fd();
 
     socket_->setKeepAlive(true);
 }
 
 TcpConnection::~TcpConnection() {
-    debug() << "TcpConnection::dtor[" <<  name_ << "] at " << this
-            << " fd=" << channel_->fd()
-            << " state=" << stateToString();
+//    debug() << "TcpConnection::dtor[" <<  name_ << "] at " << this
+//            << " fd=" << channel_->fd()
+//            << " state=" << stateToString();
 
     assert(state_ == kDisconnected);
 }
@@ -203,10 +203,10 @@ void TcpConnection::handleWrite() {
                     shutdownInLoop();
                 }
             } else {
-                debug() << "I am going to write more data" << std::endl;
+//                debug() << "I am going to write more data" << std::endl;
             }
         } else {
-            debug() << "TcpConnection::handleWrite" << std:: endl;
+//            debug() << "TcpConnection::handleWrite" << std:: endl;
         }
     } else {
         debug(LogLevel::ERROR) << "Connection is down, no more writing" << std::endl;
@@ -215,7 +215,7 @@ void TcpConnection::handleWrite() {
 
 void TcpConnection::handleClose() {
     loop_->assertInLoopThread();
-    debug() << "TcpConnection::handleClose state = " << stateToString() << std::endl;
+//    debug() << "TcpConnection::handleClose state = " << stateToString() << std::endl;
     assert(state_ == kConnected || state_ == kDisconnecting);
     setState(kDisconnected);
     // 不关闭 socket fd，让它（Socket 对象）自己析构，从而我们可以轻松地定位到内存泄漏。
@@ -239,7 +239,7 @@ void TcpConnection::sendInLoop(const std::string &message) {
         if (n >= 0) {
             if (static_cast<size_t>(n) < message.size()) {
                 // 只发送了一部分数据
-                debug() << "I am going to write more data" << std::endl;
+//                debug() << "I am going to write more data" << std::endl;
             } else {
                 if (writeCompleteCallback_) {
                     loop_->queueInLoop(

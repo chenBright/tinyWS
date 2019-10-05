@@ -24,7 +24,7 @@ TcpServer::TcpServer(EventLoop *loop, const InternetAddress &address, const std:
 
 TcpServer::~TcpServer() {
     loop_->assertInLoopThread();
-    debug() << "TcpServer::~TcpServer [" << name_ << "] destructing" << std::endl;
+//    debug() << "TcpServer::~TcpServer [" << name_ << "] destructing" << std::endl;
     for (const auto &connection : connectionMap_) {
         connection.second->getLoop()->runInLoop(
                 std::bind(&TcpConnection::connectionDestroyed, connection.second.get()));
@@ -67,9 +67,9 @@ void TcpServer::newConnection(Socket socket, const InternetAddress &peerAddress)
     ++nextConnectionId_;
     std::string connectionName = name_ + buf;
 
-    debug() << "TcpServer::newConnection [" << name_
-            << "] - new connection [" << connectionName
-            << "] from " << peerAddress.toIpPort() << std::endl;
+//    debug() << "TcpServer::newConnection [" << name_
+//            << "] - new connection [" << connectionName
+//            << "] from " << peerAddress.toIpPort() << std::endl;
 
     InternetAddress localAddress(InternetAddress::getLocalAddress(socket.fd()));
 
@@ -82,6 +82,7 @@ void TcpServer::newConnection(Socket socket, const InternetAddress &peerAddress)
                               localAddress,
                               peerAddress));
     connectionMap_[connectionName] = connection;
+    connection->setTcpNoDelay(true); // 禁用 Nagle 算法
     // 设置回调函数
     connection->setConnectionCallback(connectionCallback_);
     connection->setMessageCallback(messageCallback_);
@@ -101,8 +102,8 @@ void TcpServer::removeConnection(const TcpConnectionPtr &connection) {
 
 void TcpServer::removeConnectionInLoop(const TcpConnectionPtr &connection) {
     loop_->assertInLoopThread(); // 确保在 IO 线程中
-    debug() << "TcpServer::removeConnectionInLoop [" << name_
-            << "] - connection " << connection->name() << std::endl;
+//    debug() << "TcpServer::removeConnectionInLoop [" << name_
+//            << "] - connection " << connection->name() << std::endl;
     size_t n = connectionMap_.erase(connection->name());
 
     assert(n == 1);
