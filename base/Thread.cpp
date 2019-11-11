@@ -20,10 +20,6 @@ Thread::Thread(const Thread::ThreadFunction &func, const std::string &name)
       name_(name) {
 }
 
-Thread::~Thread() {
-    // no join
-}
-
 void Thread::start() {
     assert(!started_);
 
@@ -69,8 +65,8 @@ void Thread::runInThread() {
     try {
         func_();
     } catch (const std::exception &ex) {
-        fprintf(stderr, "exception caught in Thread %d\n", tid_);
-        fprintf(stderr, "reason: %s\n", ex.what());
+        debug(LogLevel::ERROR) << "exception caught in Thread " << tid_ << std::endl;
+        debug(LogLevel::ERROR) << "reason: " << ex.what() << std::endl;
         abort();
     } catch (...) {
         throw; // rethrow

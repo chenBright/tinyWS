@@ -19,7 +19,8 @@ namespace tinyWS {
          * @param name 线程名
          */
         explicit Thread(const ThreadFunction &func, const std::string &name = std::string());
-        ~Thread();
+
+        ~Thread() = delete;
 
         /**
          * 创建线程
