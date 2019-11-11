@@ -48,7 +48,8 @@ int proxyport=80;
 char *proxyhost=NULL;
 int benchtime=30;
 
-bool keep_alive = false;
+bool keep_alive = true;
+//bool keep_alive = false;
 
 /* internal */
 int mypipe[2];

@@ -2,9 +2,18 @@
 
 ## 测试环境
 
-- OS: Ubuntu 16.04.5 LTS（腾讯云虚拟主机）
-- CPU: 1核
+### 腾讯云虚拟主机
 
+- OS: Ubuntu 16.04 LTS
+- CPU: 1核
+- 内存：2M
+
+### 本地主机
+
+- OS：Ubuntu 1.04 LTS
+- CPU：8核
+- 内存：16G
+8
 ## 测试方法
 
 - 为了避免带宽带来的影响，将服务器程序和 WebBench 程序都运行在同一台主机上。
@@ -22,27 +31,42 @@
 
 ## 测试结果
 
-| 短连接 | 长连接  | 长连接（禁用 Nagle 算法） |
-| ------ | ------- | ------------------------- |
-| 341837 | 1207940 | 1301368                   |
+| 主机           | 短连接  | 长连接  | 长连接（禁用 Nagle 算法） |
+| -------------- | ------- | ------- | ------------------------- |
+| 腾讯云虚拟主机 | 341837  | 1207940 | 1301368                   |
+| 本地主机       | 1554467 | 7579179 | 7885731（未截图）         |
 
 处理请求数方面，长连接比短连接能很多，差不多为3倍。
 
 因为发送的内容很少，为避免发送可能的延迟，禁用了 Nagle 算法，请求数并没有得到显著的提升。
 
+在本地主机上运行的程序比在腾讯云虚拟主机上运行的程序要快得多，可以看出来，硬件的性能对并发数的影响也是很大的。
+
 ## 测试结果截图
+
+### 腾讯云虚拟主机
 
 - 短连接
 
-![短连接](/Users/chenbright/Desktop/c:c++_workspace/tinyWS/doc/pressure_test_close.png)
+![短连接](pressure_test1_short.png)
 
 - 长连接
 
-![长连接](/Users/chenbright/Desktop/c:c++_workspace/tinyWS/doc/pressure_test_keep_alive.png)
+![长连接](pressure_test1_keep_alive.png)
 
-## 长连接（禁用 Nagle 算法）
+- 长连接（禁用 Nagle 算法）
 
-![长连接（禁用 Nagle 算法）](/Users/chenbright/Desktop/c:c++_workspace/tinyWS/doc/pressure_test_keep_alive_noNagle.png)
+![长连接（禁用 Nagle 算法）](pressure_test1_keep_alive_noNagle.png)
+
+### 本地主机
+
+- 短连接
+
+![短连接](/Users/chenbright/Desktop/c:c++_workspace/tinyWS/doc/pressure_test2_short.png)
+
+- 长连接
+
+![长连接](/Users/chenbright/Desktop/c:c++_workspace/tinyWS/doc/pressure_test2_keep_alive.png)
 
 ## 参考
 

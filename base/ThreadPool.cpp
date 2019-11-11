@@ -4,6 +4,8 @@
 #include <functional>
 #include <algorithm>
 
+#include "Logger.h"
+
 using namespace std::placeholders;
 using namespace tinyWS;
 
@@ -68,11 +70,11 @@ void ThreadPool::runInThread() {
             }
         }
     } catch (const std::exception &ex) {
-        fprintf(stderr, "exception caught in ThreadPool %s\n", name_.c_str());
-        fprintf(stderr, "reason: %s\n", ex.what());
+        debug(LogLevel::ERROR) << "exception caught in ThreadPool " << name_.c_str() << std::endl;
+        debug(LogLevel::ERROR) << "reason: " << ex.what() << std::endl;
         abort();
     } catch (...) {
-        fprintf(stderr, "unkonw exception caugt in ThreadPool %s\n", name_.c_str());
+        debug(LogLevel::ERROR) << "unkonw exception caugt in ThreadPool " << name_.c_str() << std::endl;
         throw; // rethrow
     }
 
