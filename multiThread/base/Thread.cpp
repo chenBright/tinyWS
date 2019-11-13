@@ -14,10 +14,17 @@ using namespace tinyWS;
 
 Thread::Thread(const Thread::ThreadFunction &func, const std::string &name)
     : started_(false),
+      joined_(false),
       pthreadId_(0),
       tid_(0),
       func_(func),
       name_(name) {
+}
+
+Thread::~Thread() {
+    if (started_ && !joined_) {
+        pthread_detach(pthreadId_);
+    }
 }
 
 void Thread::start() {
@@ -37,7 +44,9 @@ bool Thread::started() {
 
 int Thread::join() {
     assert(started_);
+    assert(!joined_);
 
+    joined_ = true;
     return pthread_join(pthreadId_, nullptr);
 }
 

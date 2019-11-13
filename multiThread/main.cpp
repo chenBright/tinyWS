@@ -20,7 +20,7 @@ using namespace tinyWS;
 void httpCallback(const HttpRequest &request, HttpResponse &response);
 void set404NotFound(HttpResponse &response);
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 //     debug() << "pid = " << ::getpid() << ", tid = " << Thread::gettid() << std::endl;
 
     int threadNums = 0;
