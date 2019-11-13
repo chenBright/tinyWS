@@ -20,7 +20,7 @@ namespace tinyWS {
          */
         explicit Thread(const ThreadFunction &func, const std::string &name = std::string());
 
-        ~Thread() = delete;
+        ~Thread();
 
         /**
          * 创建线程
@@ -59,6 +59,7 @@ namespace tinyWS {
 
     private:
         bool started_;          // 线程是否启动
+        bool joined_;           // 线程是否 joined
         pthread_t pthreadId_;   // pthread库返回的线程id
         pid_t tid_;             // 系统调用返回的线程id
         ThreadFunction func_;   // 线程执行函数
