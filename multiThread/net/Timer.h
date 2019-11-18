@@ -8,7 +8,7 @@
 #include "../base/noncopyable.h"
 #include "../base/Atomic.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
     // 非线程安全，不暴露给用户，只向用户提供 TdmerId 对象，用于识别定时器。
     class Timer : noncopyable {
     public:

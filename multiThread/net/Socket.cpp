@@ -9,7 +9,7 @@
 #include "../base/Logger.h"
 #include "InternetAddress.h"
 
-using namespace tinyWS;
+using namespace tinyWS_thread;
 
 Socket::Socket(int sockfd) : sockfd_(sockfd) {}
 

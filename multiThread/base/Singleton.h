@@ -5,7 +5,7 @@
 
 #include "noncopyable.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
     /**
      * 使用 pthread_once_t 来保证 lazy-initialization 的线程安全，线程安全性由 Pthread 库保证。
      * @tparam T

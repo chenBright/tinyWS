@@ -6,7 +6,7 @@
 
 #include "../net/Timer.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
     // 用于保存请求相关的信息：请求方法、请求路径、查询字段、接收请求的时间、请求头
     class HttpRequest {
     public:

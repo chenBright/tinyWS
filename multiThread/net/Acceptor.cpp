@@ -10,7 +10,7 @@
 #include "EventLoop.h"
 #include "InternetAddress.h"
 
-using namespace tinyWS;
+using namespace tinyWS_thread;
 
 Acceptor::Acceptor(EventLoop *loop, const InternetAddress &listenAdress)
     : loop_(loop),

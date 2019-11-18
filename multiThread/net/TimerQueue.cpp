@@ -11,7 +11,7 @@
 #include "../base/Logger.h"
 #include "EventLoop.h"
 
-using namespace tinyWS;
+using namespace tinyWS_thread;
 
 // timerfd 操作函数集合
 namespace Timerfd {

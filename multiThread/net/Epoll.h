@@ -2,7 +2,6 @@
 #define TINYWS_EPOLLER_H
 
 #include <sys/epoll.h>
-#include <cstdint>
 
 #include <vector>
 #include <map>
@@ -10,11 +9,11 @@
 #include <memory>
 
 #include "../base/noncopyable.h"
-#include "EventLoop.h"
 #include "Timer.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
     class Channel;
+    class EventLoop;
 
     // Epoll 的职责：
     // 1 管理（增删改） Channel 列表：有关心事件的 Channel 和 无关心事件的 Channel；
@@ -84,10 +83,10 @@ namespace tinyWS {
 
         /**
          * 把"活动"的 Channel 填入到 activeChannels 中
-         * @param numEvents "活动"的 Channel 数量
+         * @param eventNums "活动"的 Channel 数量
          * @param activeChannels "活动"的 Channel 列表
          */
-        void fillActiveChannels(int numEvents, ChannelList *activeChannels) const;
+        void fillActiveChannels(int eventNums, ChannelList *activeChannels) const;
 
         /**
          * 更新 epoll 中的文件描述符

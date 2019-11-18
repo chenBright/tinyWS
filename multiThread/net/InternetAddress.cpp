@@ -4,7 +4,7 @@
 #include "InternetAddress.h"
 #include "../base/Logger.h"
 
-using namespace tinyWS;
+using namespace tinyWS_thread;
 
 
 //     // Structure describing an Internet socket address.

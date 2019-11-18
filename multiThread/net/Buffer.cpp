@@ -7,7 +7,7 @@
 
 #include <algorithm>
 
-using namespace tinyWS;
+using namespace tinyWS_thread;
 
 const char Buffer::kCRLF[] = "\r\n";
 
@@ -20,7 +20,7 @@ Buffer::Buffer()
     assert(prependableBytes() == kCheapPrepend);
 }
 
-void Buffer::swap(tinyWS::Buffer &rhs) {
+void Buffer::swap(tinyWS_thread::Buffer &rhs) {
     buffer_.swap(rhs.buffer_);
     std::swap(readerIndex_, rhs.readerIndex_);
     std::swap(writerIndex_, rhs.writerIndex_);

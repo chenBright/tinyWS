@@ -12,7 +12,7 @@
 #include "Timer.h"
 #include "TimerId.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
     class Channel;
     class Epoll;
     class TimerQueue;

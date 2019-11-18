@@ -8,7 +8,7 @@
 #include "MutexLock.h"
 #include "noncopyable.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
     // 条件变量对象
     class Condition : noncopyable {
     public:

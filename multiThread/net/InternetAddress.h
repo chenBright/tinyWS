@@ -6,7 +6,7 @@
 
 #include <string>
 
-namespace tinyWS {
+namespace tinyWS_thread {
     class InternetAddress {
     public:
         /**

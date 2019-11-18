@@ -9,7 +9,7 @@
 #include "../net/TcpConnection.h"
 #include "../net/Timer.h"
 
-namespace tinyWS{
+namespace tinyWS_thread{
     class Buffer;
     class HttpRequest;
     class HttpResponse;

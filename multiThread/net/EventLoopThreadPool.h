@@ -7,7 +7,7 @@
 
 #include "../base/noncopyable.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
     class EventLoop;
     class EventLoopThread;
 

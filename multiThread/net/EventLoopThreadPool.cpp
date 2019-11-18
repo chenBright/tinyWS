@@ -6,7 +6,7 @@
 #include "EventLoopThread.h"
 #include "../base/MutexLock.h"
 
-using namespace tinyWS;
+using namespace tinyWS_thread;
 
 EventLoopThreadPool::EventLoopThreadPool(EventLoop *baseLoop)
     : baseLoop_(baseLoop),

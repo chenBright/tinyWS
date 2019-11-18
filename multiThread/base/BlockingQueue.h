@@ -9,7 +9,7 @@
 #include "MutexLock.h"
 #include "Condition.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
 
     template <class T>
     class BlockingQueue : noncopyable {

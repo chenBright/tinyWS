@@ -15,7 +15,7 @@
 #include "base/Logger.h"
 
 using namespace std::placeholders;
-using namespace tinyWS;
+using namespace tinyWS_thread;
 
 void httpCallback(const HttpRequest &request, HttpResponse &response);
 void set404NotFound(HttpResponse &response);

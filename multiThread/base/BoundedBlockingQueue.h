@@ -11,7 +11,7 @@
 #include "MutexLock.h"
 #include "Condition.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
     namespace detail {
         // 循环队列，元素范围为 [front_, rear_)，
         // 即逻辑上的队列容量为 capacity，而实际的空间大小为 capcaity + 1，

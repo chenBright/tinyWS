@@ -12,7 +12,7 @@
 #include "EventLoopThreadPool.h"
 #include "CallBack.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
     class EventLoop;
     class Acceptor;
     class InternetAddress;
@@ -36,8 +36,8 @@ namespace tinyWS {
          * @param address server 的地址对象
          * @param name server 的名字
          */
-        TcpServer(tinyWS::EventLoop *loop,
-                  const tinyWS::InternetAddress &address,
+        TcpServer(tinyWS_thread::EventLoop *loop,
+                  const tinyWS_thread::InternetAddress &address,
                   const std::string &name);
 
         ~TcpServer();

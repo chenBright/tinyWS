@@ -1,15 +1,14 @@
 #include "Epoll.h"
 
+#include <unistd.h>
 #include <cassert>
-#include <unistd.h> // close
-#include <cstring>
-#include <sys/epoll.h>
 
-#include "../base/Logger.h"
-#include "Channel.h"
+#include <iostream>
+
 #include "EventLoop.h"
+#include "Channel.h"
 
-using namespace tinyWS_thread;
+using namespace tinyWS_process;
 
 // channel 的状态
 // 表示还没添加到 ChannelMap 中
@@ -20,12 +19,11 @@ const int kAdded = 1;
 const int kDeleted = 2;
 
 Epoll::Epoll(EventLoop *loop)
-    : ownerLoop_(loop),
+    : loop_(loop),
       epollfd_(epoll_create1(EPOLL_CLOEXEC)),
       events_(kInitEventListSize) {
-
     if (epollfd_ < 0) {
-        debug(LogLevel::ERROR) << "EPollPoller::EPollPoller" << std::endl;
+        std::cout << "EPollPoller::EPollPoller" << std::endl;
     }
 }
 
@@ -33,39 +31,29 @@ Epoll::~Epoll() {
     close(epollfd_);
 }
 
-Timer::TimeType Epoll::poll(int timeoutMs, ChannelList *activeChannels)  {
-    // 往 events_ 的内存里写入活跃的事件。
-    // events_.data() 返回 vector 底层数组的指针，
-    // 也可以通过 &*event_.begin() 获取
+int64_t Epoll::poll(int timeoutMS, ChannelList *activeChannels) {
     int eventNums = epoll_wait(epollfd_, events_.data(),
-            static_cast<int>(events_.size()), timeoutMs);
-    Timer::TimeType now = Timer::now();
+            static_cast<int>(events_.size()), timeoutMS);
 
     if (eventNums > 0) {
-//        debug() << eventNums << " events happen" << std::endl;
         fillActiveChannels(eventNums, activeChannels);
-        // 当向epoll中注册的事件过多，导致返回的活动事件可能越來越多，
-        // events_ 裝不下时，events_ 扩容为2倍
         if (static_cast<EventList::size_type>(eventNums) == events_.size()) {
             events_.resize(events_.size() * 2);
         }
     } else if (eventNums == 0) {
-//        debug() << "nothing happended" << std::endl;
+        std::cout << "nothing happended" << std::endl;
     } else {
-//        debug() << "EPollPoller::poll()" << std::endl;
+        std::cout << "EPollPoller::poll()" << std::endl;
     }
-
-    return now; // 返回 epoll return 的时刻
 }
 
-void Epoll::updateChannel(Channel *channel) {
-    assertInLoopThread();
-
-//    debug() << "Epoll::updateChannel() fd = " << channel->fd()
-//            << " event = " << channel->getEvents() << std::endl;
+void Epoll::updateChannel(tinyWS_process::Channel *channel) {
+    std::cout << "Epoll::updateChannel() fd = " << channel->fd()
+              << " event = " << channel->getEvents() << std::endl;
 
     const int status = channel->getStatusInEpoll();
     int fd = channel->fd();
+
     if (status == kNew || status == kDeleted) {
         if (status == kNew) {
             // 未在 ChannelMap 中，需要建立映射
@@ -77,7 +65,7 @@ void Epoll::updateChannel(Channel *channel) {
             assert(channels_.find(fd) != channels_.end());
             assert(channels_[fd] == channel);
         }
-        // 新的文件描述符
+
         channel->setStatusInEpoll(kAdded);
         update(EPOLL_CTL_ADD, channel);
     } else {
@@ -88,7 +76,6 @@ void Epoll::updateChannel(Channel *channel) {
         if (channel->isNoneEvent()) {
             // Channel 没有关心的事件，则要在 epoll 中移除该 Channel 对应的文件描述符
             update(EPOLL_CTL_DEL, channel);
-            channel->setStatusInEpoll(kDeleted);
         } else {
             update(EPOLL_CTL_MOD, channel);
         }
@@ -96,35 +83,26 @@ void Epoll::updateChannel(Channel *channel) {
 }
 
 void Epoll::removeChannel(Channel *channel) {
-    assertInLoopThread();
-
     int fd = channel->fd();
-    channels_.erase(fd); // 删除文件描述符和 Channel 之间的映射关系
-    // 如果 epoll 正在监听该文件描述符，则取消 epoll 对该文件描述符的监听。
+    channels_.erase(fd);
     if (channel->getStatusInEpoll() == kAdded) {
         update(EPOLL_CTL_DEL, channel);
     }
-    channel->setStatusInEpoll(kNew); // 设置 Channel 状态为 kNew
+    channel->setStatusInEpoll(kNew);
 }
 
-bool Epoll::hasChannel(tinyWS_thread::Channel *channel) {
-    assertInLoopThread();
+bool Epoll::hasChannel(Channel *channel) {
     auto it = channels_.find(channel->fd());
+
     return it != channels_.end() && it->second == channel;
 }
 
-void Epoll::assertInLoopThread() {
-    ownerLoop_->assertInLoopThread();
-}
-
-void Epoll::fillActiveChannels(int eventNums, Epoll::ChannelList *activeChannels) const {
-    assert((size_t) eventNums <= events_.size());
+void Epoll::fillActiveChannels(int eventNums, ChannelList *activeChannels) const {
+    assert(eventNums <= events_.size());
 
     for (int i = 0; i < eventNums; ++i) {
-        // 在 Epoll::update() 中，
-        // 使用 epoll_event.data.ptr  保存文件描述符对应的 Channel 对象的指针
-        auto *channel = static_cast<Channel*>(events_[i].data.ptr);
-        channel->setRevents(events_[i].events); // 设置"到来"的事件
+        auto* channel = static_cast<Channel*>(events_[i].data.ptr);
+        channel->setRevents(events_[i].events);
         activeChannels->push_back(channel);
     }
 }
@@ -150,8 +128,8 @@ void Epoll::update(int operation, Channel *channel) {
     event.data.ptr = channel;
     int fd = channel->fd();
     if (epoll_ctl(epollfd_, operation, fd, &event) < 0) {
-        debug(LogLevel::ERROR) << "epoll_ctl op=" << operationToString(operation)
-                                     << " fd=" << fd;
+        std::cout << "epoll_ctl op=" << operationToString(operation)
+                  << " fd=" << fd;
     }
 }
 

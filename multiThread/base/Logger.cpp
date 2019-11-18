@@ -8,9 +8,9 @@
 #include <iomanip>
 #include <regex>
 
-using namespace tinyWS;
+using namespace tinyWS_thread;
 
-ConsoleLogger tinyWS::debug;
+ConsoleLogger tinyWS_thread::debug;
 //FileLogger tinyWS::record("test.log");
 
 static const std::map<LogLevel, const std::string> LogLevelStr =
@@ -50,7 +50,7 @@ void BaseLogger::endine(LogLevel level, const std::string &message) {
     output(getLocalTime(), LogLevelStr.find(level)->second, message);
 }
 
-BaseLogger::LogStream::LogStream(BaseLogger &logger, tinyWS::LogLevel level)
+BaseLogger::LogStream::LogStream(BaseLogger &logger, tinyWS_thread::LogLevel level)
     : logger_(logger),
       level_(level) {
 

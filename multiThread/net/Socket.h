@@ -5,7 +5,7 @@
 
 struct tcp_info; // in
 
-namespace tinyWS {
+namespace tinyWS_thread {
     class InternetAddress;
 
 

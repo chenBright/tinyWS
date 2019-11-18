@@ -8,11 +8,12 @@
 #include <string>
 
 #include "noncopyable.h"
-#include "Thread.h"
 #include "MutexLock.h"
 #include "Condition.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
+    class Thread;
+
     class ThreadPool : noncopyable {
     public:
         using Task = std::function<void()>;                             // 任务函数类型
@@ -42,7 +43,7 @@ namespace tinyWS {
         void run(const Task &task);
 
     private:
-        using ThreadList = std::vector<std::unique_ptr<Thread> >;       // 线程列表类型
+        using ThreadList = std::vector<std::unique_ptr<Thread>>;       // 线程列表类型
         MutexLock mutex_;                                               // 互斥锁
         Condition cond_;                                                // 条件变量
         std::string name_;                                              // 线程池名
