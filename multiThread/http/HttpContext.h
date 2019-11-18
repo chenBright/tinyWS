@@ -4,7 +4,7 @@
 #include "HttpRequest.h"
 #include "../net/Timer.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
     class Buffer;
 
     class HttpContext {

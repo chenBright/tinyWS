@@ -4,7 +4,7 @@
 
 #include <memory>
 
-using namespace tinyWS;
+using namespace tinyWS_thread;
 
 AtomicInt64 Timer::s_numCreated_;
 

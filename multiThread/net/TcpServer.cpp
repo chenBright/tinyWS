@@ -7,7 +7,7 @@
 #include "InternetAddress.h"
 #include "EventLoop.h"
 
-using namespace tinyWS;
+using namespace tinyWS_thread;
 using namespace std::placeholders;
 
 TcpServer::TcpServer(EventLoop *loop, const InternetAddress &address, const std::string &name)

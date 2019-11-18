@@ -7,7 +7,7 @@
 #include "Channel.h"
 #include "Socket.h"
 
-using namespace tinyWS;
+using namespace tinyWS_thread;
 using namespace std::placeholders;
 
 TcpConnection::TcpConnection(EventLoop *loop,
@@ -159,7 +159,7 @@ bool TcpConnection::disconnected() const {
     return state_ == kDisconnected;
 }
 
-void TcpConnection::setState(tinyWS::TcpConnection::StateE s) {
+void TcpConnection::setState(tinyWS_thread::TcpConnection::StateE s) {
     state_ = s;
 }
 

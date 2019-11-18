@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 
-namespace tinyWS {
+namespace tinyWS_thread {
     class Buffer;
 
     class HttpResponse {

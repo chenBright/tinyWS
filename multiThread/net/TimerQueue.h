@@ -13,7 +13,7 @@
 #include "Channel.h"
 
 
-namespace tinyWS {
+namespace tinyWS_thread {
     class EventLoop;
 
     class TimerQueue : noncopyable {

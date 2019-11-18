@@ -4,7 +4,7 @@
 #include <functional>
 #include <memory>
 
-namespace tinyWS {
+namespace tinyWS_thread {
     class TcpConnection;
 
     // TcpConnection 对象的智能指针类型

@@ -7,7 +7,7 @@
 #include "../base/noncopyable.h"
 #include "Timer.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
     class EventLoop;
 
     // A selectable I/O channel
@@ -148,7 +148,7 @@ namespace tinyWS {
         static const int kWriteEvent;       // 写事件
 
         EventLoop *loop_;                   // 所属事件循环
-        int fd_;                      // 负责的文件描述符
+        int fd_;                            // 负责的文件描述符
         int events_;                        // IO事件，由用户设置。bit pattern
         int revents_;                       // 目前活动事件，由 EventLoop / Epoll 设置。bit pattern
 

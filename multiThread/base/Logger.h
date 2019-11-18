@@ -10,7 +10,7 @@
 #include "MutexLock.h"
 #include "noncopyable.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
     // 参考 https://blog.csdn.net/u014755412/article/details/79334572
 
     // 日志等级

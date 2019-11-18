@@ -13,7 +13,7 @@
 #include "TimerQueue.h"
 #include "TimerId.h"
 
-using namespace tinyWS;
+using namespace tinyWS_thread;
 
 // __thread 关键字可将变量声明为线程局部变量
 __thread EventLoop *t_loopInThisThread = nullptr; // IO 线程
@@ -189,7 +189,7 @@ void EventLoop::removeChannel(Channel *channel) {
     epoll_->removeChannel(channel);
 }
 
-bool EventLoop::hasChannel(tinyWS::Channel *channel) {
+bool EventLoop::hasChannel(tinyWS_thread::Channel *channel) {
     assert(channel->ownerLoop() == this);
     assertInLoopThread();
     return epoll_->hasChannel(channel);

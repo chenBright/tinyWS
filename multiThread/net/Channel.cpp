@@ -7,7 +7,7 @@
 #include "../base/Logger.h"
 #include "EventLoop.h"
 
-using namespace tinyWS;
+using namespace tinyWS_thread;
 
 const int Channel::kNoneEvent = 0;
 const int Channel::kReadEvent = EPOLLIN | EPOLLPRI;
@@ -134,7 +134,7 @@ std::string Channel::eventsToString() const {
     return eventsToString(fd_, events_);
 }
 
-void Channel::handleEventWithGuard(tinyWS::Timer::TimeType receiveTime) {
+void Channel::handleEventWithGuard(tinyWS_thread::Timer::TimeType receiveTime) {
     eventHandling_ = true;
 
     // 位操作的的编译器警告：Use of a signed integer operand with a binary bitwise operator

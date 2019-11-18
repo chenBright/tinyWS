@@ -12,7 +12,7 @@
 #include "CallBack.h"
 #include "../http/HttpContext.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
     class EventLoop;
     class Socket;
     class Channel;

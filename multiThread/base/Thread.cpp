@@ -10,7 +10,7 @@
 
 #include "Logger.h"
 
-using namespace tinyWS;
+using namespace tinyWS_thread;
 
 Thread::Thread(const Thread::ThreadFunction &func, const std::string &name)
     : started_(false),

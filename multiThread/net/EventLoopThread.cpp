@@ -4,7 +4,7 @@
 
 #include "EventLoop.h"
 
-using namespace tinyWS;
+using namespace tinyWS_thread;
 
 EventLoopThread::EventLoopThread(const EventLoopThreadCallback &cb)
     : loop_(nullptr),

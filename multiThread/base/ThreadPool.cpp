@@ -1,13 +1,15 @@
 #include "ThreadPool.h"
 
 #include <cassert>
+#include <cstdio>
 #include <functional>
 #include <algorithm>
 
+#include "Thread.h"
 #include "Logger.h"
 
 using namespace std::placeholders;
-using namespace tinyWS;
+using namespace tinyWS_thread;
 
 ThreadPool::ThreadPool(const std::string &name)
     : mutex_(),

@@ -5,7 +5,7 @@
 #include "HttpResponse.h"
 
 using namespace std::placeholders;
-using namespace tinyWS;
+using namespace tinyWS_thread;
 
 HttpServer::HttpServer(EventLoop *loop,
                        const InternetAddress &listenAddress,

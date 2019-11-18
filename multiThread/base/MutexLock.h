@@ -7,7 +7,7 @@
 #include "Thread.h"
 #include "noncopyable.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
     // 这段代码没有达到工业强度，详见 《Linux多线程服务端编程》P46
     class MutexLock : noncopyable {
     public:

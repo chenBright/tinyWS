@@ -8,7 +8,7 @@
 #include "../base/Condition.h"
 #include "../base/Thread.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
     class EventLoop;
 
     // EventLoopThread 启动自己的线程，

@@ -5,7 +5,7 @@
 
 #include "Timer.h"
 
-namespace tinyWS {
+namespace tinyWS_thread {
     // Timer 对象是非线程安全的，不暴露给用户，
     // 只向用户提供 TdmerId 对象，用于识别定时器（主要用于注销定时器队列中定时器）
     class TimerId {
