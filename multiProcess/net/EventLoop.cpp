@@ -8,8 +8,10 @@
 
 using namespace tinyWS_process;
 
+const int kEpollTimeMs = 10000;
+
 EventLoop::EventLoop()
-    : looping_(false),
+    : running_(false),
       epoll_(make_unique<Epoll>(this)),
       pid_(getpid()){
 
@@ -19,20 +21,40 @@ EventLoop::EventLoop()
 }
 
 void EventLoop::loop() {
-    looping_ = true;
+    running_ = true;
 
     std::cout << "EventLoop " << this << "start looping" << std::endl;
 
-    while (looping_) {
+    while (running_) {
         activeChannels_.clear();
-        auto receiveTime = epoll_->poll(100, &activeChannels_);
+        auto receiveTime = epoll_->poll(kEpollTimeMs, &activeChannels_);
 
         for (auto channel : activeChannels_) {
             channel->handleEvent(receiveTime);
         }
-    }
 
-    looping_ = false;
+        // TODO 处理信号
+    }
+}
+
+void EventLoop::quit() {
+    running_ = false;
+}
+
+TimerId EventLoop::runAt(TimeType time, const Timer::TimerCallback &cb) {
+    return timerQueue_->addTimer(cb, time, 0);
+}
+
+TimerId EventLoop::runAfter(TimeType delay, const Timer::TimerCallback &cb) {
+    return runAt(Timer::now() + delay, cb);
+}
+
+TimerId EventLoop::runEvery(TimeType interval, const Timer::TimerCallback &cb) {
+    return timerQueue_->addTimer(cb, Timer::now(), interval);
+}
+
+void EventLoop::cancel(const TimerId& timerId) {
+    timerQueue_->cancel(timerId);
 }
 
 void EventLoop::updateChannel(Channel *channel) {

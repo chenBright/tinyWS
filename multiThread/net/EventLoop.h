@@ -82,7 +82,7 @@ namespace tinyWS_thread {
          * @param cb 回调函数
          * @return 定时器 id
          */
-        TimerId runAt(Timer::TimeType time, const Timer::TimeCallback &cb);
+        TimerId runAt(Timer::TimeType time, const Timer::TimerCallback &cb);
 
         /**
          * --- 安全线程 ---
@@ -91,7 +91,7 @@ namespace tinyWS_thread {
          * @param cb 回调函数
          * @return 定时器 id
          */
-        TimerId runAfter(Timer::TimeType delay, const Timer::TimeCallback &cb);
+        TimerId runAfter(Timer::TimeType delay, const Timer::TimerCallback &cb);
 
         /**
          * --- 安全线程 ---
@@ -100,7 +100,7 @@ namespace tinyWS_thread {
          * @param cb 回调函数
          * @return 定时器 id
          */
-        TimerId runEvery(Timer::TimeType interval, const Timer::TimeCallback &cb);
+        TimerId runEvery(Timer::TimeType interval, const Timer::TimerCallback &cb);
 
         /**
          * --- 安全线程 ---

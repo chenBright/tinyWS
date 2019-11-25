@@ -8,6 +8,7 @@
 #include <string>
 
 #include "../base/noncopyable.h"
+#include "Timer.h"
 
 namespace tinyWS_process {
     class Channel;
@@ -44,7 +45,7 @@ namespace tinyWS_process {
 
         ~Epoll();
 
-        int64_t poll(int timeoutMS, ChannelList *activeChannels);
+        TimeType poll(int timeoutMS, ChannelList *activeChannels);
 
         void updateChannel(Channel* channel);
 

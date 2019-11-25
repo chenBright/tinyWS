@@ -10,7 +10,7 @@ namespace tinyWS_thread {
     // 只向用户提供 TdmerId 对象，用于识别定时器（主要用于注销定时器队列中定时器）
     class TimerId {
     public:
-        TimerId() : timer_(std::weak_ptr<Timer>()), sequence_(0) {}
+        TimerId() : sequence_(0) {}
         explicit TimerId(const std::weak_ptr<Timer> &timer)
                 : timer_(timer),
                   sequence_(timer.lock() ? timer.lock()->getSequence() : 0) {

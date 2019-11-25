@@ -10,17 +10,22 @@
 #include <vector>
 #include <memory>
 
+#include "Timer.h"
+#include "TimerId.h"
+
 namespace tinyWS_process {
     class Channel;
     class Epoll;
+    class TimerQueue;
 
     class EventLoop {
     private:
         using ChannelList = std::vector<Channel*>;
 
-        bool looping_;
-        std::unique_ptr<Epoll> epoll_;
+        bool running_;
         pid_t pid_;
+        std::unique_ptr<Epoll> epoll_;
+        std::unique_ptr<TimerQueue> timerQueue_;
         ChannelList activeChannels_;
 
     public:
@@ -32,11 +37,13 @@ namespace tinyWS_process {
 
         void quit();
 
-//        void runAt();
-//
-//        void runAfter();
-//
-//        void runEvery();
+        TimerId runAt(TimeType time, const Timer::TimerCallback& cb);
+
+        TimerId runAfter(TimeType delay, const Timer::TimerCallback &cb);
+
+        TimerId runEvery(TimeType interval, const Timer::TimerCallback &cb);
+
+        void cancel(const TimerId& timerId);
 
         void updateChannel(Channel* channel);
 
