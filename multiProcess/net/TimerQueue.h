@@ -6,13 +6,12 @@
 #include <set>
 #include <vector>
 
-#include "Timer.h"
 #include "Channel.h"
-//#include "TimerId.h"
+#include "Timer.h"
 
 namespace tinyWS_process {
 
-    class Eventloop;
+    class EventLoop;
     class TimerId;
 
     class TimerQueue {

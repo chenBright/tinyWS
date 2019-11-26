@@ -4,11 +4,10 @@
 #include <functional>
 
 #include "../base/noncopyable.h"
+#include "type.h"
 #include "../base/Atomic.h"
 
 namespace tinyWS_process {
-
-    using TimeType = int64_t;
 
     class Timer : noncopyable {
     public:
