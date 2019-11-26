@@ -6,6 +6,7 @@
 #include <string>
 
 #include "../base/noncopyable.h"
+#include "TimerQueue.h"
 
 namespace tinyWS_process {
     class EventLoop;

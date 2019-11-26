@@ -12,7 +12,7 @@ namespace tinyWS_thread {
     // 非线程安全，不暴露给用户，只向用户提供 TdmerId 对象，用于识别定时器。
     class Timer : noncopyable {
     public:
-        using TimeCallback = std::function<void()>;                 // 定时器回调函数类型
+        using TimerCallback = std::function<void()>;                 // 定时器回调函数类型
         using TimeType = int64_t;                                   // 时间数据类型
 
         const static TimeType kMicroSecondsPerSecond = 1000 * 1000; // 一秒有 1000 * 1000 微秒
@@ -23,7 +23,7 @@ namespace tinyWS_thread {
          * @param timeout 到期时间
          * @param interval
          */
-        explicit Timer(const TimeCallback &cb, TimeType timeout, TimeType interval = 0);
+        Timer(const TimerCallback &cb, TimeType timeout, TimeType interval = 0);
 
         /**
          * 执行回调函数
@@ -64,7 +64,7 @@ namespace tinyWS_thread {
          * 返回无效时间
          * @return 0
          */
-        Timer::TimeType invaild() const;
+        TimeType invaild() const;
 
         /**
          * 重设定时器到期时间
@@ -85,7 +85,7 @@ namespace tinyWS_thread {
         static int64_t createNum();
 
     private:
-        const TimeCallback timeCallback_;   // 定时器回调函数
+        const TimerCallback timerCallback_;   // 定时器回调函数
         TimeType expiredTime_;              // 到期时间
         const TimeType interval_;           // 执行周期
         const bool repeat_;                 // 是否周期执行

@@ -4,15 +4,13 @@
 
 #include <memory>
 
-using namespace tinyWS_thread;
-
-AtomicInt64 Timer::s_numCreated_;
+using namespace tinyWS_process;
 
 Timer::Timer(const Timer::TimerCallback &cb, TimeType timeout, TimeType interval)
     : timerCallback_(cb),
       expiredTime_(timeout),
       interval_(interval),
-      repeat_(interval > 0),
+      repeat_(interval_ > 0),
       sequence_(s_numCreated_.incrementAndGet()) {
 
 }
@@ -21,7 +19,7 @@ void Timer::run() const {
     timerCallback_();
 }
 
-Timer::TimeType Timer::getExpiredTime() {
+TimeType Timer::getExpiredTime() {
     return expiredTime_;
 }
 
@@ -37,30 +35,27 @@ int64_t Timer::getSequence() const {
     return sequence_;
 }
 
-bool Timer::isVaild() {
+bool Timer::isVaild() const {
     return expiredTime_ >= Timer::now();
 }
 
-Timer::TimeType Timer::invaild() const {
+TimeType Timer::invaild() const {
     return 0;
 }
 
 void Timer::restart(TimeType now) {
     if (repeat_) {
-        // 周期执行，则当前时间 + 周期
         expiredTime_ = now + interval_;
     } else {
-        // 如果不是周期执行，则不能重设定时器到期时间
         expiredTime_ = invaild();
     }
 }
 
-Timer::TimeType Timer::now() {
+TimeType Timer::now() {
     // struct timeval {
     //     time_t       tv_sec;   // seconds since Jan. 1, 1970
     //     suseconds_t  tv_usec;  // and microseconds
     //     };
-//    std::shared_ptr<timeval> tv(new timeval());
     std::shared_ptr<timeval> tv(std::make_shared<timeval>());
 
     // SUSv4 指定 gettimeofday() 函数现已弃用。
@@ -68,9 +63,5 @@ Timer::TimeType Timer::now() {
     // 精度为1纳秒。
     gettimeofday(tv.get(), nullptr);
 
-    return static_cast<int64_t >(tv->tv_sec * Timer::kMicroSecondsPerSecond + tv->tv_usec);
-}
-
-int64_t Timer::createNum() {
-    return s_numCreated_.get();
+    return static_cast<TimeType>(tv->tv_sec * Timer::kMicroSecondsPerSecond + tv->tv_usec);
 }

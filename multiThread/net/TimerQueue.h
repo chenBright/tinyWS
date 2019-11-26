@@ -33,7 +33,7 @@ namespace tinyWS_thread {
          * @param interval 如果为 0，则表示该定时器不是周期定时器。如果不为 0，则该定时器是周期定时器，且 interval 为周期时间。
          * @return 定时器 ID
          */
-        TimerId addTimer(const Timer::TimeCallback &cb, Timer::TimeType timeout, Timer::TimeType interval);
+        TimerId addTimer(const Timer::TimerCallback &cb, Timer::TimeType timeout, Timer::TimeType interval);
 
         /**
          * 注销定时器
@@ -69,7 +69,7 @@ namespace tinyWS_thread {
         // 两个容器保存相同的定时器，只是 timers_ 是按到期时间排序，activeTimers_ 按对象地址排序。
         ActiveTimerSet activeTimers_;
         // 用于防止定时器"自注销"
-        bool callingExpiredTimers_{};                                             // 是否在处理到期定时器
+        bool callingExpiredTimers_;                                             // 是否在处理到期定时器
         ActiveTimerSet cancelingTimers_;                                        // "自注销"定时器集合
 
         /**

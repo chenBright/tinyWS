@@ -78,7 +78,6 @@ TimerQueue::TimerQueue(EventLoop *loop)
     : loop_(loop),
       timerfd_(Timerfd::createTimerfd()),
       timerfdChannel(loop, timerfd_),
-      timers_(),
       callingExpiredTimers_(false) {
 
     // 设置"读"回调函数和可读
@@ -91,7 +90,7 @@ TimerQueue::~TimerQueue() {
     // 直到 EventLoop 析构之前，都不能移除 channel
 }
 
-TimerId TimerQueue::addTimer(const Timer::TimeCallback &cb, Timer::TimeType timeout, Timer::TimeType interval) {
+TimerId TimerQueue::addTimer(const Timer::TimerCallback &cb, Timer::TimeType timeout, Timer::TimeType interval) {
     std::shared_ptr<Timer> timer(new Timer(cb, timeout, interval));
     // 将添加定时器的实际工作转移到 IO 线程，使得不加锁也能保证线程安全性
     loop_->runInLoop(std::bind(&TimerQueue::addTimerInLoop, this, timer));
@@ -163,12 +162,13 @@ void TimerQueue::handleRead() {
 std::vector<TimerQueue::Entry> TimerQueue::getExpired(Timer::TimeType now) {
     assert(timers_.size() == activeTimers_.size());
 
-    std::vector<Entry> expired;
     // UINTPTR_MAX 是 uintptr_t 的最大值，使用最大值，避免冲突
     Entry sentry = std::make_pair(now, std::shared_ptr<Timer>(reinterpret_cast<Timer*>(UINTPTR_MAX)));
     auto it = timers_.lower_bound(sentry); // 找到第一个未到期 Timer 的迭代器
 
-    assert(it == timers_.end() || now < sentry.first);
+    assert(it == timers_.end() || now < it->first);
+
+    std::vector<Entry> expired;
     std::copy(timers_.begin(), it, std::back_inserter(expired));
     timers_.erase(timers_.begin(), it);
 
@@ -177,7 +177,7 @@ std::vector<TimerQueue::Entry> TimerQueue::getExpired(Timer::TimeType now) {
         ActiveTimer timer(activated.second, activated.second->getSequence());
         auto n = activeTimers_.erase(timer);
         assert(n == 1);
-        (void)n;
+        (void)(n);
     }
 
     assert(timers_.size() == activeTimers_.size());
@@ -199,8 +199,8 @@ void TimerQueue::reset(const std::vector<Entry> &expired, Timer::TimeType now) {
     // 更新 timerfd 到期时间
     if (!timers_.empty() ) {
         auto earliestTimer = timers_.begin()->second;
-        auto newExpiredTime = earliestTimer->getExpiredTime();
         if (earliestTimer->isVaild()) {
+            auto newExpiredTime = earliestTimer->getExpiredTime();
             Timerfd::resetTimerfd(timerfd_, newExpiredTime);
         }
     }

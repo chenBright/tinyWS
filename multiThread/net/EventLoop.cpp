@@ -149,15 +149,15 @@ void EventLoop::queueInLoop(const Functor &cb) {
     }
 }
 
-TimerId EventLoop::runAt(Timer::TimeType time, const Timer::TimeCallback &cb) {
+TimerId EventLoop::runAt(Timer::TimeType time, const Timer::TimerCallback &cb) {
     return timerQueue_->addTimer(cb, time, 0);
 }
 
-TimerId EventLoop::runAfter(Timer::TimeType delay, const Timer::TimeCallback &cb) {
+TimerId EventLoop::runAfter(Timer::TimeType delay, const Timer::TimerCallback &cb) {
     return runAt(Timer::now() + delay, cb);
 }
 
-TimerId EventLoop::runEvery(Timer::TimeType interval, const Timer::TimeCallback &cb) {
+TimerId EventLoop::runEvery(Timer::TimeType interval, const Timer::TimerCallback &cb) {
     return timerQueue_->addTimer(cb, Timer::now(), interval);
 }
 
