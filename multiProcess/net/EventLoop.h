@@ -10,6 +10,7 @@
 #include <vector>
 #include <memory>
 
+#include "EventLoop.h"
 #include "Timer.h"
 #include "TimerId.h"
 
