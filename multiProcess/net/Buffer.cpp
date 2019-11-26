@@ -7,14 +7,15 @@
 
 #include <algorithm>
 
-using namespace tinyWS_thread;
+using namespace tinyWS_process;
+
 
 const char Buffer::kCRLF[] = "\r\n";
 
 Buffer::Buffer()
-    : buffer_(kCheapPrepend + kInitialSize),
-      readerIndex_(kCheapPrepend),
-      writerIndex_(kCheapPrepend) {
+        : buffer_(kCheapPrepend + kInitialSize),
+          readerIndex_(kCheapPrepend),
+          writerIndex_(kCheapPrepend) {
     assert(readableBytes() == 0);
     assert(writableBytes() == kInitialSize);
     assert(prependableBytes() == kCheapPrepend);
