@@ -35,11 +35,11 @@ int64_t Timer::getSequence() const {
     return sequence_;
 }
 
-bool Timer::isVaild() const {
+bool Timer::isValid() const {
     return expiredTime_ >= Timer::now();
 }
 
-TimeType Timer::invaild() const {
+TimeType Timer::invalid() const {
     return 0;
 }
 
@@ -47,7 +47,7 @@ void Timer::restart(TimeType now) {
     if (repeat_) {
         expiredTime_ = now + interval_;
     } else {
-        expiredTime_ = invaild();
+        expiredTime_ = invalid();
     }
 }
 

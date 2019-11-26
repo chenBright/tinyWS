@@ -21,9 +21,9 @@ namespace tinyWS_thread {
         /**
          * 构造函数
          * @param loop 所属 EventLoop
-         * @param listenAdress 监听的地址
+         * @param listenAddress 监听的地址
          */
-        Acceptor(EventLoop *loop, const InternetAddress &listenAdress);
+        Acceptor(EventLoop *loop, const InternetAddress &listenAddress);
 
         ~Acceptor();
 

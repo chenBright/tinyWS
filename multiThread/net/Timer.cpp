@@ -37,11 +37,11 @@ int64_t Timer::getSequence() const {
     return sequence_;
 }
 
-bool Timer::isVaild() {
+bool Timer::isValid() {
     return expiredTime_ >= Timer::now();
 }
 
-Timer::TimeType Timer::invaild() const {
+Timer::TimeType Timer::invalid() const {
     return 0;
 }
 
@@ -51,7 +51,7 @@ void Timer::restart(TimeType now) {
         expiredTime_ = now + interval_;
     } else {
         // 如果不是周期执行，则不能重设定时器到期时间
-        expiredTime_ = invaild();
+        expiredTime_ = invalid();
     }
 }
 

@@ -3,9 +3,9 @@
 #include <cstring>
 #include <arpa/inet.h>
 
-#include "../base/Logger.h"
+#include <iostream>
 
-using namespace tinyWS_thread;
+using namespace tinyWS_process;
 
 
 //     // Structure describing an Internet socket address.
@@ -27,22 +27,22 @@ InternetAddress::InternetAddress(uint16_t port) : address_{} {
     address_.sin_port = htobe16(port);
 }
 
-InternetAddress::InternetAddress(const std::string &ip, uint16_t port) : address_{} {
+InternetAddress::InternetAddress(const std::string& ip, uint16_t port) : address_{} {
     address_.sin_family = AF_INET;
     address_.sin_port = htobe16(port);
     if (inet_pton(AF_INET, ip.c_str(), &address_.sin_addr) <= 0) {
-        debug(LogLevel::ERROR)
-            << "InternetAddress::InternetAddress(const std::string &ip, uint16_t port)"
-            << std::endl;
+        std::cout << "InternetAddress::InternetAddress(const std::string &ip, uint16_t port)"
+                  << std::endl;
     }
 }
 
-InternetAddress::InternetAddress(const sockaddr_in &address) : address_(address) {}
+InternetAddress::InternetAddress(const sockaddr_in& address) : address_(address) {}
 
 std::string InternetAddress::toIP() const {
     const int size = 32;
     char buf[size];
     inet_ntop(AF_INET, &address_.sin_addr, buf, static_cast<socklen_t>(size));
+
     return buf;
 }
 
@@ -51,10 +51,11 @@ std::string InternetAddress::toIPPort() const {
     char buf[size];
 
     char host[INET_ADDRSTRLEN] = "INVALID";
-    ::inet_ntop(AF_INET, &address_.sin_addr, host, static_cast<socklen_t>(strlen(host)));
+    inet_ntop(AF_INET, &address_.sin_addr, host, static_cast<socklen_t>(strlen(host)));
 
     uint16_t port = be16toh(address_.sin_port);
     snprintf(buf, size, "%s:%u", host, port);
+
     return buf;
 }
 
@@ -62,7 +63,7 @@ const sockaddr_in& InternetAddress::getSockAddrInternet() const {
     return address_;
 }
 
-void InternetAddress::setSockAddrInternet(const sockaddr_in &address) {
+void InternetAddress::setSockAddrInternet(const sockaddr_in& address) {
     address_ = address;
 }
 
@@ -77,8 +78,8 @@ uint16_t InternetAddress::portNetEnd() const {
 sockaddr_in InternetAddress::getLocalAddress(int sockfd) {
     sockaddr_in localAddress{};
     socklen_t addressLen = sizeof(localAddress);
-    if (::getsockname(sockfd, reinterpret_cast<sockaddr*>(&localAddress), &addressLen) < 0) {
-        debug(LogLevel::ERROR) << "InternetAddress::getLocalAddress" << std::endl;
+    if (getsockname(sockfd, reinterpret_cast<sockaddr*>(&localAddress), &addressLen) < 0) {
+        std::cout << "InternetAddress::getPeerAddress" << std::endl;
     }
 
     return localAddress;
@@ -87,8 +88,8 @@ sockaddr_in InternetAddress::getLocalAddress(int sockfd) {
 sockaddr_in InternetAddress::getPeerAddress(int sockfd) {
     sockaddr_in peerAddress{};
     socklen_t addressLen = sizeof(peerAddress);
-    if (::getpeername(sockfd, reinterpret_cast<sockaddr*>(&peerAddress), &addressLen) < 0) {
-        debug(LogLevel::ERROR) << "InternetAddress::getPeerAddress" << std::endl;
+    if (getpeername(sockfd, reinterpret_cast<sockaddr*>(&peerAddress), &addressLen) < 0) {
+        std::cout << "InternetAddress::getPeerAddress" << std::endl;
     }
 
     return peerAddress;

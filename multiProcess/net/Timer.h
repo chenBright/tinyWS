@@ -37,9 +37,9 @@ namespace tinyWS_process {
 
         int64_t getSequence() const;
 
-        bool isVaild() const;
+        bool isValid() const;
 
-        TimeType invaild() const;
+        TimeType invalid() const;
 
         void restart(TimeType now);
 
