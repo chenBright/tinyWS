@@ -38,7 +38,7 @@ namespace tinyWS_thread {
          * 获取"IP:port"格式的字符串
          * @return "IP:port"格式的字符串
          */
-        std::string toIpPort() const;
+        std::string toIPPort() const;
 
         /**
          * 获取 sockaddr_in 类型的地址信息

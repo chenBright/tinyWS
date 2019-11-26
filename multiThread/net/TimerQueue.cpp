@@ -199,7 +199,7 @@ void TimerQueue::reset(const std::vector<Entry> &expired, Timer::TimeType now) {
     // 更新 timerfd 到期时间
     if (!timers_.empty() ) {
         auto earliestTimer = timers_.begin()->second;
-        if (earliestTimer->isVaild()) {
+        if (earliestTimer->isValid()) {
             auto newExpiredTime = earliestTimer->getExpiredTime();
             Timerfd::resetTimerfd(timerfd_, newExpiredTime);
         }

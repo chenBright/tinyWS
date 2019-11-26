@@ -58,13 +58,13 @@ namespace tinyWS_thread {
          * 是否有效
          * @return true / false
          */
-        bool isVaild();
+        bool isValid();
 
         /**
          * 返回无效时间
          * @return 0
          */
-        TimeType invaild() const;
+        TimeType invalid() const;
 
         /**
          * 重设定时器到期时间
