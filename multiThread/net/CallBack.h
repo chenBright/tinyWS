@@ -6,6 +6,7 @@
 
 namespace tinyWS_thread {
     class TcpConnection;
+    class Buffer;
 
     // TcpConnection 对象的智能指针类型
     using TcpConnectionPtr = std::shared_ptr<TcpConnection>;

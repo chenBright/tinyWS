@@ -1,6 +1,7 @@
 #include "TcpConnection.h"
 
 #include <unistd.h> // read
+#include <cassert>
 
 #include "../base/Logger.h"
 #include "EventLoop.h"
@@ -159,7 +160,7 @@ bool TcpConnection::disconnected() const {
     return state_ == kDisconnected;
 }
 
-void TcpConnection::setState(tinyWS_thread::TcpConnection::StateE s) {
+void TcpConnection::setState(TcpConnection::StateE s) {
     state_ = s;
 }
 

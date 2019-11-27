@@ -237,7 +237,7 @@ void Buffer::hasWritten(size_t len) {
     writerIndex_ += len;
 }
 
-ssize_t Buffer::readFd(int fd, int *savedErrno) {
+ssize_t Buffer::readFd(int fd) {
     // 在 stack 上创建一个临时的缓冲区 extrabuf，这样使得缓冲区足够大，
     // 所以通常一次 readv(2) 调用就能读出全部数据。
     // 这样做的好处：
@@ -257,7 +257,7 @@ ssize_t Buffer::readFd(int fd, int *savedErrno) {
     vec[1].iov_len = sizeof(extrabuf);
     ssize_t n = ::readv(fd, vec, 2);
     if (n < 0) {
-        *savedErrno = errno;
+
     } else if (static_cast<size_t>(n) <= writable) {
         writerIndex_ += n;
     } else {
@@ -267,7 +267,7 @@ ssize_t Buffer::readFd(int fd, int *savedErrno) {
 
         // 如果 n == writable + sizeof(extrabuf)，可能还有数据没读完，就再读一次。
         if (n == writable + sizeof(extrabuf)) {
-            n += readFd(fd, savedErrno);
+            n += readFd(fd);
         }
     }
 
