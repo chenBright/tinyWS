@@ -62,6 +62,7 @@ namespace tinyWS_thread {
         void shutdown();
 
         // TODO moduo 使用 boost::any，因为 muduo 不单单是实现 HTTP 服务器（而且 TcpConnection 也不应该知道 HttpConnection ？）
+        // C++ 17 引入了 any
         void setContext(const HttpContext &context);
         const HttpContext& getContext() const;
         HttpContext* getMutableContext();
@@ -147,7 +148,7 @@ namespace tinyWS_thread {
         // 调用 TcpConnection::connectionDestroyed()，
         // 转而调用 Channel::remove() 来移除 Epoll 中持有的 Channel 指针。
         // 当有事件到来时，IO 线程被唤醒，EventLoop 从 Epoll 中获得 Channel 的指针。
-        // 但 EventLoop 只是短暂持有，在下一事件循环之前，持有的 Channel 指针一杯销毁。
+        // 但 EventLoop 只是短暂持有，在下一事件循环之前，持有的 Channel 指针已被销毁。
         std::unique_ptr<Channel> channel_;
 
         InternetAddress localAddress_;                  // 本地地址对象

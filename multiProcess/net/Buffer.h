@@ -281,7 +281,7 @@ namespace tinyWS_process {
          * @param savedErrno 错误信息
          * @return 读取到的数据的大小
          */
-        ssize_t readFd(int fd, int *savedErrno);
+        ssize_t readFd(int fd);
 
 
 

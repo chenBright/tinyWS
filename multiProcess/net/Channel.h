@@ -6,6 +6,7 @@
 #include <string>
 
 #include "../base/noncopyable.h"
+#include "type.h"
 #include "TimerQueue.h"
 
 namespace tinyWS_process {
@@ -14,7 +15,7 @@ namespace tinyWS_process {
     class Channel : noncopyable {
     public:
         using EventCallback = std::function<void()>;                    // 事件回调函数
-        using ReadEventCallback = std::function<void()>; // 读事件回调函数
+        using ReadEventCallback = std::function<void(TimeType)>; // 读事件回调函数
 
     private:
         static const int kNoneEvent;        // 无事件
