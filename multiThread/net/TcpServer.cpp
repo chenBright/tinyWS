@@ -1,12 +1,16 @@
 #include "TcpServer.h"
 
+#include <cstdio>
+#include <cassert>
+
 #include <functional>
 
 #include "../base/Logger.h"
+#include "EventLoop.h"
 #include "Acceptor.h"
 #include "InternetAddress.h"
-#include "EventLoop.h"
-
+#include "EventLoopThreadPool.h"
+#include "Socket.h"
 using namespace tinyWS_thread;
 using namespace std::placeholders;
 
@@ -15,7 +19,6 @@ TcpServer::TcpServer(EventLoop *loop, const InternetAddress &address, const std:
       name_(name),
       acceptor_(new Acceptor(loop, address)),
       threadPool_(new EventLoopThreadPool(loop)),
-      started_(),
       nextConnectionId_(1) {
 
     acceptor_->setNewConnectionCallback(

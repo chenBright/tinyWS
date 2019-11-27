@@ -9,20 +9,21 @@
 #include "../base/noncopyable.h"
 #include "../base/Atomic.h"
 #include "TcpConnection.h"
-#include "EventLoopThreadPool.h"
 #include "CallBack.h"
 
 namespace tinyWS_thread {
+
     class EventLoop;
     class Acceptor;
     class InternetAddress;
-
+    class EventLoopThreadPool;
+    class Socket;
 
     // TcpServer 的功能：管理 Acceptor 获得的 TcpConnection。
     // TcpServer 是供用户直接使用的，生命周期由用户控制。
     // 用户只需要设置好 callback，再调用 start() 即可。
     //
-    // muduo 尽量让依赖是单向的。
+    // 尽量让依赖是单向的。
     // TcpServer 用到 Acceptor，但 Acceptor 并不知道 TcpServer 的存在。
     // TcpServer 创建 TcpConnection，但 TcpConnection 并不知道 TcpServer 的存在。
     class TcpServer : noncopyable,
@@ -36,8 +37,8 @@ namespace tinyWS_thread {
          * @param address server 的地址对象
          * @param name server 的名字
          */
-        TcpServer(tinyWS_thread::EventLoop *loop,
-                  const tinyWS_thread::InternetAddress &address,
+        TcpServer(EventLoop *loop,
+                  const InternetAddress &address,
                   const std::string &name);
 
         ~TcpServer();
@@ -91,7 +92,7 @@ namespace tinyWS_thread {
         const std::string name_;                            // TcpServer 名字，方便打印日志
         std::unique_ptr<Acceptor> acceptor_;                // Acceptor
         std::unique_ptr<EventLoopThreadPool> threadPool_;   // EventLoop 线程池
-        AtomicInt32 started_;                                      // 是否启动
+        AtomicInt32 started_;                               // 是否启动
         int nextConnectionId_;                              // 下一连接 ID，只会在 IO 线程中操作该值
         ConnectionMap connectionMap_;                       // <连接名，TcpConnection 对象的智能指针>
 
