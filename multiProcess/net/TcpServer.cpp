@@ -42,7 +42,6 @@ void TcpServer::start() {
     acceptor_->listen();
 }
 
-
 void TcpServer::setConnectionCallback(const ConnectionCallback &cb) {
     connectionCallback_ = cb;
 }
