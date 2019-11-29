@@ -9,6 +9,7 @@
 
 #include "EventLoop.h"
 #include "Acceptor.h"
+#include "ProcessPool.h"
 #include "InternetAddress.h"
 #include "../base/utility.h"
 
@@ -21,6 +22,7 @@ TcpServer::TcpServer(EventLoop* loop,
                      : loop_(loop),
                        name_(name),
                        acceptor_(make_unique<Acceptor>(loop, address)),
+                       processPool_(make_unique<ProcessPool>(loop_)),
                        nextConnectionId_(1) {
 
     acceptor_->setNewConnectionCallback(
@@ -39,7 +41,12 @@ EventLoop* TcpServer::getLoop() const {
 }
 
 void TcpServer::start() {
-    acceptor_->listen();
+    if (!started_) {
+        processPool_->start();
+
+        acceptor_->listen();
+        started_ = true;
+    }
 }
 
 void TcpServer::setConnectionCallback(const ConnectionCallback &cb) {
@@ -60,20 +67,22 @@ void TcpServer::newConnection(Socket socket, const InternetAddress& peerAddress)
               << "] - new connection [" << connectionName
               << "] from " << peerAddress.toIPPort() << std::endl;
 
-    InternetAddress localAddress(InternetAddress::getLocalAddress(socket.fd()));
+//    InternetAddress localAddress(InternetAddress::getLocalAddress(socket.fd()));
+//
+//    auto connection = std::make_shared<TcpConnection>(loop_,
+//                                                         connectionName,
+//                                                         std::move(socket),
+//                                                         localAddress,
+//                                                         peerAddress);
+//    connectionMap_[connectionName] = connection;
+//    connection->setTcpNoDelay(true);
+//    connection->setConnectionCallback(connectionCallback_);
+//    connection->setMessageCallback(messageCallback_);
+//    connection->setConnectionCallback(std::bind(&TcpServer::removeConnection, this, _1));
+//
+//    connection->connectionEstablished();
 
-    auto connection = std::make_shared<TcpConnection>(loop_,
-                                                         connectionName,
-                                                         std::move(socket),
-                                                         localAddress,
-                                                         peerAddress);
-    connectionMap_[connectionName] = connection;
-    connection->setTcpNoDelay(true);
-    connection->setConnectionCallback(connectionCallback_);
-    connection->setMessageCallback(messageCallback_);
-    connection->setConnectionCallback(std::bind(&TcpServer::removeConnection, this, _1));
-
-    connection->connectionEstablished();
+    // TODO 将 sockfd 传递给 nextConnectionId_ 号子进程
 }
 
 void TcpServer::removeConnection(const TcpConnectionPtr& connection) {

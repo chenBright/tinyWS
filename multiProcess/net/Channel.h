@@ -39,7 +39,7 @@ namespace tinyWS_process {
 
         ~Channel() = default;
 
-        void handleEvent(int64_t receiveTime);
+        void handleEvent(TimeType receiveTime);
 
         void setReadCallback(const ReadEventCallback& cb);
 

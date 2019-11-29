@@ -7,7 +7,6 @@
 #include <map>
 
 #include "../base/noncopyable.h"
-#include "../base/Atomic.h"
 #include "TcpConnection.h"
 #include "type.h"
 
@@ -15,11 +14,12 @@ namespace tinyWS_process {
 
     class EventLoop;
     class Acceptor;
+    class ProcessPool;
     class InternetAddress;
 
     // TcpServer 的功能：管理 Acceptor 获得的 TcpConnection。
     // TcpServer 是供用户直接使用的，生命周期由用户控制。
-    // 用户只需要设置好 callback，再调用 start() 即可。
+    // 用户只需要设置好 callback，再调用 createProccesses() 即可。
     //
     // 尽量让依赖是单向的。
     // TcpServer 用到 Acceptor，但 Acceptor 并不知道 TcpServer 的存在。
@@ -34,10 +34,10 @@ namespace tinyWS_process {
         EventLoop* loop_;
         const std::string name_;
         std::unique_ptr<Acceptor> acceptor_;
-        // TODO 进程池
+        std::unique_ptr<ProcessPool> processPool_;
 
         int nextConnectionId_;
-        AtomicInt32 started_;
+        bool started_;
         ConnectionMap connectionMap_;
 
 

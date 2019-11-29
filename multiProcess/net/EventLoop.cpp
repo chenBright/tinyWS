@@ -23,7 +23,7 @@ EventLoop::EventLoop()
 void EventLoop::loop() {
     running_ = true;
 
-    std::cout << "EventLoop " << this << "start looping" << std::endl;
+    std::cout << "EventLoop " << this << "createProccesses looping" << std::endl;
 
     while (running_) {
         activeChannels_.clear();
