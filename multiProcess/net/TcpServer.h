@@ -70,9 +70,13 @@ namespace tinyWS_process {
         void setMessageCallback(const MessageCallback &cb);
 
     private:
-        void newConnection(Socket socket, const InternetAddress& peerAddress);
+        void newConnectionInParent(Socket socket, const InternetAddress& peerAddress);
+
+        void newConnectionInChild(EventLoop* loop, Socket socket);
 
         void removeConnection(const TcpConnectionPtr& connection);
+
+        void clearInSubProcess(bool isParent);
     };
 }
 

@@ -3,46 +3,59 @@
 
 #include <string>
 #include <memory>
+#include <functional>
 
 #include "../base/noncopyable.h"
 #include "type.h"
+#include "Socket.h"
 
 namespace tinyWS_process {
 
     class EventLoop;
     class TcpConnection;
+    class Channel;
+    class Socket;
+    class InternetAddress;
 
     class SocketPair : noncopyable {
+    public:
+        using ReceiveFdCallback = std::function<void(int)>;
+        using CloseCallback = std::function<void()>;
+
     private:
         EventLoop* loop_;
         int fds_[2];
         std::unique_ptr<TcpConnection> connection_;
+        std::unique_ptr<Channel> pipeChannel_;
 
         bool isParent_;
+
+        ReceiveFdCallback receiveFdCallback_;
+        CloseCallback closeCallback_;
 
     public:
         SocketPair(EventLoop* loop, int fds[2]);
 
         ~SocketPair();
 
-        void setParentSocket(int port);
+        void setParentSocket();
 
-        void setChildSocket(int port);
+        void setChildSocket();
 
-        void writeToChild(const std::string& data);
+        void sendFdToChild(Socket socket);
 
-        void writeToParent(const std::string& data);
+        void sendFdToParent(Socket socket);
 
-        void setConnectCallback(const ConnectionCallback& cb);
-
-        void setMessageCallback(const MessageCallback& cb);
-
-        void setWriteCompleteCallback(const WriteCompleteCallback& cb);
+        void setReceiveFdCallback(const ReceiveFdCallback& cb);
 
         void setCloseCallback(const CloseCallback& cb);
 
-        void clearSocket();
+    private:
+        void sendFd(Socket socket);
 
+        int receiveFd();
+
+        void handleRead();
     };
 
 }

@@ -8,14 +8,17 @@
 #include <deque>
 #include <string>
 
+#include "Process.h"
+
 namespace tinyWS_process {
 
     class EventLoop;
-    class Process;
     class SocketPair;
+    class Socket;
 
     class ProcessPool {
     public:
+        using ForkCallback = std::function<void(bool)>;
 
     private:
         EventLoop* baseLoop_; // 父进程事件循环
@@ -25,9 +28,13 @@ namespace tinyWS_process {
 
 //        std::string name_;
         bool running_;
+        int next_;
+
+        ForkCallback forkFunction_;
+        Process::ChildConnectionCallback childConnectionCallback_;
 
     public:
-        ProcessPool(EventLoop *loop);
+        explicit ProcessPool(EventLoop *loop);
 
         ~ProcessPool();
 
@@ -35,7 +42,13 @@ namespace tinyWS_process {
 
         void start();
 
-        void writeToChild(int nChild, int fd);
+        void sendToChild(Socket socket);
+
+        void setForkFunction(const ForkCallback& cb);
+
+        void setChildConnectionCallback(const Process::ChildConnectionCallback& cb);
+
+        void newChildConnection(EventLoop* loop, Socket socket);
     };
 }
 
