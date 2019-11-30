@@ -44,7 +44,7 @@ webbench (1.1) unstable; urgency=medium
   * added support for multiple HTTP versions (0.9 -- 1.1)
   * added long options
   * added multiple clients
-  * wait for start of second before test
+  * wait for createProccesses of second before test
   * test time can be specified
   * better error checking when reading reply from server
   * FIX: tests was one second longer than expected

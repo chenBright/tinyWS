@@ -24,7 +24,7 @@ Channel::Channel(EventLoop *loop, int fdArg)
 }
 
 
-void Channel::handleEvent(int64_t receiveTime) {
+void Channel::handleEvent(TimeType receiveTime) {
     if ((revents_ & EPOLLHUP) && !(revents_ & EPOLLIN)) {
         std::cout << "Channel::handleEvent() EPOLLHUP" << std::endl;
         if (closeCallback_) {
@@ -34,7 +34,7 @@ void Channel::handleEvent(int64_t receiveTime) {
 
     if (revents_ & (EPOLLIN | EPOLLRDHUP | EPOLLPRI)) {
         if (readCallback_) {
-            readCallback_();
+            readCallback_(receiveTime);
         }
     }
 

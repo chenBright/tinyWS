@@ -47,7 +47,7 @@ int64_t Epoll::poll(int timeoutMS, ChannelList *activeChannels) {
     }
 }
 
-void Epoll::updateChannel(tinyWS_process::Channel *channel) {
+void Epoll::updateChannel(Channel *channel) {
     std::cout << "Epoll::updateChannel() fd = " << channel->fd()
               << " event = " << channel->getEvents() << std::endl;
 

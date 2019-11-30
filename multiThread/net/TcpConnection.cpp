@@ -122,7 +122,9 @@ void TcpConnection::connectionEstablished() {
     channel_->tie(shared_from_this());
     channel_->enableReading();
 
-    connectionCallback_(shared_from_this());
+    if (connectionCallback_) {
+        connectionCallback_(shared_from_this());
+    }
 }
 
 void TcpConnection::connectionDestroyed() {
@@ -130,8 +132,10 @@ void TcpConnection::connectionDestroyed() {
     if (state_ == kConnected) {
         setState(kDisconnected);
         channel_->disableAll();
-        connectionCallback_(shared_from_this());
-    }
+
+        if (connectionCallback_) {
+            connectionCallback_(shared_from_this());
+        }    }
     // 将 Channel 从 Epoll 中移除
     channel_->remove();
 }
@@ -169,7 +173,9 @@ void TcpConnection::handleRead(Timer::TimeType receiveTime) {
     int savedErrno = 0;
     ssize_t n = inputBuffer_.readFd(socket_->fd(), &savedErrno);
     if (n > 0) {
-        messageCallback_(shared_from_this(), &inputBuffer_, receiveTime);
+        if (messageCallback_) {
+            messageCallback_(shared_from_this(), &inputBuffer_, receiveTime);
+        }
     } else if (n == 0) {
         handleClose();
     } else {

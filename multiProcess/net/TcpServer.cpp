@@ -9,6 +9,7 @@
 
 #include "EventLoop.h"
 #include "Acceptor.h"
+#include "ProcessPool.h"
 #include "InternetAddress.h"
 #include "../base/utility.h"
 
@@ -21,10 +22,13 @@ TcpServer::TcpServer(EventLoop* loop,
                      : loop_(loop),
                        name_(name),
                        acceptor_(make_unique<Acceptor>(loop, address)),
+                       processPool_(make_unique<ProcessPool>(loop_)),
                        nextConnectionId_(1) {
 
     acceptor_->setNewConnectionCallback(
-            std::bind(&TcpServer::newConnection, this, _1, _2));
+            std::bind(&TcpServer::newConnectionInParent, this, _1, _2));
+
+    processPool_->setForkFunction(std::bind(&TcpServer::clearInSubProcess, this, _1));
 }
 
 TcpServer::~TcpServer() {
@@ -39,7 +43,13 @@ EventLoop* TcpServer::getLoop() const {
 }
 
 void TcpServer::start() {
-    acceptor_->listen();
+    if (!started_) {
+
+        processPool_->start();
+
+        acceptor_->listen();
+        started_ = true;
+    }
 }
 
 void TcpServer::setConnectionCallback(const ConnectionCallback &cb) {
@@ -50,23 +60,39 @@ void TcpServer::setMessageCallback(const MessageCallback &cb) {
     messageCallback_ = cb;
 }
 
-void TcpServer::newConnection(Socket socket, const InternetAddress& peerAddress) {
+void TcpServer::newConnectionInParent(Socket socket, const InternetAddress& peerAddress) {
     char buf[32];
     snprintf(buf, sizeof(buf), "%d", nextConnectionId_);
     ++nextConnectionId_;
     std::string connectionName = name_ + buf;
 
-    std::cout << "TcpServer::newConnection [" << name_
+    std::cout << "TcpServer::newConnectionInParent [" << name_
               << "] - new connection [" << connectionName
               << "] from " << peerAddress.toIPPort() << std::endl;
 
-    InternetAddress localAddress(InternetAddress::getLocalAddress(socket.fd()));
+    // 发送新连接的 socket 给子进程
+    processPool_->sendToChild(std::move(socket));
+}
 
-    auto connection = std::make_shared<TcpConnection>(loop_,
-                                                         connectionName,
-                                                         std::move(socket),
-                                                         localAddress,
-                                                         peerAddress);
+void TcpServer::newConnectionInChild(EventLoop* loop, Socket socket) {
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%d", nextConnectionId_);
+    ++nextConnectionId_;
+    std::string connectionName = name_ + " subprocess " + buf;
+
+    InternetAddress localAddress(InternetAddress::getLocalAddress(socket.fd()));
+    InternetAddress peerAddress(InternetAddress::getPeerAddress(socket.fd()));
+
+    std::cout << "TcpServer::newConnectionInParent [" << name_
+              << "] - new connection [" << connectionName
+              << "] from " << peerAddress.toIPPort() << std::endl;
+
+    auto connection = std::make_shared<TcpConnection>(
+            loop,
+            connectionName,
+            std::move(socket),
+            localAddress,
+            peerAddress);
     connectionMap_[connectionName] = connection;
     connection->setTcpNoDelay(true);
     connection->setConnectionCallback(connectionCallback_);
@@ -77,7 +103,7 @@ void TcpServer::newConnection(Socket socket, const InternetAddress& peerAddress)
 }
 
 void TcpServer::removeConnection(const TcpConnectionPtr& connection) {
-        std::cout << "TcpServer::removeConnectionInLoop [" << name_
+        std::cout << "TcpServer::removeConnection [" << name_
                   << "] - connection " << connection->name() << std::endl;
 
         size_t n = connectionMap_.erase(connection->name());
@@ -86,4 +112,17 @@ void TcpServer::removeConnection(const TcpConnectionPtr& connection) {
         (void)(n);
 
         connection->connectionDestroyed();
+}
+
+inline void TcpServer::clearInSubProcess(bool isParent) {
+    if (!isParent) {
+        delete(loop_);
+
+        auto ptr = acceptor_.release();
+        delete(ptr);
+
+        // 设置子进程接受到新连接时的回调函数
+        processPool_->setChildConnectionCallback(
+                std::bind(&TcpServer::newConnectionInChild, this, _1, _2));
+    }
 }
