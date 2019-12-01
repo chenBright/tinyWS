@@ -6,6 +6,8 @@
 
 using namespace tinyWS_process;
 
+AtomicInt64 Timer::s_numCreated_;
+
 Timer::Timer(const Timer::TimerCallback &cb, TimeType timeout, TimeType interval)
     : timerCallback_(cb),
       expiredTime_(timeout),
@@ -64,4 +66,8 @@ TimeType Timer::now() {
     gettimeofday(tv.get(), nullptr);
 
     return static_cast<TimeType>(tv->tv_sec * Timer::kMicroSecondsPerSecond + tv->tv_usec);
+}
+
+int64_t Timer::createNum() {
+    return s_numCreated_.get();
 }

@@ -2,6 +2,7 @@
 
 #include <sys/epoll.h>
 #include <unistd.h>
+#include <cassert>
 
 #include <iostream>
 #include <sstream>
@@ -14,40 +15,38 @@ const int Channel::kNoneEvent = 0;
 const int Channel::kReadEvent = EPOLLIN | EPOLLPRI;
 const int Channel::kWriteEvent = EPOLLOUT;
 
-Channel::Channel(EventLoop *loop, int fdArg)
+Channel::Channel(EventLoop* loop, int fdArg)
     : loop_(loop),
       fd_(fdArg),
       events_(0),
       revents_(0),
-      statusInEpoll_(-1) {
+      statusInEpoll_(-1),
+      eventHandling_(false),
+      addedToLoop_(false),
+      tied_(false) {
 
 }
 
+Channel::~Channel() {
+    // 事件处理期间，不会析构
+    assert(!eventHandling_);
+    assert(!addedToLoop_);
+}
+
+void Channel::tie(const std::shared_ptr<void>& obj) {
+    tie_ = obj;
+    tied_ = true;
+}
 
 void Channel::handleEvent(TimeType receiveTime) {
-    if ((revents_ & EPOLLHUP) && !(revents_ & EPOLLIN)) {
-        std::cout << "Channel::handleEvent() EPOLLHUP" << std::endl;
-        if (closeCallback_) {
-            closeCallback_();
+    std::shared_ptr<void> guard;
+    if (tied_) {
+        guard = tie_.lock();
+        if (guard) {
+            handleEventWithGuard(receiveTime);
         }
-    }
-
-    if (revents_ & (EPOLLIN | EPOLLRDHUP | EPOLLPRI)) {
-        if (readCallback_) {
-            readCallback_(receiveTime);
-        }
-    }
-
-    if (revents_ & EPOLLOUT) {
-        if (writeCallback_) {
-            writeCallback_();
-        }
-    }
-
-    if (revents_ & EPOLLERR) {
-        if (errorCallback_) {
-            errorCallback_();
-        }
+    } else {
+        handleEventWithGuard(receiveTime);
     }
 }
 
@@ -102,10 +101,6 @@ void Channel::disableAll() {
     update();
 }
 
-void Channel::update() {
-    loop_->updateChannel(this);
-}
-
 bool Channel::isWriting() const {
     return static_cast<bool>(events_ & kWriteEvent);
 }
@@ -123,6 +118,8 @@ EventLoop* Channel::ownerLoop() {
 }
 
 void Channel::remove() {
+    assert(isNoneEvent());
+    addedToLoop_ = false;
     loop_->removeChannel(this);
 }
 
@@ -132,6 +129,49 @@ std::string Channel::reventsToString() const {
 
 std::string Channel::eventsToString() const {
     return eventsToString(fd_, events_);
+}
+
+void Channel::handleEventWithGuard(TimeType receiveTime) {
+    eventHandling_ = true;
+
+    if ((revents_ & EPOLLHUP) && !(revents_ & EPOLLIN)) {
+        std::cout << "Channel::handleEvent() EPOLLHUP" << std::endl;
+        if (closeCallback_) {
+            closeCallback_();
+        }
+    }
+
+    // 可读事件
+    if (revents_ & EPOLLIN) {
+        std::cout << "Channel::handleEvent() EPOLLIN" << std::endl;
+    }
+
+    // 异常事件
+    if (revents_ & EPOLLERR) {
+        if (errorCallback_) {
+            errorCallback_();
+        }
+    }
+
+    // 可读事件
+    if (revents_ & (EPOLLIN | EPOLLPRI | EPOLLRDHUP)) {
+        if (readCallback_) {
+            readCallback_(receiveTime);
+        }
+    }
+
+    // 可写事件
+    if (revents_ & EPOLLOUT) {
+        if (writeCallback_) {
+            writeCallback_();
+        }
+    }
+
+    eventHandling_ = false;
+}
+
+void Channel::update() {
+    loop_->updateChannel(this);
 }
 
 std::string Channel::eventsToString(int fd, int event) const {

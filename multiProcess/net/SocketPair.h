@@ -37,10 +37,16 @@ namespace tinyWS_process {
         SocketPair(EventLoop* loop, int fds[2]);
 
         ~SocketPair();
+//
+//        SocketPair(SocketPair&& other) noexcept;
+//
+//        SocketPair& operator=(SocketPair&& other) noexcept;
 
         void setParentSocket();
 
         void setChildSocket();
+
+//        void clear();
 
         void sendFdToChild(Socket socket);
 

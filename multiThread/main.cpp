@@ -4,6 +4,7 @@
 #include <sys/mman.h>   // mmap()、munmap()
 
 #include <functional>
+#include <iostream>
 
 #include "net/EventLoop.h"
 #include "base/Thread.h"
@@ -41,7 +42,7 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-void httpCallback(const HttpRequest &request, HttpResponse &response) {
+void httpCallback(const HttpRequest& request, HttpResponse& response) {
 //    debug() << "httpCallback() " << std::endl;
 //
 //    const std::string &path = request.path();
@@ -83,13 +84,15 @@ void httpCallback(const HttpRequest &request, HttpResponse &response) {
 
     response.setBody("Hello World!"); // for pressure test
 
+//    std::cout << "Hello World!" << std::endl;
+
     response.setStatusCode(HttpResponse::k200OK);
     response.setStatusMessage("OK");
     response.addHeader("server", "tinyWS");
     response.addHeader("User-Agent", request.getHeader("User-Agent"));
 }
 
-void set404NotFound(HttpResponse &response) {
+void set404NotFound(HttpResponse& response) {
     response.setStatusCode(HttpResponse::k404NotFound);
     response.setStatusMessage("Not Found");
     response.setBody("Not Found");

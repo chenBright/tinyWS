@@ -22,9 +22,9 @@ namespace tinyWS_process {
 
     private:
         EventLoop* baseLoop_; // 父进程事件循环
-        std::unique_ptr<Process> process_; // 子进程
-        std::vector<std::unique_ptr<SocketPair>> pipes_;
+        std::vector<std::shared_ptr<SocketPair>> pipes_;
         std::vector<pid_t> pids_;
+        int processNum_;
 
 //        std::string name_;
         bool running_;
@@ -38,7 +38,7 @@ namespace tinyWS_process {
 
         ~ProcessPool();
 
-        void createProccesses(int numProcesses);
+        void setProcessNum(int processNum);
 
         void start();
 

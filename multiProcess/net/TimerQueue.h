@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "Channel.h"
+#include "../base/noncopyable.h"
 #include "Timer.h"
 
 namespace tinyWS_process {
@@ -14,7 +15,7 @@ namespace tinyWS_process {
     class EventLoop;
     class TimerId;
 
-    class TimerQueue {
+    class TimerQueue : noncopyable {
     private:
         using Entry = std::pair<TimeType, std::shared_ptr<Timer>>;
 

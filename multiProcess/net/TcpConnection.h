@@ -10,6 +10,7 @@
 #include "InternetAddress.h"
 #include "Buffer.h"
 #include "type.h"
+#include "../http/HttpContext.h"
 
 namespace tinyWS_process {
     class EventLoop;
@@ -46,11 +47,12 @@ namespace tinyWS_process {
         InternetAddress peerAddress_;
         Buffer inputBuffer_;
         Buffer outputBuffer_;
+        HttpContext context_;                           // 接收到的请求的内容
 
         ConnectionCallback connectionCallback_;         // 连接建立回调函数
         MessageCallback messageCallback_;               // 消息读取成功回调函数
         CloseCallback closeCallback_;                   // 连接断开回调函数
-        WriteCompleteCallback writeCompleteCallback_;   // 写完成回调函数，在 sendInLoop、handleWrite 中调用
+        WriteCompleteCallback writeCompleteCallback_;   // 写完成回调函数，在 send、handleWrite 中调用
 
     public:
         explicit TcpConnection(EventLoop* loop,
@@ -67,7 +69,11 @@ namespace tinyWS_process {
 
         void shutdown();
 
-        // TODO HttpContext
+        // TODO moduo 使用 boost::any，因为 muduo 不单单是实现 HTTP 服务器（而且 TcpConnection 也不应该知道 HttpConnection ？）
+        // C++ 17 引入了 any
+        void setContext(const HttpContext& context);
+        const HttpContext& getContext() const;
+        HttpContext* getMutableContext();
 
         void setTcpNoDelay(bool on);
 
@@ -77,25 +83,25 @@ namespace tinyWS_process {
          * 设置连接建立回调函数
          * @param cb 回调函数
          */
-        void setConnectionCallback(const ConnectionCallback &cb);
+        void setConnectionCallback(const ConnectionCallback& cb);
 
         /**
          * 设置消息读取成功回调函数
          * @param cb 回调函数
          */
-        void setMessageCallback(const MessageCallback &cb);
+        void setMessageCallback(const MessageCallback& cb);
 
         /**
          * 设置连接断开回调函数
          * @param cb 回调函数
          */
-        void setCloseCallback(const CloseCallback &cb);
+        void setCloseCallback(const CloseCallback& cb);
 
         /**
          * 设置写完成回调函数
          * @param cb 回调函数
          */
-        void setWriteCompleteCallback(const WriteCompleteCallback &cb);
+        void setWriteCompleteCallback(const WriteCompleteCallback& cb);
 
         void connectionEstablished();
 

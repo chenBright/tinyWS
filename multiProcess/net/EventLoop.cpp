@@ -2,9 +2,10 @@
 
 #include <iostream>
 
-#include "Epoll.h"
 #include "Channel.h"
-#include "../base/utility.h" // make_unique
+#include "Epoll.h"
+#include "TimerQueue.h"
+#include "TimerId.h"
 
 using namespace tinyWS_process;
 
@@ -12,12 +13,16 @@ const int kEpollTimeMs = 10000;
 
 EventLoop::EventLoop()
     : running_(false),
-      epoll_(make_unique<Epoll>(this)),
+      epoll_(new Epoll(this)),
       pid_(getpid()){
 
     std::cout << "EventLoop created "
             << this << " in process "
             << pid_ << std::endl;
+}
+
+EventLoop::~EventLoop() {
+
 }
 
 void EventLoop::loop() {

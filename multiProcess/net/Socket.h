@@ -1,8 +1,6 @@
 #ifndef TINYWS_SOCKET_H
 #define TINYWS_SOCKET_H
 
-
-
 #include "../base/noncopyable.h"
 
 namespace tinyWS_process {

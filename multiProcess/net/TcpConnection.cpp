@@ -20,9 +20,9 @@ TcpConnection::TcpConnection(EventLoop* loop,
                              const InternetAddress& peerAddress)
                              : loop_(loop),
                                name_(name),
-                               state_(kDisconnected),
-                               socket_(make_unique<Socket>(std::move(socket))),
-                               channel_(make_unique<Channel>(loop, socket_->fd())),
+                               state_(kConnecting),
+                               socket_(new Socket(std::move(socket))),
+                               channel_(new Channel(loop, socket_->fd())),
                                localAddress_(localAddress),
                                peerAddress_(peerAddress) {
     // 设置 Channel 的回调函数
@@ -32,7 +32,7 @@ TcpConnection::TcpConnection(EventLoop* loop,
     channel_->setErrorCallback(std::bind(&TcpConnection::handleError, this));
 
     std::cout << "TcpConnection::ctor[" <<  name_ << "] at " << this
-              << " fd=" << socket_->fd();
+              << " fd=" << socket_->fd() << std::endl;
 
     socket_->setKeepAlive(true);
 }
@@ -59,7 +59,7 @@ void TcpConnection::send(const std::string& message) {
                 // 发送数据出错
                 n = 0;
                 if (errno != EWOULDBLOCK) {
-                    std::cout << "TcpConnection::sendInLoop" << std::endl;
+                    std::cout << "TcpConnection::send" << std::endl;
                 }
             }
 
@@ -88,6 +88,18 @@ void TcpConnection::shutdown() {
     }
 }
 
+void TcpConnection::setContext(const HttpContext& context) {
+    context_ = context;
+}
+
+const HttpContext& TcpConnection::getContext() const {
+    return context_;
+}
+
+HttpContext* TcpConnection::getMutableContext() {
+    return &context_;
+}
+
 
 void TcpConnection::setTcpNoDelay(bool on) {
     socket_->setTcpNoDelay(on);
@@ -97,37 +109,42 @@ void TcpConnection::setKeepAlive(bool on) {
     socket_->setKeepAlive(on);
 }
 
-void TcpConnection::setConnectionCallback(const ConnectionCallback &cb) {
+void TcpConnection::setConnectionCallback(const ConnectionCallback& cb) {
     connectionCallback_ = cb;
 }
 
-void TcpConnection::setMessageCallback(const MessageCallback &cb) {
+void TcpConnection::setMessageCallback(const MessageCallback& cb) {
     messageCallback_ = cb;
 }
 
-void TcpConnection::setCloseCallback(const CloseCallback &cb) {
+void TcpConnection::setCloseCallback(const CloseCallback& cb) {
     closeCallback_ = cb;
 }
 
-void TcpConnection::setWriteCompleteCallback(const WriteCompleteCallback &cb) {
+void TcpConnection::setWriteCompleteCallback(const WriteCompleteCallback& cb) {
     writeCompleteCallback_ = cb;
 }
 
 void TcpConnection::connectionEstablished() {
     assert(state_ == kConnecting);
     setState(kConnected);
-    // TODO 将 TcpConnection 绑定到 channel 上
 
+    channel_->tie(shared_from_this());
     channel_->enableReading();
 
-    connectionCallback_(shared_from_this());
+    if (connectionCallback_) {
+        connectionCallback_(shared_from_this());
+    }
 }
 
 void TcpConnection::connectionDestroyed() {
     if (state_ == kConnected) {
         setState(kDisconnected);
         channel_->disableAll();
-        connectionCallback_(shared_from_this());
+
+        if (connectionCallback_) {
+            connectionCallback_(shared_from_this());
+        }
     }
     // 将 Channel 从 Epoll 中移除
     channel_->remove();
@@ -165,11 +182,13 @@ void TcpConnection::handleRead(TimeType receiveTime) {
     int savedErrno = 0;
     ssize_t n = inputBuffer_.readFd(socket_->fd());
     if (n > 0) {
-        messageCallback_(shared_from_this(), &inputBuffer_, receiveTime);
+        if (messageCallback_) {
+            messageCallback_(shared_from_this(), &inputBuffer_, receiveTime);
+        }
     } else if (n == 0) {
         handleClose();
     } else {
-        std::cout << "TcpConnection::handleRead" << std::endl;
+        std::cout << "TcpConnection::handleError" << std::endl;
         handleError();
     }
 }
@@ -200,7 +219,11 @@ void TcpConnection::handleClose() {
     assert(state_ == kConnected || state_ == kDisconnecting);
     setState(kDisconnected);
     channel_->disableAll();
-    closeCallback_(shared_from_this());
+
+    if (closeCallback_) {
+        // 该回调实际是 TcpServer::removeConnection。
+        closeCallback_(shared_from_this());
+    }
 }
 
 void TcpConnection::handleError() {

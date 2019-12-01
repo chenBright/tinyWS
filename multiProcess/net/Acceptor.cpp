@@ -15,7 +15,7 @@ using namespace tinyWS_process;
 Acceptor::Acceptor(EventLoop* loop, const InternetAddress& listenAddress)
     : loop_(loop),
       acceptSocket_(createNonblocking()),
-      acceptChannel_(loop, acceptSocket_.fd()),
+      acceptChannel_(loop_, acceptSocket_.fd()),
       isListening_(false) {
 
     acceptSocket_.setReuseAddr(true);
@@ -36,6 +36,15 @@ void Acceptor::listen() {
     isListening_ = true;
     acceptSocket_.listen();
     acceptChannel_.enableReading();
+}
+
+void Acceptor::unlisten() {
+    isListening_ = false;
+    acceptChannel_.disableAll();
+}
+
+bool Acceptor::isLIstening() const {
+    return isListening_;
 }
 
 int Acceptor::createNonblocking() {

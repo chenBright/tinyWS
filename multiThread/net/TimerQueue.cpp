@@ -77,12 +77,12 @@ namespace Timerfd {
 TimerQueue::TimerQueue(EventLoop *loop)
     : loop_(loop),
       timerfd_(Timerfd::createTimerfd()),
-      timerfdChannel(loop, timerfd_),
+      timerfdChannel_(loop, timerfd_),
       callingExpiredTimers_(false) {
 
     // 设置"读"回调函数和可读
-    timerfdChannel.setReadCallback(std::bind(&TimerQueue::handleRead, this));
-    timerfdChannel.enableReading();
+    timerfdChannel_.setReadCallback(std::bind(&TimerQueue::handleRead, this));
+    timerfdChannel_.enableReading();
 }
 
 TimerQueue::~TimerQueue() {

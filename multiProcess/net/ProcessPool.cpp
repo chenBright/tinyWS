@@ -19,25 +19,27 @@ using namespace tinyWS_process;
 
 ProcessPool::ProcessPool(EventLoop* loop)
       : baseLoop_(loop),
-        process_(nullptr),
+        processNum_(1),
         running_(false),
         next_(0) {
 
 }
 
 ProcessPool::~ProcessPool() {
-    std::cout << "class ProcessPoll destructor\n";
+    std::cout << "class ProcessPoll destructor" << std::endl;
 }
 
-void ProcessPool::createProccesses(int numProcesses) {
-    assert(numProcesses > 0);
+void ProcessPool::setProcessNum(int processNum) {
+    processNum_ = processNum;
+}
 
-    pipes_.reserve(numProcesses);
-    pids_.reserve(numProcesses);
+void ProcessPool::start() {
+    pipes_.reserve(processNum_);
+    pids_.reserve(processNum_);
 
     running_ = true;
 
-    for (int i = 0; i < numProcesses; ++i) {
+    for (int i = 0; i < processNum_; ++i) {
         int fds[2];
         if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1) {
             std::cout << "[processpool] socketpair error" << std::endl;
@@ -52,13 +54,13 @@ void ProcessPool::createProccesses(int numProcesses) {
 
             forkFunction_(false); // fork 回调函数
 
-            process_ = make_unique<Process>(fds);
-            process_->setAsChild(static_cast<int>(getpid()));
-            process_->setChildConnectionCallback(
+            Process process(fds);
+            process.setAsChild(static_cast<int>(getpid()));
+            process.setChildConnectionCallback(
                     std::bind(&ProcessPool::newChildConnection, this, _1, _2));
             // TODO 信号处理
 
-            start();
+            process.start();
             exit(0);
         } else {
             // 父进程
@@ -69,11 +71,9 @@ void ProcessPool::createProccesses(int numProcesses) {
 
             pids_.push_back(pid);
 
-            auto pipe = make_unique<SocketPair>(baseLoop_, fds);
-            pipes_.push_back(pipe);
-
+            std::unique_ptr<SocketPair> pipe(new SocketPair(baseLoop_, fds));
             pipe->setParentSocket();
-
+            pipes_.push_back(std::move(pipe));
         }
 
         // 父进程
@@ -81,20 +81,9 @@ void ProcessPool::createProccesses(int numProcesses) {
     }
 }
 
-void ProcessPool::start() {
-    if (process_ == nullptr) {
-        // 父进程
-        assert(pids_.size() == pipes_.size());
-        // TODO 信号处理
-    } else {
-        // 子进程
-        process_->start();
-    }
-}
-
 void ProcessPool::sendToChild(Socket socket) {
     pipes_[next_]->sendFdToChild(std::move(socket));
-    ++next_;
+    next_ = (next_ + 1) % processNum_;
 }
 
 void ProcessPool::setForkFunction(const ForkCallback& cb) {

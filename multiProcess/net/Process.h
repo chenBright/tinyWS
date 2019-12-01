@@ -1,8 +1,6 @@
 #ifndef TINYWS_PROCESS_H
 #define TINYWS_PROCESS_H
 
-#include <sched.h>
-
 #include <array>
 #include <string>
 #include <functional>
@@ -29,7 +27,7 @@ namespace tinyWS_process {
         ChildConnectionCallback childConnectionCallback_;
 
     public:
-        Process(int fds[2]);
+        explicit Process(int fds[2]);
 
         ~Process();
 
