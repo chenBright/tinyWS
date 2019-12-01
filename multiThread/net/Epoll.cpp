@@ -25,7 +25,7 @@ Epoll::Epoll(EventLoop *loop)
       events_(kInitEventListSize) {
 
     if (epollfd_ < 0) {
-        debug(LogLevel::ERROR) << "EPollPoller::EPollPoller" << std::endl;
+        debug(LogLevel::ERROR) << "Epoll::Epoll" << std::endl;
     }
 }
 
@@ -151,7 +151,7 @@ void Epoll::update(int operation, Channel *channel) {
     int fd = channel->fd();
     if (epoll_ctl(epollfd_, operation, fd, &event) < 0) {
         debug(LogLevel::ERROR) << "epoll_ctl op=" << operationToString(operation)
-                                     << " fd=" << fd;
+                                     << " fd=" << fd << std::endl;
     }
 }
 

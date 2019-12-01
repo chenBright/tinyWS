@@ -135,7 +135,8 @@ void TcpConnection::connectionDestroyed() {
 
         if (connectionCallback_) {
             connectionCallback_(shared_from_this());
-        }    }
+        }
+    }
     // 将 Channel 从 Epoll 中移除
     channel_->remove();
 }
@@ -180,7 +181,7 @@ void TcpConnection::handleRead(Timer::TimeType receiveTime) {
         handleClose();
     } else {
         errno = savedErrno;
-        debug(LogLevel::ERROR) << "TcpConnection::handleRead" << std::endl;
+        debug(LogLevel::ERROR) << "TcpConnection::handleError" << std::endl;
         handleError();
     }
 }
@@ -227,8 +228,10 @@ void TcpConnection::handleClose() {
     setState(kDisconnected);
     // 不关闭 socket fd，让它（Socket 对象）自己析构，从而我们可以轻松地定位到内存泄漏。
     channel_->disableAll();
-    // 该回调实际是 TcpServer::removeConnection。
-    closeCallback_(shared_from_this());
+    if (closeCallback_) {
+        // 该回调实际是 TcpServer::removeConnection。
+        closeCallback_(shared_from_this());
+    }
 }
 
 void TcpConnection::handleError() {

@@ -12,7 +12,6 @@
 #include "TimerId.h"
 #include "Channel.h"
 
-
 namespace tinyWS_thread {
     class EventLoop;
 
@@ -60,7 +59,7 @@ namespace tinyWS_thread {
         // 2. 可能存在周期处理的定时器；
         // 3. 由于调用函数或者陷入内核需要时间，在此段时间内，也有定时器到期了，尽早处理到期定时器
         const int timerfd_;                                                     // 时间描述符
-        Channel timerfdChannel;                                                 // timerfd Channel
+        Channel timerfdChannel_;                                                // timerfd Channel
         TimerList timers_;                                                      // 定时器集合，定时器根据过期时间升序排序
 
         // 用于 cancel 操作

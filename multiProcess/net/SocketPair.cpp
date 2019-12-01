@@ -24,13 +24,15 @@ SocketPair::SocketPair(EventLoop* loop, int fds[2])
       isParent_(true) {
 
     fds_[0] = fds[0];
-    fds[1] = fds[1];
+    fds_[1] = fds[1];
 
     std::cout << "class SocketPair constructor" << std::endl;
 }
 
 SocketPair::~SocketPair() {
-    assert(nullptr != pipeChannel_);
+    if (nullptr != pipeChannel_) {
+        return;
+    }
 
     std::cout << "class SocketPair destructor" << std::endl;
 
@@ -38,6 +40,44 @@ SocketPair::~SocketPair() {
     pipeChannel_->remove();
     close(pipeChannel_->fd());
 }
+//
+//SocketPair::SocketPair(SocketPair&& other) noexcept {
+//    if (this == &other) {
+//        return;
+//    }
+//
+//    loop_ = other.loop_;
+//    fds_[0] = fds_[0];
+//    fds_[1] = fds_[1];
+//    connection_ = std::move(other.connection_);
+//    pipeChannel_ = std::move(other.pipeChannel_);
+//    isParent_ = other.isParent_;
+//    receiveFdCallback_ = std::move(other.receiveFdCallback_);
+//    closeCallback_ = std::move(other.closeCallback_);
+//
+//    other.fds_[0] = -1;
+//    other.fds_[1] = -1;
+//    pipeChannel_ = nullptr;
+//}
+//
+//SocketPair& SocketPair::operator=(SocketPair&& other) noexcept {
+//    if (this != &other) {
+//        loop_ = other.loop_;
+//        fds_[0] = fds_[0];
+//        fds_[1] = fds_[1];
+//        connection_ = std::move(other.connection_);
+//        pipeChannel_ = std::move(other.pipeChannel_);
+//        isParent_ = other.isParent_;
+//        receiveFdCallback_ = std::move(other.receiveFdCallback_);
+//        closeCallback_ = std::move(other.closeCallback_);
+//
+//        other.fds_[0] = -1;
+//        other.fds_[1] = -1;
+//        pipeChannel_ = nullptr;
+//    }
+//
+//    return *this;
+//}
 
 void SocketPair::setParentSocket() {
     assert(fds_[0] != -1 || fds_[1] != -1);
@@ -48,7 +88,7 @@ void SocketPair::setParentSocket() {
 
     std::cout << "socketpair parent set connection" << std::endl;
     // TODO name
-    pipeChannel_ = make_unique<Channel>(loop_, fds_[0]);
+    pipeChannel_.reset(new Channel(loop_, fds_[0]));
     pipeChannel_->setReadCallback(std::bind(&SocketPair::receiveFd, this));
     pipeChannel_->enableReading();
 }
@@ -62,8 +102,8 @@ void SocketPair::setChildSocket() {
 
     std::cout << "socketpair child set connection" << std::endl;
     // TODO name
-    pipeChannel_ = make_unique<Channel>(loop_, fds_[1]);
-    pipeChannel_->setReadCallback(std::bind(&SocketPair::receiveFd, this));
+    pipeChannel_.reset(new Channel(loop_, fds_[1]));
+    pipeChannel_->setReadCallback(std::bind(&SocketPair::handleRead, this));
     pipeChannel_->enableReading();
 
 }
@@ -71,7 +111,7 @@ void SocketPair::setChildSocket() {
 void SocketPair::sendFdToChild(Socket socket) {
     assert(nullptr != pipeChannel_ || isParent_);
 
-    std::cout << "[parent] send fd: " << socket.fd() << std::endl;
+    std::cout << "[parent] send fd: " << socket.fd() << ", pid = " << getpid() << std::endl;
 
     sendFd(std::move(socket));
 }
@@ -79,7 +119,7 @@ void SocketPair::sendFdToChild(Socket socket) {
 void SocketPair::sendFdToParent(Socket socket) {
     assert(nullptr != pipeChannel_ || !isParent_);
 
-    std::cout << "[child] send fd: " << socket.fd() << std::endl;
+    std::cout << "[child] send fd: " << socket.fd() << ", pid = " << getpid() << std::endl;
 
     sendFd(std::move(socket));
 }
@@ -104,7 +144,7 @@ void SocketPair::sendFd(Socket socket) {
     vec[0].iov_len = 1;
 
     int cmsgsize = CMSG_LEN(sizeof(int));
-    auto cmptr = static_cast<cmsghdr*>(malloc(cmsgsize));
+    auto cmptr = (cmsghdr*)malloc(cmsgsize);
     if (cmptr == nullptr) {
         std::cout << "[send_fd] init cmptr error" << std::endl;
         exit(1);
@@ -135,14 +175,14 @@ int SocketPair::receiveFd() {
     assert(nullptr != pipeChannel_);
 
     int cmsgsize = CMSG_LEN(sizeof(int));
-    auto cmptr = static_cast<cmsghdr*>(malloc(cmsgsize));
+    auto cmptr = (cmsghdr*)malloc(cmsgsize);
 
     char buf[32]; // the max buf in msg is 32
     iovec vec[1];
     vec[0].iov_base = buf;
     vec[0].iov_len = sizeof(buf);
 
-    msghdr msg{};
+    msghdr msg;
     msg.msg_iov = vec;
     msg.msg_iovlen = 1;
     msg.msg_name = nullptr;
@@ -151,14 +191,18 @@ int SocketPair::receiveFd() {
     msg.msg_controllen = cmsgsize;
 
     int result = recvmsg(pipeChannel_->fd(), &msg, 0);
-    free(cmptr);
+
+
     if (result == -1) {
         std::cout << "[send_fd] recvmsg error" << std::endl;
 
         return -1;
     }
 
-    int acceptFd = *reinterpret_cast<int*>(CMSG_DATA(cmptr));
+    int acceptFd = *(int*)CMSG_DATA(cmptr);
+    std::cout << "receive fd: " << acceptFd << ", pid = " << getpid() << std::endl;
+
+//    free(cmptr);
 
     return acceptFd;
 }

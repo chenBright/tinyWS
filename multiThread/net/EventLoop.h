@@ -10,12 +10,12 @@
 #include "../base/noncopyable.h"
 #include "../base/MutexLock.h"
 #include "Timer.h"
-#include "TimerId.h"
 
 namespace tinyWS_thread {
     class Channel;
     class Epoll;
     class TimerQueue;
+    class TimerId;
 
     // IO 线程创建 EventLoop 对象
     // EventLoop 的主要功能是运行事件循环 EventLoop::loop()

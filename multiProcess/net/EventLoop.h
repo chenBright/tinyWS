@@ -1,7 +1,3 @@
-//
-// Created by 陈光明 on 2019/11/17.
-//
-
 #ifndef TINYWS_EVENTLOOP_H
 #define TINYWS_EVENTLOOP_H
 
@@ -10,16 +6,16 @@
 #include <vector>
 #include <memory>
 
-#include "EventLoop.h"
 #include "Timer.h"
-#include "TimerId.h"
+#include "../base/noncopyable.h"
 
 namespace tinyWS_process {
     class Channel;
     class Epoll;
     class TimerQueue;
+    class TimerId;
 
-    class EventLoop {
+    class EventLoop : noncopyable {
     private:
         using ChannelList = std::vector<Channel*>;
 
@@ -32,7 +28,7 @@ namespace tinyWS_process {
     public:
         EventLoop();
 
-        ~EventLoop() = default;
+        ~EventLoop();
 
         void loop();
 

@@ -23,7 +23,7 @@ Epoll::Epoll(EventLoop *loop)
       epollfd_(epoll_create1(EPOLL_CLOEXEC)),
       events_(kInitEventListSize) {
     if (epollfd_ < 0) {
-        std::cout << "EPollPoller::EPollPoller" << std::endl;
+        std::cout << "Epoll::Epoll" << std::endl;
     }
 }
 
@@ -43,7 +43,7 @@ int64_t Epoll::poll(int timeoutMS, ChannelList *activeChannels) {
     } else if (eventNums == 0) {
         std::cout << "nothing happended" << std::endl;
     } else {
-        std::cout << "EPollPoller::poll()" << std::endl;
+        std::cout << "Epoll::poll()" << std::endl;
     }
 }
 
@@ -129,7 +129,7 @@ void Epoll::update(int operation, Channel *channel) {
     int fd = channel->fd();
     if (epoll_ctl(epollfd_, operation, fd, &event) < 0) {
         std::cout << "epoll_ctl op=" << operationToString(operation)
-                  << " fd=" << fd;
+                  << " fd=" << fd << std::endl;
     }
 }
 

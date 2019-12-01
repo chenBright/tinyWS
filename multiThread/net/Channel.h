@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <memory>
+#include <string>
 
 #include "../base/noncopyable.h"
 #include "Timer.h"

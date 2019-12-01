@@ -39,6 +39,10 @@ int Socket::fd() const {
     return sockfd_;
 }
 
+void Socket::setNoneFd() {
+    sockfd_ = -1;
+}
+
 inline bool Socket::isValid() const {
     return sockfd_ >= 0;
 }
@@ -48,6 +52,12 @@ void Socket::bindAddress(const InternetAddress& localAddress) {
     int result = ::bind(sockfd_, reinterpret_cast<sockaddr*>(&address), sizeof(address));
     if (result < 0) {
         std::cout << "Socket::bindAddress" << std::endl;
+    }
+}
+
+void Socket::listen() {
+    if (::listen(sockfd_, 128) < 0) {
+        std::cout << "Socket::listen" << std::endl;
     }
 }
 
@@ -110,6 +120,11 @@ void Socket::setTcpNoDelay(bool on) {
 void Socket::setReuseAddr(bool on) {
     int opt = on ? 1 : 0;
     setsockopt(sockfd_, IPPROTO_TCP, SO_REUSEADDR, &opt, sizeof(opt));
+}
+
+void Socket::setKeepAlive(bool on) {
+    int opt = on ? 1 : 0;
+    setsockopt(sockfd_, SOL_SOCKET, SO_KEEPALIVE, &opt, sizeof(opt));
 }
 
 int Socket::getSocketError() {

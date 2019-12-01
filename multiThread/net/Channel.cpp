@@ -1,6 +1,8 @@
 #include "Channel.h"
 
 #include <sys/epoll.h>
+#include <unistd.h>
+#include <cassert>
 
 #include <sstream>
 
@@ -134,7 +136,7 @@ std::string Channel::eventsToString() const {
     return eventsToString(fd_, events_);
 }
 
-void Channel::handleEventWithGuard(tinyWS_thread::Timer::TimeType receiveTime) {
+void Channel::handleEventWithGuard(Timer::TimeType receiveTime) {
     eventHandling_ = true;
 
     // 位操作的的编译器警告：Use of a signed integer operand with a binary bitwise operator

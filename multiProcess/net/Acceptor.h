@@ -32,9 +32,11 @@ namespace tinyWS_process {
 
         void setNewConnectionCallback(const NewConnectionCallback& cb);
 
-        bool isLIstening() const;
-
         void listen();
+
+        void unlisten();
+
+        bool isLIstening() const;
 
         static int createNonblocking();
 

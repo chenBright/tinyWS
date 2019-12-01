@@ -53,9 +53,10 @@ namespace tinyWS_process {
         ~TcpServer();
 
         EventLoop* getLoop() const;
+        
+        void setProcessNum(int processNum);
 
         void start();
-
 
         /**
          * 设置连接建立的回调函数
