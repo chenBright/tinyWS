@@ -48,10 +48,12 @@ void TcpServer::setProcessNum(int processNum) {
 
 void TcpServer::start() {
     if (!started_) {
-        processPool_->start();
-
-        acceptor_->listen();
         started_ = true;
+        acceptor_->listen();
+        // 一定要在 ProcessPool 之前 listen()。
+        // 否则，将无法 listen 端口。
+        // 因为程序会一直处在事件循环中，知道程序结束。
+        processPool_->start();
     }
 }
 
@@ -139,6 +141,9 @@ void TcpServer::removeConnection(const TcpConnectionPtr& connection) {
 
 inline void TcpServer::clearInSubProcess(bool isParent) {
     if (!isParent) {
+        // 将子进程中多余的资源释放了。
+        acceptor_->~Acceptor();
+        loop_->~EventLoop();
         // 设置子进程接受到新连接时的回调函数
         processPool_->setChildConnectionCallback(
                 std::bind(&TcpServer::newConnectionInChild, this, _1, _2));
