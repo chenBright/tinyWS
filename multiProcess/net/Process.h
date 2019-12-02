@@ -7,6 +7,7 @@
 
 #include "../base/noncopyable.h"
 #include "SocketPair.h"
+#include "../base/Signal.h"
 
 namespace tinyWS_process {
 
@@ -23,6 +24,7 @@ namespace tinyWS_process {
         bool running_;
         pid_t pid_;
         SocketPair pipe_;
+        SignalManager signalManager_;
 
         ChildConnectionCallback childConnectionCallback_;
 
@@ -37,9 +39,7 @@ namespace tinyWS_process {
 
         void setAsChild(int port);
 
-// TODO 信号处理
-
-//        int wait();
+        void setSignalHandlers();
 
         void setChildConnectionCallback(const ChildConnectionCallback& cb);
 
@@ -47,6 +47,8 @@ namespace tinyWS_process {
 
     private:
         void newConnection(int sockfd);
+
+        static void childSignalHandler(int signo);
     };
 }
 

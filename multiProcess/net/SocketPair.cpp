@@ -154,7 +154,7 @@ void SocketPair::sendFd(Socket socket) {
     cmptr->cmsg_type = SCM_RIGHTS;
     cmptr->cmsg_len = cmsgsize;
 
-    msghdr msg;
+    msghdr msg{};
     msg.msg_iov = vec;
     msg.msg_iovlen = 1;
     msg.msg_name = nullptr;
@@ -182,7 +182,7 @@ int SocketPair::receiveFd() {
     vec[0].iov_base = buf;
     vec[0].iov_len = sizeof(buf);
 
-    msghdr msg;
+    msghdr msg{};
     msg.msg_iov = vec;
     msg.msg_iovlen = 1;
     msg.msg_name = nullptr;

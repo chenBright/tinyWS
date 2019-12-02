@@ -9,6 +9,7 @@
 #include <string>
 
 #include "Process.h"
+#include "../base/Signal.h"
 
 namespace tinyWS_process {
 
@@ -30,6 +31,8 @@ namespace tinyWS_process {
         bool running_;
         int next_;
 
+        SignalManager signalManager_;
+
         ForkCallback forkFunction_;
         Process::ChildConnectionCallback childConnectionCallback_;
 
@@ -42,13 +45,28 @@ namespace tinyWS_process {
 
         void start();
 
+        void killAll();
+
+        void killSoftly();
+
         void sendToChild(Socket socket);
 
         void setForkFunction(const ForkCallback& cb);
 
+        void setSignalHandlers();
+
         void setChildConnectionCallback(const Process::ChildConnectionCallback& cb);
 
         void newChildConnection(EventLoop* loop, Socket socket);
+
+    private:
+        void parentStart();
+
+        void clearDeadChild();
+
+        void destroyProcess(pid_t pid);
+
+        static void parentSignalHandler(int signo);
     };
 }
 

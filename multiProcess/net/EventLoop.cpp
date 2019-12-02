@@ -6,6 +6,10 @@
 #include "Epoll.h"
 #include "TimerQueue.h"
 #include "TimerId.h"
+#include "status.h"
+extern int tinyWS_process::status_quit_softly; //QUIT
+extern int tinyWS_process::status_terminate;   //TERM,INT
+extern int tinyWS_process::status_child_quit;  //CHLD
 
 using namespace tinyWS_process;
 
@@ -17,8 +21,8 @@ EventLoop::EventLoop()
       pid_(getpid()){
 
     std::cout << "EventLoop created "
-            << this << " in process "
-            << pid_ << std::endl;
+              << this << " in process "
+              << pid_ << std::endl;
 }
 
 EventLoop::~EventLoop() {
@@ -38,7 +42,11 @@ void EventLoop::loop() {
             channel->handleEvent(receiveTime);
         }
 
-        // TODO 处理信号
+        // stop this loop if get signal SIGINT SIGTERM SIGKILL SIGQUIT SIGCHLD(parent process)
+        if (status_quit_softly == 1 || status_terminate == 1 || status_child_quit == 1) {
+            std::cout << "process(" << getpid() << ") quit this eventloop" << std::endl;
+            running_ = false;
+        }
     }
 }
 

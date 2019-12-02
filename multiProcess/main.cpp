@@ -36,7 +36,6 @@ int main(int argc, char* argv[]) {
     // 在 server::start() 函数调用之前，必须配置好跟子进程相关的设置。
     // 因为直到程序结束，子进程都不会从 start() 函数返回。
     server.start();
-    loop.loop();
 
     return 0;
 }
