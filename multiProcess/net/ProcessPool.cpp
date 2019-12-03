@@ -183,13 +183,14 @@ void ProcessPool::clearDeadChild() {
         // https://typecodes.com/cseries/kill0checkprocessifexist.html
         int isAlive = ::kill(*it, 0);
         if (isAlive == -1) {
+            std::cout << "[parent]:clear subprocess " << *it << std::endl;
             pipes_.erase(pipes_.begin() + (it - pids_.begin()));
             it = pids_.erase(it);
         } else {
             ++it;
         }
-        assert(pipes_.size() == pids_.size());
     }
+    assert(pipes_.size() == pids_.size());
 }
 
 void ProcessPool::destroyProcess(pid_t pid) {

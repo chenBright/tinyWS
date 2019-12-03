@@ -142,7 +142,8 @@ void TcpServer::removeConnection(const TcpConnectionPtr& connection) {
 inline void TcpServer::clearInSubProcess(bool isParent) {
     if (!isParent) {
         // 将子进程中多余的资源释放了。
-        acceptor_->~Acceptor();
+        // FIXME 如果析构了 acceptor_，会导致父进程无法接受到请求。暂时找不到原因。
+//        acceptor_->~Acceptor();
         loop_->~EventLoop();
         // 设置子进程接受到新连接时的回调函数
         processPool_->setChildConnectionCallback(

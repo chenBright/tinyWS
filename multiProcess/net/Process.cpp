@@ -14,11 +14,6 @@
 #include "Socket.h"
 #include "InternetAddress.h"
 #include "status.h"
-extern int tinyWS_process::status_quit_softly; //QUIT
-extern int tinyWS_process::status_terminate;   //TERM,INT
-extern int tinyWS_process::status_exiting;
-extern int tinyWS_process::status_reconfigure; //HUP,reboot
-extern int tinyWS_process::status_child_quit;  //CHLD
 
 using namespace tinyWS_process;
 using namespace std::placeholders;
