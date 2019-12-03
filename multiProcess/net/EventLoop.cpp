@@ -7,9 +7,6 @@
 #include "TimerQueue.h"
 #include "TimerId.h"
 #include "status.h"
-extern int tinyWS_process::status_quit_softly; //QUIT
-extern int tinyWS_process::status_terminate;   //TERM,INT
-extern int tinyWS_process::status_child_quit;  //CHLD
 
 using namespace tinyWS_process;
 
