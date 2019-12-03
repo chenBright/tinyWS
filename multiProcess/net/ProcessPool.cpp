@@ -40,54 +40,14 @@ void ProcessPool::setProcessNum(int processNum) {
 }
 
 void ProcessPool::start() {
-    pipes_.reserve(processNum_);
-    pids_.reserve(processNum_);
-
     running_ = true;
 
-    for (int i = 0; i < processNum_; ++i) {
-        int fds[2];
-        if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1) {
-            std::cout << "[processpool] socketpair error" << std::endl;
-        }
 
-        pid_t pid = fork();
-
-        if (pid < 0) {
-            std::cout  << "[processpool] fork error" << std::endl;
-        } else if (pid == 0) {
-            // 子进程
-
-            forkFunction_(false); // fork 回调函数
-
-            Process process(fds);
-            process.setAsChild(static_cast<int>(getpid()));
-            process.setChildConnectionCallback(
-                    std::bind(&ProcessPool::newChildConnection, this, _1, _2));
-            process.setSignalHandlers(); // 信号处理
-            process.start();
-            exit(0);
-        } else {
-            // 父进程
-
-            forkFunction_(true); // fork 回调函数
-
-            std::cout << "[processpool] create process(" << pid << ")" << std::endl;
-
-            pids_.push_back(pid);
-
-            std::unique_ptr<SocketPair> pipe(new SocketPair(baseLoop_, fds));
-            pipe->setParentSocket();
-            pipes_.push_back(std::move(pipe));
-            setSignalHandlers();
-        }
-
-        // 父进程
-        assert(pids_.size() == pipes_.size());
-    }
+    pipes_.reserve(processNum_);
+    pids_.reserve(processNum_);
+    createChildAndSetParent(processNum_);
 
     parentStart();
-
 }
 
 void ProcessPool::killAll() {
@@ -150,25 +110,84 @@ void ProcessPool::newChildConnection(EventLoop* loop, Socket socket) {
     }
 }
 
+void ProcessPool::createChildAndSetParent(int processNum) {
+    for (int i = 0; i < processNum; ++i) {
+        int fds[2];
+        if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1) {
+            std::cout << "[processpool] socketpair error" << std::endl;
+        }
+
+        // 子进程创建后，一直在函数里运行，知道进程结束。
+        pid_t pid = createChildProcess(fds);
+
+        // 父进程
+        addChildInfoToParent(pid, fds);
+    }
+}
+
+pid_t ProcessPool::createChildProcess(int fds[2]) {
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        std::cout  << "[processpool] fork error" << std::endl;
+    } else if (pid > 0) {
+        // 父进程
+
+        forkFunction_(true); // fork 回调函数
+
+        std::cout << "[processpool] create process(" << pid << ")" << std::endl;
+
+        return pid;
+    }
+
+    // 子进程
+
+    forkFunction_(false); // fork 回调函数
+
+    Process process(fds);
+    process.setAsChild(static_cast<int>(getpid()));
+    process.setChildConnectionCallback(
+            std::bind(&ProcessPool::newChildConnection, this, _1, _2));
+    process.setSignalHandlers(); // 信号处理
+    process.start();
+    exit(0);
+}
+
+void ProcessPool::addChildInfoToParent(pid_t childPid, int fds[2]) {
+    pids_.push_back(childPid);
+
+    std::unique_ptr<SocketPair> pipe(new SocketPair(baseLoop_, fds));
+    pipe->setParentSocket();
+    pipes_.push_back(std::move(pipe));
+    setSignalHandlers();
+
+    assert(pids_.size() == pipes_.size());
+}
+
+
 void ProcessPool::parentStart() {
-    int status = 1;
-    while (status) {
+    while (running_) {
         baseLoop_->loop();
         if (status_terminate || status_quit_softly) {
             std::cout << "[parent]:(term/stop)I will kill all chilern" << std::endl;
             killAll();
-            status = 0;
+            running_ = false;
             return;
         }
         if (status_restart || status_reconfigure) {
             std::cout << "[parent]:(restart/reload)quit and restart parent process's eventloop" << std::endl;
             status_restart = status_reconfigure = 0;
-            // TODO
+
+            // 只是单纯地重启父进程的 EVentLoop
         }
         if (status_child_quit) {
             clearDeadChild();
             status_child_quit = 0;
             assert(pipes_.size() == pids_.size());
+
+            // 创建新的子进程，使得子进程数等于 processNum_
+            int numToCreating = processNum_ - static_cast<int>(pids_.size());
+            createChildAndSetParent(numToCreating);
         }
     }
 }
@@ -190,14 +209,8 @@ void ProcessPool::clearDeadChild() {
             ++it;
         }
     }
-    assert(pipes_.size() == pids_.size());
-}
 
-void ProcessPool::destroyProcess(pid_t pid) {
-    auto it = std::find(pids_.begin(), pids_.end(), pid);
-    pipes_.erase(pipes_.begin() + (it - pids_.begin()));
-    pids_.erase(it);
-    --processNum_;
+    assert(pipes_.size() == pids_.size());
 }
 
 void ProcessPool::parentSignalHandler(int signo) {

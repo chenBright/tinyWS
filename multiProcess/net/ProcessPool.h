@@ -60,11 +60,15 @@ namespace tinyWS_process {
         void newChildConnection(EventLoop* loop, Socket socket);
 
     private:
+        void createChildAndSetParent(int processNum);
+
+        pid_t createChildProcess(int fds[2]);
+
+        void addChildInfoToParent(pid_t childPid, int fds[2]);
+
         void parentStart();
 
         void clearDeadChild();
-
-        void destroyProcess(pid_t pid);
 
         static void parentSignalHandler(int signo);
     };
