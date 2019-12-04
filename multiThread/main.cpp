@@ -25,12 +25,16 @@ int main(int argc, char* argv[]) {
 //     debug() << "pid = " << ::getpid() << ", tid = " << Thread::gettid() << std::endl;
 
     int threadNums = 0;
+    int port = 19123;
     if (argc > 1) {
         threadNums = ::atoi(argv[1]);
     }
+    if (argc > 2) {
+        port = ::atoi(argv[2]);
+    }
 
     EventLoop loop;
-    InternetAddress listenAddress(12315);
+    InternetAddress listenAddress(port);
 //    InternetAddress listenAddress(std::string("127.0.0.1"),8888); // for pressure test
     HttpServer server(&loop, listenAddress, "tinyWS");
 
