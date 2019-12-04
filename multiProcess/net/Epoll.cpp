@@ -31,7 +31,7 @@ Epoll::~Epoll() {
     close(epollfd_);
 }
 
-int64_t Epoll::poll(int timeoutMS, ChannelList *activeChannels) {
+int64_t Epoll::poll(int timeoutMS, ChannelList* activeChannels) {
     int eventNums = epoll_wait(epollfd_, events_.data(),
             static_cast<int>(events_.size()), timeoutMS);
 
