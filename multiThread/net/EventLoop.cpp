@@ -40,9 +40,9 @@ EventLoop::EventLoop()
       wakeupFd_(createEventfd()),
       wakeupChannel_(new Channel(this, wakeupFd_)) {
 
-//    debug() << "EventLoop created "
-//            << this << " in thread "
-//            << threadId_ << std::endl;
+    debug() << "EventLoop created "
+            << this << " in thread "
+            << threadId_ << std::endl;
 
     if (t_loopInThisThread) { // 已创建 EventLoop
         debug(LogLevel::TRACE) << "Another EventLoop " << t_loopInThisThread

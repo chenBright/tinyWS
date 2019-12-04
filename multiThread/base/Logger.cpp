@@ -39,8 +39,8 @@ BaseLogger::LogStream BaseLogger::operator()(LogLevel level) {
 
 const tm* BaseLogger::getLocalTime() {
     auto now = std::chrono::system_clock::now();
-    auto tmie = std::chrono::system_clock::to_time_t(now);
-    localtime_r(reinterpret_cast<const time_t *>(&time), &localtime_);
+    auto in_time_t = std::chrono::system_clock::to_time_t(now);
+    localtime_r(reinterpret_cast<const time_t *>(&in_time_t), &localtime_);
 
     return &localtime_;
 }
