@@ -71,6 +71,7 @@ void ProcessPool::killSoftly() {
 
 void ProcessPool::sendToChild(Socket socket) {
     pipes_[next_]->sendFdToChild(std::move(socket));
+    std::cout << "Process id: " << next_ << std::endl;
     next_ = (next_ + 1) % processNum_;
 }
 
@@ -108,7 +109,7 @@ void ProcessPool::newChildConnection(EventLoop* loop, Socket socket) {
 void ProcessPool::createChildAndSetParent(int processNum) {
     for (int i = 0; i < processNum; ++i) {
         int fds[2];
-        if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1) {
+        if (::socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1) {
             std::cout << "[processpool] socketpair error" << std::endl;
         }
 
@@ -163,7 +164,7 @@ void ProcessPool::addChildInfoToParent(pid_t childPid, int fds[2]) {
 void ProcessPool::parentStart() {
     while (running_) {
         baseLoop_->loop();
-        if (status_terminate || status_quit_softly) {
+        if (status_terminate || status_quit_softly || status_child_quit) {
             std::cout << "[parent]:(term/stop)I will kill all chilern" << std::endl;
             killAll();
             running_ = false;
@@ -175,15 +176,17 @@ void ProcessPool::parentStart() {
 
             // 只是单纯地重启父进程的 EVentLoop
         }
-        if (status_child_quit) {
-            clearDeadChild();
-            status_child_quit = 0;
-            assert(pipes_.size() == pids_.size());
 
-            // 创建新的子进程，使得子进程数等于 processNum_
-            int numToCreating = processNum_ - static_cast<int>(pids_.size());
-            createChildAndSetParent(numToCreating);
-        }
+//        TODO 创建新进程，并重启 EventLoop
+//        if (status_child_quit) {
+//            clearDeadChild();
+//            status_child_quit = 0;
+//            assert(pipes_.size() == pids_.size());
+//
+//            // 创建新的子进程，使得子进程数等于 processNum_
+//            int numToCreating = processNum_ - static_cast<int>(pids_.size());
+//            createChildAndSetParent(numToCreating);
+//        }
     }
 }
 

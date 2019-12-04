@@ -45,7 +45,7 @@ namespace tinyWS_process {
 
         ~Epoll();
 
-        TimeType poll(int timeoutMS, ChannelList *activeChannels);
+        TimeType poll(int timeoutMS, ChannelList* activeChannels);
 
         void updateChannel(Channel* channel);
 
