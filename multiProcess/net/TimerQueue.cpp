@@ -146,7 +146,7 @@ void TimerQueue::handleRead() {
 std::vector<TimerQueue::Entry> TimerQueue::getExpired(TimeType now) {
     assert(timers_.size() == activeTimers_.size());
 
-    // UINTPTR_MAX 是 uintptr_t 的最大值，使用最大值，避免冲突
+    // UINTPTR_MAX 是 uintptr_t 的最大值，使用最大值，避免冲突 
     Entry sentry = std::make_pair(now, std::shared_ptr<Timer>(reinterpret_cast<Timer*>(UINTPTR_MAX)));
     auto it = timers_.lower_bound(sentry); // 找到第一个未到期 Timer 的迭代器
     assert(it ==timers_.end() || now < it->first);
