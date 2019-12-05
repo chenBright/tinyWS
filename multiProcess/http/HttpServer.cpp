@@ -5,14 +5,13 @@
 #include "HttpContext.h"
 #include "HttpRequest.h"
 #include "HttpResponse.h"
+#include "../net/TimerId.h"
 
 using namespace std::placeholders;
 using namespace tinyWS_process;
 
-HttpServer::HttpServer(EventLoop* loop,
-                       const InternetAddress& listenAddress,
-                       const std::string& name)
-        : tcpServer_(loop, listenAddress, name),
+HttpServer::HttpServer(const InternetAddress& listenAddress, const std::string& name)
+        : tcpServer_(listenAddress, name),
           httpCallback_() {
     tcpServer_.setConnectionCallback(
             std::bind(&HttpServer::onConnection, this, _1));
@@ -40,6 +39,18 @@ void HttpServer::onConnection(const TcpConnectionPtr& connection) {
     if (connection->connected()) {
         connection->setContext(HttpContext());
     }
+}
+
+TimerId HttpServer::runAt(TimeType runTime, const Timer::TimerCallback& cb) {
+    return tcpServer_.runAt(runTime, cb);
+}
+
+TimerId HttpServer::runAfter(TimeType delay, const Timer::TimerCallback& cb) {
+    return tcpServer_.runAfter(delay, cb);
+}
+
+TimerId HttpServer::runEvery(TimeType interval, const Timer::TimerCallback& cb) {
+    return tcpServer_.runEvery(interval, cb);
 }
 
 void HttpServer::onMessage(const TcpConnectionPtr& connection, Buffer* buffer,

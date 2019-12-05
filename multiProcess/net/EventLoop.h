@@ -34,11 +34,11 @@ namespace tinyWS_process {
 
         void quit();
 
-        TimerId runAt(TimeType time, const Timer::TimerCallback& cb);
+        TimerId runAt(TimeType runTime, const Timer::TimerCallback& cb);
 
-        TimerId runAfter(TimeType delay, const Timer::TimerCallback &cb);
+        TimerId runAfter(TimeType delay, const Timer::TimerCallback& cb);
 
-        TimerId runEvery(TimeType interval, const Timer::TimerCallback &cb);
+        TimerId runEvery(TimeType interval, const Timer::TimerCallback& cb);
 
         void cancel(const TimerId& timerId);
 

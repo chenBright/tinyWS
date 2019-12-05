@@ -8,6 +8,7 @@
 
 #include "../base/noncopyable.h"
 #include "TcpConnection.h"
+#include "Timer.h"
 #include "type.h"
 
 namespace tinyWS_process {
@@ -16,6 +17,7 @@ namespace tinyWS_process {
     class Acceptor;
     class ProcessPool;
     class InternetAddress;
+    class TimerId;
 
     // TcpServer 的功能：管理 Acceptor 获得的 TcpConnection。
     // TcpServer 是供用户直接使用的，生命周期由用户控制。
@@ -46,9 +48,7 @@ namespace tinyWS_process {
         ProcessInitCallback threadInitCallback_;             // 线程初始化的回调函数
 
     public:
-        TcpServer(EventLoop* loop,
-                  const InternetAddress& address,
-                  const std::string& name);
+        TcpServer(const InternetAddress &address, const std::string &name);
 
         ~TcpServer();
 
@@ -69,6 +69,12 @@ namespace tinyWS_process {
          * @param cb 回调函数
          */
         void setMessageCallback(const MessageCallback &cb);
+
+        TimerId runAt(TimeType runTime, const Timer::TimerCallback& cb);
+
+        TimerId runAfter(TimeType delay, const Timer::TimerCallback& cb);
+
+        TimerId runEvery(TimeType interval, const Timer::TimerCallback& cb);
 
     private:
         void newConnectionInParent(Socket socket, const InternetAddress& peerAddress);
