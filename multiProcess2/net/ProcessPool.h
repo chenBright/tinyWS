@@ -39,6 +39,8 @@ namespace tinyWS_process {
     public:
         explicit ProcessPool(EventLoop* loop);
 
+        explicit ProcessPool(int processNum);
+
         ~ProcessPool();
 
         void setProcessNum(int processNum);
