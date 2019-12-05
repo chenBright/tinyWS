@@ -14,10 +14,12 @@
 #include "http/HttpRequest.h"
 #include "http/HttpResponse.h"
 #include "base/Logger.h"
+#include "net/TimerId.h"
 
 using namespace std::placeholders;
 using namespace tinyWS_thread;
 
+void test_runEvery();
 void httpCallback(const HttpRequest &request, HttpResponse &response);
 void set404NotFound(HttpResponse &response);
 
@@ -38,12 +40,18 @@ int main(int argc, char* argv[]) {
 //    InternetAddress listenAddress(std::string("127.0.0.1"),8888); // for pressure test
     HttpServer server(&loop, listenAddress, "tinyWS");
 
+    loop.runEvery(2 * 1000 * 1000, std::bind(&test_runEvery));
+
     server.setThreadNum(threadNums);
     server.start();
     server.setHttpCallback(std::bind(&httpCallback, _1, _2));
     loop.loop();
 
     return 0;
+}
+
+void test_runEvery() {
+    std::cout << "test Timer" << std::endl;
 }
 
 void httpCallback(const HttpRequest& request, HttpResponse& response) {
