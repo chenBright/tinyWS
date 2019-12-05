@@ -3,18 +3,20 @@
 #include <sys/stat.h>   // struct stat
 #include <sys/mman.h>   // mmap()、munmap()
 
+#include <iostream>
 #include <functional>
 
 #include "net/EventLoop.h"
-#include "net/TcpConnection.h"
-#include "net/TcpServer.h"
 #include "http/HttpServer.h"
 #include "http/HttpRequest.h"
 #include "http/HttpResponse.h"
+#include "net/TimerId.h"
+#include "net/Timer.h"
 
 using namespace std::placeholders;
 using namespace tinyWS_process;
 
+void test_runEvery();
 void httpCallback(const HttpRequest& request, HttpResponse& response);
 void set404NotFound(HttpResponse& response);
 
@@ -30,10 +32,11 @@ int main(int argc, char* argv[]) {
         port = ::atoi(argv[2]);
     }
 
-    EventLoop loop;
     InternetAddress listenAddress(port);
 //    InternetAddress listenAddress(std::string("127.0.0.1"), 12315); // for pressure test
-    HttpServer server(&loop, listenAddress, "tinyWS");
+    HttpServer server(listenAddress, "tinyWS");
+
+    auto timerId = server.runEvery(2 * 1000 * 1000, std::bind(&test_runEvery));
 
     server.setProcessNum(processNum);
     server.setHttpCallback(std::bind(&httpCallback, _1, _2));
@@ -42,6 +45,10 @@ int main(int argc, char* argv[]) {
     server.start();
 
     return 0;
+}
+
+void test_runEvery() {
+    std::cout << "test Timer at Process " << getpid() << std::endl;
 }
 
 void httpCallback(const HttpRequest& request, HttpResponse& response) {

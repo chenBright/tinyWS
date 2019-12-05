@@ -15,7 +15,8 @@ const int kEpollTimeMs = 10000;
 EventLoop::EventLoop()
     : running_(false),
       epoll_(new Epoll(this)),
-      pid_(getpid()){
+      pid_(getpid()),
+      timerQueue_(new TimerQueue(this)) {
 
     std::cout << "EventLoop created "
               << this << " in process "
@@ -51,15 +52,16 @@ void EventLoop::quit() {
     running_ = false;
 }
 
-TimerId EventLoop::runAt(TimeType time, const Timer::TimerCallback &cb) {
-    return timerQueue_->addTimer(cb, time, 0);
+TimerId EventLoop::runAt(TimeType runTime, const Timer::TimerCallback& cb) {
+    return timerQueue_->addTimer(cb, runTime, 0);
 }
 
-TimerId EventLoop::runAfter(TimeType delay, const Timer::TimerCallback &cb) {
+TimerId EventLoop::runAfter(TimeType delay, const Timer::TimerCallback& cb) {
     return runAt(Timer::now() + delay, cb);
 }
 
-TimerId EventLoop::runEvery(TimeType interval, const Timer::TimerCallback &cb) {
+TimerId EventLoop::runEvery(TimeType interval, const Timer::TimerCallback& cb) {
+    std::cout << timerQueue_.get() << std::endl;
     return timerQueue_->addTimer(cb, Timer::now(), interval);
 }
 

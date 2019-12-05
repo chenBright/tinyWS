@@ -11,17 +11,15 @@
 #include "Acceptor.h"
 #include "ProcessPool.h"
 #include "InternetAddress.h"
-#include "../base/utility.h"
+#include "TimerId.h"
 
 using namespace tinyWS_process;
 using namespace std::placeholders;
 
-TcpServer::TcpServer(EventLoop* loop,
-                     const InternetAddress& address,
-                     const std::string &name)
-                     : loop_(loop),
+TcpServer::TcpServer(const InternetAddress &address, const std::string& name)
+                     : loop_(new EventLoop()),
                        name_(name),
-                       acceptor_(new Acceptor(loop, address)),
+                       acceptor_(new Acceptor(loop_, address)),
                        processPool_(new ProcessPool(loop_)),
                        nextConnectionId_(1) {
 
@@ -57,12 +55,24 @@ void TcpServer::start() {
     }
 }
 
-void TcpServer::setConnectionCallback(const ConnectionCallback &cb) {
+void TcpServer::setConnectionCallback(const ConnectionCallback& cb) {
     connectionCallback_ = cb;
 }
 
-void TcpServer::setMessageCallback(const MessageCallback &cb) {
+void TcpServer::setMessageCallback(const MessageCallback& cb) {
     messageCallback_ = cb;
+}
+
+TimerId TcpServer::runAt(TimeType runTime, const Timer::TimerCallback& cb) {
+    return loop_->runAt(runTime, cb);
+}
+
+TimerId TcpServer::runAfter(TimeType delay, const Timer::TimerCallback& cb) {
+    return loop_->runAfter(delay, cb);
+}
+
+TimerId TcpServer::runEvery(TimeType interval, const Timer::TimerCallback& cb) {
+    return loop_->runEvery(interval, cb);
 }
 
 void TcpServer::newConnectionInParent(Socket socket, const InternetAddress& peerAddress) {

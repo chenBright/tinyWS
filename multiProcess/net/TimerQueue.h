@@ -18,10 +18,9 @@ namespace tinyWS_process {
     class TimerQueue : noncopyable {
     private:
         using Entry = std::pair<TimeType, std::shared_ptr<Timer>>;
-
         using TimerList = std::set<Entry>;
 
-        using ActiveTimer = std::pair<std::shared_ptr<Timer>, int64_t>;
+        using ActiveTimer = std::pair<std::shared_ptr<Timer>, TimeType>;
         using ActiveTimerSet = std::set<ActiveTimer>;
 
         EventLoop *loop_;
