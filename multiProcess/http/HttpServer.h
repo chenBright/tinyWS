@@ -8,6 +8,7 @@
 #include "../base/noncopyable.h"
 #include "../net/TcpServer.h"
 #include "../net/TcpConnection.h"
+#include "../net/Timer.h"
 #include "../net/type.h"
 
 namespace tinyWS_process {
@@ -15,6 +16,7 @@ namespace tinyWS_process {
     class Buffer;
     class HttpRequest;
     class HttpResponse;
+    class TimerId;
 
     class HttpServer : noncopyable {
     public:
@@ -27,9 +29,7 @@ namespace tinyWS_process {
          * @param listenAddress 监听地址
          * @param name TcpServer name
          */
-        HttpServer(EventLoop* loop,
-                   const InternetAddress& listenAddress,
-                   const std::string& name);
+        HttpServer(const InternetAddress &listenAddress, const std::string &name);
 
         /**
          * 获取所属 EventLoop
@@ -53,6 +53,13 @@ namespace tinyWS_process {
          * 启动 TcpServer
          */
         void start();
+
+        TimerId runAt(TimeType runTime, const Timer::TimerCallback& cb);
+
+        TimerId runAfter(TimeType delay, const Timer::TimerCallback& cb);
+
+        TimerId runEvery(TimeType interval, const Timer::TimerCallback& cb);
+
     private:
         TcpServer tcpServer_;       // TcpServer
         HttpCallback httpCallback_; // HTTP 请求到来时的回调函数
