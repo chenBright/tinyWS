@@ -15,6 +15,7 @@
 #include "Channel.h"
 #include "Socket.h"
 #include "type.h"
+#include "../base/utility.h"
 
 using namespace tinyWS_process;
 

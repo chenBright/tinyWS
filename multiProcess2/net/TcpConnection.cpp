@@ -8,6 +8,7 @@
 #include "EventLoop.h"
 #include "Channel.h"
 #include "Socket.h"
+#include "../base/utility.h"
 
 using namespace tinyWS_process;
 using namespace std::placeholders;
