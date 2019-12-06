@@ -36,8 +36,19 @@ void EventLoop::loop() {
         activeChannels_.clear();
         auto receiveTime = epoll_->poll(kEpollTimeMs, &activeChannels_);
 
+        // stop this loop if get signal SIGINT SIGTERM SIGKILL SIGQUIT SIGCHLD(parent process)
+        if (status_quit_softly == 1 || status_terminate == 1 || status_child_quit == 1) {
+            std::cout << "process(" << getpid() << ") quit this eventloop" << std::endl;
+            running_ = false;
+        }
+
         for (auto channel : activeChannels_) {
             channel->handleEvent(receiveTime);
+        }
+
+        if (status_child_quit == 1) {
+            std::cout << "[SIGCHLD] process(" << getpid() << ") quit this eventloop" << std::endl;
+            running_ = false;
         }
     }
 }

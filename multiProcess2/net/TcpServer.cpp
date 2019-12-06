@@ -12,13 +12,14 @@
 #include "ProcessPool.h"
 #include "InternetAddress.h"
 #include "TimerId.h"
+#include "status.h"
 
 using namespace tinyWS_process;
 using namespace std::placeholders;
 
-TcpServer::TcpServer(const InternetAddress &address, const std::string& name)
+TcpServer::TcpServer(const InternetAddress& address, const std::string& name)
                      : socketBeforeFork_(Acceptor::createNonblocking()), // listen socket
-                       processPool_(new ProcessPool(1)),
+                       processPool_(new ProcessPool(4)),
                        loop_(new EventLoop()),
                        name_(name),
                        acceptor_(new Acceptor(loop_, std::move(socketBeforeFork_), address)),
@@ -39,19 +40,28 @@ EventLoop* TcpServer::getLoop() const {
     return loop_;
 }
 
-void TcpServer::setProcessNum(int processNum) {
-    processPool_->setProcessNum(processNum);
-}
-
 void TcpServer::start() {
     if (!started_) {
         started_ = true;
         acceptor_->listen();
-        // 一定要在 ProcessPool 之前 listen()。
-        // 否则，将无法 listen 端口。
-        // 因为程序会一直处在事件循环中，知道程序结束。
-//        processPool_->start();
-        loop_->loop();
+
+        bool running = true;
+        while (running) {
+            loop_->loop();
+
+            if (status_terminate || status_quit_softly || status_child_quit) {
+                std::cout << "[parent]:(term/stop) I will kill all chilern" << std::endl;
+                processPool_->killAll();
+                running = false;
+            }
+
+            if (status_restart || status_reconfigure) {
+                std::cout << "[parent]:(restart/reload)quit and restart parent process's eventloop" << std::endl;
+                status_restart = status_reconfigure = 0;
+
+                // 只是单纯地重启父进程的 EVentLoop
+            }
+        }
     }
 }
 
@@ -155,7 +165,5 @@ inline void TcpServer::clearInSubProcess(bool isParent) {
 //        acceptor_->~Acceptor();
         loop_->~EventLoop();
         // 设置子进程接受到新连接时的回调函数
-        processPool_->setChildConnectionCallback(
-                std::bind(&TcpServer::newConnectionInChild, this, _1, _2));
     }
 }

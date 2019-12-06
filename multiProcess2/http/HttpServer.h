@@ -44,12 +44,6 @@ namespace tinyWS_process {
         void setHttpCallback(const HttpCallback& cb);
 
         /**
-         * 设置 IO 线程数
-         * @param processNum 线程数
-         */
-        void setProcessNum(int processNum);
-
-        /**
          * 启动 TcpServer
          */
         void start();
