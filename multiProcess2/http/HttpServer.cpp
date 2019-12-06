@@ -27,10 +27,6 @@ void HttpServer::setHttpCallback(const HttpCallback& cb) {
     httpCallback_ = cb;
 }
 
-void HttpServer::setProcessNum(int processNum) {
-    tcpServer_.setProcessNum(processNum);
-}
-
 void HttpServer::start() {
     tcpServer_.start();
 }

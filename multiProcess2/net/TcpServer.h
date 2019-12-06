@@ -56,8 +56,6 @@ namespace tinyWS_process {
         ~TcpServer();
 
         EventLoop* getLoop() const;
-        
-        void setProcessNum(int processNum);
 
         void start();
 
