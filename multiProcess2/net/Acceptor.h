@@ -32,6 +32,8 @@ namespace tinyWS_process2 {
 
         ~Acceptor();
 
+        void resetLoop(EventLoop* loop);
+
         void setNewConnectionCallback(const NewConnectionCallback& cb);
 
         void listen();

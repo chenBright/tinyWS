@@ -41,6 +41,12 @@ Acceptor::~Acceptor() {
     acceptChannel_.remove();
 }
 
+void Acceptor::resetLoop(EventLoop* loop) {
+    loop_ = loop;
+    acceptChannel_.resetLoop(loop);
+    listen();
+}
+
 void Acceptor::setNewConnectionCallback(const Acceptor::NewConnectionCallback& cb) {
     newConnectionCallback_ = cb;
 }

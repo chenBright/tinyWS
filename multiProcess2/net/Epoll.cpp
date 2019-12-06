@@ -36,7 +36,7 @@ int64_t Epoll::poll(int timeoutMS, ChannelList* activeChannels) {
             static_cast<int>(events_.size()), timeoutMS);
 
     // 惊群测试
-    std::cout << "wake from epoll_wait in process " << getpid() << std::endl;
+//    std::cout << "wake from epoll_wait in process " << getpid() << std::endl;
 
     if (eventNums > 0) {
         fillActiveChannels(eventNums, activeChannels);

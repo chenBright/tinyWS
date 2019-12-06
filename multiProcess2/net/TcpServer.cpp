@@ -49,7 +49,7 @@ void TcpServer::start() {
         while (running) {
             loop_->loop();
 
-            if (status_terminate || status_quit_softly || status_child_quit) {
+            if (status_terminate || status_quit_softly) {
                 std::cout << "[parent]:(term/stop) I will kill all chilern" << std::endl;
                 processPool_->killAll();
                 running = false;
@@ -60,6 +60,20 @@ void TcpServer::start() {
                 status_restart = status_reconfigure = 0;
 
                 // 只是单纯地重启父进程的 EVentLoop
+            }
+
+            if (status_child_quit) {
+                std::cout << "[parent]:child exit, I will create a new one" << std::endl;
+
+                // 重新生成新的子进程
+                pid_t pid = processPool_->createNewChildProcess();
+
+                status_child_quit = 0;
+                if (pid == 0) {
+//                    delete loop_; // 不能 delete，因为会导致 Channel 析构，包括 acceptor_
+                    loop_ = new EventLoop();
+                    acceptor_->resetLoop(loop_);
+                }
             }
         }
     }
@@ -166,4 +180,9 @@ inline void TcpServer::clearInSubProcess(bool isParent) {
         loop_->~EventLoop();
         // 设置子进程接受到新连接时的回调函数
     }
+}
+
+void TcpServer::reset() {
+    delete loop_;
+    loop_ = new EventLoop();
 }
