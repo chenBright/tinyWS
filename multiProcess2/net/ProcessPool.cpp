@@ -115,7 +115,34 @@ void ProcessPool::createChildProcess(int processNum) {
 
             setParentSignalHandlers();
         }
+    }
+}
 
+pid_t ProcessPool::createNewChildProcess() {
+    std::cout << "pids size: " << pids_.size() << std::endl;
+    for (int i = pids_.size(); i <= processNum_; ++i) {
+        pid_t pid = fork();
+
+        if (pid < 0) {
+            std::cout  << "[processpool] fork error" << std::endl;
+        } else if (pid == 0) {
+            // 子进程
+            std::cout << "[processpool] new child process(" << getpid() << ")" << std::endl;
+
+            setChildSignalHandlers();
+
+            break;
+        } else {
+            // 父进程
+
+//        forkFunction_(true); // fork 回调函数
+
+            std::cout << "[processpool] " << getpid() << " create new process(" << pid << ")" << std::endl;
+
+            pids_.push_back(pid);
+        }
+
+        return pid;
     }
 }
 

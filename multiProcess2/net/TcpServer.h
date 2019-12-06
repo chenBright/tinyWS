@@ -85,6 +85,8 @@ namespace tinyWS_process2 {
         void removeConnection(const TcpConnectionPtr& connection);
 
         void clearInSubProcess(bool isParent);
+
+        void reset();
     };
 }
 

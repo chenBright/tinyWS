@@ -48,8 +48,10 @@ namespace tinyWS_process2 {
 
         void setChildSignalHandlers();
 
+        pid_t createNewChildProcess();
     private:
         void createChildProcess(int processNum);
+
 
         void parentStart();
 

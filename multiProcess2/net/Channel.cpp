@@ -18,8 +18,8 @@ const int Channel::kWriteEvent = EPOLLOUT;
 Channel::Channel(EventLoop* loop, int fdArg)
     : loop_(loop),
       fd_(fdArg),
-      events_(0),
-      revents_(0),
+      events_(kNoneEvent),
+      revents_(kNoneEvent),
       statusInEpoll_(-1),
       eventHandling_(false),
       addedToLoop_(false),
@@ -113,6 +113,17 @@ void Channel::setStatusInEpoll(int statusInEpoll) {
     statusInEpoll_ = statusInEpoll;
 }
 
+void Channel::resetLoop(EventLoop* loop) {
+    loop_ = loop;
+
+    events_ = kNoneEvent;
+    revents_ = kNoneEvent;
+    statusInEpoll_ = -1;
+    eventHandling_ = false;
+    addedToLoop_ = false;
+    tied_ = false;
+}
+
 EventLoop* Channel::ownerLoop() {
     return loop_;
 }
@@ -171,6 +182,7 @@ void Channel::handleEventWithGuard(TimeType receiveTime) {
 }
 
 void Channel::update() {
+    addedToLoop_ = true;
     loop_->updateChannel(this);
 }
 

@@ -84,6 +84,8 @@ namespace tinyWS_process2 {
 
         void setStatusInEpoll(int statusInEpoll);
 
+        void resetLoop(EventLoop* loop);
+
         EventLoop* ownerLoop();
 
         void remove();
