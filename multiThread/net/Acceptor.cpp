@@ -54,11 +54,24 @@ int Acceptor::createNonblocking() {
 void Acceptor::hadleRead() {
     loop_->assertInLoopThread();
     InternetAddress peerAddress;
-    // FIXME loop until no more
-    Socket connectionSocket(acceptSocket_.accept(&peerAddress));
-    if (connectionSocket.fd() >= 0) {
+    // 每次只 accept 一次
+//    Socket connectionSocket(acceptSocket_.accept(&peerAddress));
+//    if (connectionSocket.fd() >= 0) {
+//        if (newConnectionCallback_) {
+//            // 移动 Socket，保证资源的安全释放
+//            newConnectionCallback_(std::move(connectionSocket), peerAddress);
+//        }
+//    }
+
+    // 一直 accept 到 EAGAIN 为止。这样需要多一次系统调用。
+    // TODO 测试新能
+    while (auto sockfd = acceptSocket_.accept(&peerAddress)) {
+        if (sockfd < 0) {
+            return;
+        }
+
+        Socket connectionSocket(sockfd);
         if (newConnectionCallback_) {
-            // 移动 Socket，保证资源的安全释放
             newConnectionCallback_(std::move(connectionSocket), peerAddress);
         }
     }

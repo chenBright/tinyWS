@@ -75,16 +75,16 @@ int Acceptor::createNonblocking() {
 
 void Acceptor::handleRead() {
     InternetAddress peerAddress;
-    // FIXME loop until no more
-    int sockfd = acceptSocket_.accept(&peerAddress);
-    if (sockfd < 0) {
-        return;
-    }
-    Socket connectionSocket(sockfd);
-    if (connectionSocket.fd() >= 0) {
+
+    while (auto sockfd = acceptSocket_.accept(&peerAddress)) {
+        std::cout << "sockfd: " << sockfd << "(" << getpid() << ")" << std::endl;
+        if (sockfd < 0) {
+            return;
+        }
+
+        Socket connectionSocket(sockfd);
         if (newConnectionCallback_) {
             newConnectionCallback_(std::move(connectionSocket), peerAddress);
         }
     }
-
 }

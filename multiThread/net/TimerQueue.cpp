@@ -32,8 +32,8 @@ namespace Timerfd {
     void readTimerfd(int timerfd, Timer::TimeType now) {
         uint64_t howmany;
         ssize_t n = read(timerfd, &howmany, sizeof(howmany));
-        debug(LogLevel::ERROR) << "TimerQueue::handleRead() "
-                                     << howmany << " at " << now << std::endl;
+//        debug(LogLevel::DEBUG) << "TimerQueue::handleRead() "
+//                                     << howmany << " at " << now << std::endl;
         if (n != sizeof(howmany)) {
             debug(LogLevel::ERROR) << "TimerQueue::handleRead() reads "
                                          << n << " bytes instead of 8" << std::endl;

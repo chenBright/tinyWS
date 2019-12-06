@@ -78,6 +78,9 @@ int Socket::accept(InternetAddress* peerAddress) {
         std::cout << "Socket::accept" << std::endl;
         switch (savedErrno) {
             case EAGAIN:
+                std::cout << "EAGAIN " << getpid() << std::endl;
+                break;
+
             case ECONNABORTED:
             case EINTR:
             case EPROTO: // ???
@@ -103,6 +106,8 @@ int Socket::accept(InternetAddress* peerAddress) {
                           << savedErrno << std::endl;
                 break;
         }
+
+        return -1;
     }
 }
 

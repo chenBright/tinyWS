@@ -75,10 +75,10 @@ int Socket::accept(InternetAddress* peerAddress) {
         return connectionFd;
     } else {
         int savedErrno = errno;
-        std::cout << "Socket::accept" << std::endl;
+        std::cout << "Socket::accept "  << getpid() << std::endl;
         switch (savedErrno) {
             case EAGAIN:
-                std::cout << "EAGAIN" << std::endl;
+                std::cout << "EAGAIN " << getpid() << std::endl;
                 break;
             case ECONNABORTED:
             case EINTR:
@@ -105,6 +105,8 @@ int Socket::accept(InternetAddress* peerAddress) {
                           << savedErrno << std::endl;
                 break;
         }
+
+        return -1;
     }
 }
 
