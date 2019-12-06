@@ -1,5 +1,5 @@
-#ifndef TINYWS_PROCESSPOOL_H
-#define TINYWS_PROCESSPOOL_H
+#ifndef tinyWS_process2POOL_H
+#define tinyWS_process2POOL_H
 
 #include <utility>
 #include <functional>
@@ -10,7 +10,7 @@
 
 #include "../base/Signal.h"
 
-namespace tinyWS_process {
+namespace tinyWS_process2 {
 
     class EventLoop;
     class Socket;
@@ -62,4 +62,4 @@ namespace tinyWS_process {
 }
 
 
-#endif //TINYWS_PROCESSPOOL_H
+#endif //tinyWS_process2POOL_H

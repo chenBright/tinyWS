@@ -1,7 +1,7 @@
 #ifndef TINYWS_NONCOPYABLE_H
 #define TINYWS_NONCOPYABLE_H
 
-namespace tinyWS_process {
+namespace tinyWS_process2 {
     // 不可拷贝类
     class noncopyable {
     protected:

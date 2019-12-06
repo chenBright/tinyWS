@@ -11,7 +11,7 @@
 #include "EventLoop.h"
 #include "InternetAddress.h"
 
-using namespace tinyWS_process;
+using namespace tinyWS_process2;
 
 Acceptor::Acceptor(EventLoop* loop, const InternetAddress& listenAddress)
     : loop_(loop),

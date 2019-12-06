@@ -10,7 +10,7 @@
 
 #include "InternetAddress.h"
 
-using namespace tinyWS_process;
+using namespace tinyWS_process2;
 
 Socket::Socket(int sockfd) : sockfd_(sockfd) {}
 

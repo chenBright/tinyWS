@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-using namespace tinyWS_process;
+using namespace tinyWS_process2;
 
 
 //     // Structure describing an Internet socket address.

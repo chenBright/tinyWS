@@ -8,7 +8,7 @@
 #include "TimerId.h"
 #include "status.h"
 
-using namespace tinyWS_process;
+using namespace tinyWS_process2;
 
 const int kEpollTimeMs = 10000;
 

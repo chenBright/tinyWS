@@ -7,7 +7,7 @@
 #include "Channel.h"
 #include "Socket.h"
 
-namespace tinyWS_process {
+namespace tinyWS_process2 {
 
     class InternetAddress;
     class EventLoop;

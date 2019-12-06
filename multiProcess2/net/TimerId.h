@@ -5,7 +5,7 @@
 
 #include "Timer.h"
 
-namespace tinyWS_process {
+namespace tinyWS_process2 {
     class TimerId{
     public:
         friend class TimerQueue;

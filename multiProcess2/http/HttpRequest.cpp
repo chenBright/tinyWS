@@ -5,7 +5,7 @@
 
 #include <algorithm>
 
-using namespace tinyWS_process;
+using namespace tinyWS_process2;
 
 HttpRequest::HttpRequest()
     : method_(kInvalid),

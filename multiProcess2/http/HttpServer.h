@@ -11,7 +11,7 @@
 #include "../net/Timer.h"
 #include "../net/type.h"
 
-namespace tinyWS_process {
+namespace tinyWS_process2 {
 
     class Buffer;
     class HttpRequest;

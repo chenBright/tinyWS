@@ -5,7 +5,7 @@
 #include <netinet/in.h>
 
 #include <string>
-namespace tinyWS_process {
+namespace tinyWS_process2 {
 
     class InternetAddress {
     private:
