@@ -71,6 +71,8 @@ int Socket::accept(InternetAddress *peerAddress) {
         debug(LogLevel::ERROR) << "Socket::accept" << std::endl;
         switch (savedErrno) {
             case EAGAIN:
+                debug(LogLevel::DEBUG) << "EAGAIN " << getpid() << std::endl;
+                break;
             case ECONNABORTED:
             case EINTR:
             case EPROTO: // ???
@@ -96,6 +98,8 @@ int Socket::accept(InternetAddress *peerAddress) {
                                              << savedErrno << std::endl;
                 break;
         }
+
+        return -1;
     }
 }
 
