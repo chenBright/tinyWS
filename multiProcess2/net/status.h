@@ -1,7 +1,7 @@
 #ifndef TINYWS_STATUS_H
 #define TINYWS_STATUS_H
 
-namespace tinyWS_process {
+namespace tinyWS_process2 {
     extern int status_quit_softly; //QUIT
     extern int status_terminate;   //TERM,INT
     extern int status_exiting;

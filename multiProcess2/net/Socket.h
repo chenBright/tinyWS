@@ -3,7 +3,7 @@
 
 #include "../base/noncopyable.h"
 
-namespace tinyWS_process {
+namespace tinyWS_process2 {
 
     class InternetAddress;
 

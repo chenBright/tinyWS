@@ -14,7 +14,7 @@
 #include "TimerId.h"
 #include "status.h"
 
-using namespace tinyWS_process;
+using namespace tinyWS_process2;
 using namespace std::placeholders;
 
 TcpServer::TcpServer(const InternetAddress& address, const std::string& name)

@@ -7,7 +7,7 @@
 #include <string>
 #include <iostream>
 
-namespace tinyWS_process {
+namespace tinyWS_process2 {
 
     class Signal {
     public:

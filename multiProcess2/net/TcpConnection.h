@@ -12,7 +12,7 @@
 #include "type.h"
 #include "../http/HttpContext.h"
 
-namespace tinyWS_process {
+namespace tinyWS_process2 {
     class EventLoop;
     class Socket;
     class Channel;

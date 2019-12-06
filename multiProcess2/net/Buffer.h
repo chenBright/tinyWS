@@ -6,7 +6,7 @@
 
 #include "../base/noncopyable.h"
 
-namespace tinyWS_process {
+namespace tinyWS_process2 {
     class Buffer : public noncopyable {
     public:
         // 在缓冲区前方增加 perpendable 区域，以应对需要在数据前面添加信息的场景。

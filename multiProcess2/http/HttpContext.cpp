@@ -4,7 +4,7 @@
 
 #include "../net/Buffer.h"
 
-using namespace tinyWS_process;
+using namespace tinyWS_process2;
 
 HttpContext::HttpContext() : state_(kExpectRequestLine) {
 

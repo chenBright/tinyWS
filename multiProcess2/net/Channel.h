@@ -8,7 +8,7 @@
 #include "../base/noncopyable.h"
 #include "type.h"
 
-namespace tinyWS_process {
+namespace tinyWS_process2 {
     class EventLoop;
 
     class Channel : noncopyable {

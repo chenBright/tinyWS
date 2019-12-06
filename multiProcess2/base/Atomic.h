@@ -5,7 +5,7 @@
 
 #include "noncopyable.h"
 
-namespace tinyWS_process {
+namespace tinyWS_process2 {
     template <class T>
     class AtomicIntegerT : noncopyable {
     private:

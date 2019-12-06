@@ -10,7 +10,7 @@
 #include "../base/noncopyable.h"
 #include "Timer.h"
 
-namespace tinyWS_process {
+namespace tinyWS_process2 {
 
     class EventLoop;
     class TimerId;

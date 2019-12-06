@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 
-namespace tinyWS_process {
+namespace tinyWS_process2 {
 
     class Buffer;
 
