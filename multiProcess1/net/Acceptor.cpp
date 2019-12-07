@@ -38,13 +38,12 @@ void Acceptor::listen() {
     acceptChannel_.enableReading();
 }
 
-void Acceptor::unlisten() {
-    isListening_ = false;
-    acceptChannel_.disableAll();
-}
-
 bool Acceptor::isLIstening() const {
     return isListening_;
+}
+
+int Acceptor::getSockfd() const {
+    return acceptSocket_.fd();
 }
 
 int Acceptor::createNonblocking() {

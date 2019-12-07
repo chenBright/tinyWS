@@ -77,7 +77,7 @@ void TcpServer::start() {
 
                 status_child_quit = 0;
                 if (pid == 0) {
-//                    delete loop_; // 不能 delete，因为会导致 Channel 析构，包括 acceptor_
+                    delete loop_;
                     loop_ = new EventLoop();
                     acceptor_->resetLoop(loop_);
                 }

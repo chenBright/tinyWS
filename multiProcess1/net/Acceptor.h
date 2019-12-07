@@ -34,9 +34,9 @@ namespace tinyWS_process1 {
 
         void listen();
 
-        void unlisten();
-
         bool isLIstening() const;
+
+        int getSockfd() const;
 
         static int createNonblocking();
 
