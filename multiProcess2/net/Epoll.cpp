@@ -134,7 +134,6 @@ void Epoll::update(int operation, Channel *channel) {
     event.events = static_cast<uint32_t>(channel->getEvents());
     event.data.ptr = channel;
     int fd = channel->fd();
-    std::cout << "operation: " << operationToString(operation) << std::endl;
     if (epoll_ctl(epollfd_, operation, fd, &event) < 0) {
         std::cout << "[ERROR] epoll_ctl op=" << operationToString(operation)
                   << " fd=" << fd << std::endl;

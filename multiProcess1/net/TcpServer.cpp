@@ -152,9 +152,15 @@ void TcpServer::removeConnection(const TcpConnectionPtr& connection) {
 inline void TcpServer::clearInSubProcess(bool isParent) {
     if (!isParent) {
         // 将子进程中多余的资源释放了。
-        // FIXME 如果析构了 acceptor_，会导致父进程无法接受到请求。暂时找不到原因。
+
+        // 如果析构了 acceptor_，会导致父进程无法接受到请求。
+        // fork 之后，所有进程的 epollfd 都是指向同一文件，listened sockfd 也是。
+        // 如果析构了 acceptor_，会导致在 epoll 中删除 listened sockfd，
+        // 不监听 listened sockfd 的 IO 事件，从而导致父进程不能监听 listened sockfd。
+        // 所以，只能关闭 listened sockfd。
 //        acceptor_->~Acceptor();
-        loop_->~EventLoop();
+        close(acceptor_->getSockfd());
+        delete loop_;
         // 设置子进程接受到新连接时的回调函数
         processPool_->setChildConnectionCallback(
                 std::bind(&TcpServer::newConnectionInChild, this, _1, _2));
