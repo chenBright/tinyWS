@@ -11,7 +11,7 @@ namespace tinyWS_thread {
     // 这段代码没有达到工业强度，详见 《Linux多线程服务端编程》P46
     class MutexLock : noncopyable {
     public:
-        MutexLock() : holder_(0) {
+        MutexLock() : mutex_{}, holder_(0) {
             assert(pthread_mutex_init(&mutex_, nullptr) == 0);
         }
 
@@ -60,7 +60,7 @@ namespace tinyWS_thread {
             return &mutex_;
         }
     private:
-        pthread_mutex_t mutex_{}; // 互斥量
+        pthread_mutex_t mutex_; // 互斥量
         pid_t holder_;          // 存储持有锁的线程 ID
     };
 
@@ -80,13 +80,14 @@ namespace tinyWS_thread {
     private:
         MutexLock &mutex_;
     };
-}
 
-/**
- * 防止类似误用：MutexLockGuard(mutex_)
- * 临时对象不能长时间持有锁，一产生对象又马上被销毁！
- * 正确写法：MutexLockGuard lock(mutex)
- */
-#define MutexLockGuard(x) error "Missing guard object name"
+    /**
+     * 防止类似误用：MutexLockGuard(mutex_)
+     * 临时对象不能长时间持有锁，一产生对象又马上被销毁！
+     * 正确写法：MutexLockGuard lock(mutex)
+     */
+    #define MutexLockGuard(x) error "Missing guard object name"
+
+}
 
 #endif //TINYWS_MUTEXLOCK_H

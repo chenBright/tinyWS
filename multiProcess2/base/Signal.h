@@ -31,11 +31,11 @@ namespace tinyWS_process2 {
                   meaning_(meaing),
                   signalCallback_(cb) {
 
-            std::cout << "class Signal constructor" << std::endl;
+//            std::cout << "class Signal constructor" << std::endl;
         }
 
         ~Signal() {
-            std::cout << "class Signal destructor" << std::endl;
+//            std::cout << "class Signal destructor" << std::endl;
         }
 
         int signo() const {

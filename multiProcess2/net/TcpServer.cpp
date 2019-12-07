@@ -19,6 +19,8 @@ using namespace std::placeholders;
 
 TcpServer::TcpServer(const InternetAddress& address, const std::string& name)
                      : socketBeforeFork_(Acceptor::createNonblocking()), // listen socket
+                       processMutexLock_(),
+                       isLock_(false),
                        processPool_(new ProcessPool(4)),
                        loop_(new EventLoop()),
                        name_(name),
@@ -27,6 +29,10 @@ TcpServer::TcpServer(const InternetAddress& address, const std::string& name)
 
     acceptor_->setNewConnectionCallback(
             std::bind(&TcpServer::newConnectionInParent, this, _1, _2));
+
+    loop_->setListenSockfd(acceptor_->getSockfd());
+    loop_->setBeforeEachLoopFunction(std::bind(&TcpServer::lockAcceptor, this));
+    loop_->setAfterEachLoopFunction(std::bind(&TcpServer::unlockAcceptor, this));
 }
 
 TcpServer::~TcpServer() {
@@ -44,6 +50,7 @@ void TcpServer::start() {
     if (!started_) {
         started_ = true;
         acceptor_->listen();
+//        acceptor_->listenInEpoll();
 
         bool running = true;
         while (running) {
@@ -172,17 +179,27 @@ void TcpServer::removeConnection(const TcpConnectionPtr& connection) {
         connection->connectionDestroyed();
 }
 
-inline void TcpServer::clearInSubProcess(bool isParent) {
-    if (!isParent) {
-        // 将子进程中多余的资源释放了。
-        // FIXME 如果析构了 acceptor_，会导致父进程无法接受到请求。暂时找不到原因。
-//        acceptor_->~Acceptor();
-        loop_->~EventLoop();
-        // 设置子进程接受到新连接时的回调函数
-    }
-}
-
 void TcpServer::reset() {
     delete loop_;
     loop_ = new EventLoop();
+}
+
+void TcpServer::lockAcceptor() {
+    bool locked = processMutexLock_.trylock();
+    if (locked) {
+        std::cout << "get lock in process " << getpid() << std::endl;
+        isLock_ = true;
+        acceptor_->listenInEpoll();
+    }
+}
+
+void TcpServer::unlockAcceptor() {
+    std::cout << "unlockAcceptor in process " << getpid() << std::endl;
+    if (isLock_) {
+        std::cout << "release lock in process " << getpid() << std::endl;
+
+        isLock_ = false;
+        acceptor_->unlistenInEpoll();
+        processMutexLock_.unlock();
+    }
 }

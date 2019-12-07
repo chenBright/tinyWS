@@ -7,8 +7,9 @@
 #include <map>
 
 #include "../base/noncopyable.h"
-#include "TcpConnection.h"
 #include "Socket.h"
+#include "../base/ProcessMutexLock.h"
+#include "TcpConnection.h"
 #include "Timer.h"
 #include "type.h"
 
@@ -34,12 +35,16 @@ namespace tinyWS_process2 {
     private:
         using ConnectionMap = std::map<std::string, TcpConnectionPtr>;
 
-        EventLoop* loop_;
-        const std::string name_;
-
         Socket socketBeforeFork_; // 用于在进程池 fork 子进程之前，保存 listen sockfd
-        std::unique_ptr<Acceptor> acceptor_;
+        ProcessMutexLock processMutexLock_;
+        bool isLock_;
+
+
         std::unique_ptr<ProcessPool> processPool_;
+        EventLoop* loop_;
+        std::unique_ptr<Acceptor> acceptor_;
+
+        const std::string name_;
 
         int nextConnectionId_;
         bool started_;
@@ -84,9 +89,11 @@ namespace tinyWS_process2 {
 
         void removeConnection(const TcpConnectionPtr& connection);
 
-        void clearInSubProcess(bool isParent);
-
         void reset();
+
+        void lockAcceptor();
+
+        void unlockAcceptor();
     };
 }
 
