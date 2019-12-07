@@ -87,6 +87,11 @@ void Channel::enableReading() {
     update();
 }
 
+void Channel::disableReading() {
+    events_ &= ~kReadEvent;
+    update();
+}
+
 void Channel::enableWriting() {
     events_ |= kWriteEvent;
 }

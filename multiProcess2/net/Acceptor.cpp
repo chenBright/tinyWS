@@ -54,16 +54,22 @@ void Acceptor::setNewConnectionCallback(const Acceptor::NewConnectionCallback& c
 void Acceptor::listen() {
     isListening_ = true;
     acceptSocket_.listen();
+}
+
+void Acceptor::listenInEpoll() {
     acceptChannel_.enableReading();
 }
 
-void Acceptor::unlisten() {
-    isListening_ = false;
-    acceptChannel_.disableAll();
+void Acceptor::unlistenInEpoll() {
+    acceptChannel_.disableReading();
 }
 
 bool Acceptor::isLIstening() const {
     return isListening_;
+}
+
+int Acceptor::getSockfd() const {
+    return acceptSocket_.fd();
 }
 
 int Acceptor::createNonblocking() {
@@ -76,15 +82,14 @@ int Acceptor::createNonblocking() {
 void Acceptor::handleRead() {
     InternetAddress peerAddress;
 
-    while (auto sockfd = acceptSocket_.accept(&peerAddress)) {
-        std::cout << "sockfd: " << sockfd << "(" << getpid() << ")" << std::endl;
-        if (sockfd < 0) {
-            return;
-        }
+    auto sockfd = acceptSocket_.accept(&peerAddress);
+    std::cout << "sockfd: " << sockfd << "(" << getpid() << ")" << std::endl;
+    if (sockfd < 0) {
+        return;
+    }
 
-        Socket connectionSocket(sockfd);
-        if (newConnectionCallback_) {
-            newConnectionCallback_(std::move(connectionSocket), peerAddress);
-        }
+    Socket connectionSocket(sockfd);
+    if (newConnectionCallback_) {
+        newConnectionCallback_(std::move(connectionSocket), peerAddress);
     }
 }

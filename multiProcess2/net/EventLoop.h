@@ -16,6 +16,10 @@ namespace tinyWS_process2 {
     class TimerId;
 
     class EventLoop : noncopyable {
+    public:
+        using BeforeEachLoopFunction = std::function<void()>;
+        using AfterEachAcceptFunction = std::function<void()>;
+
     private:
         using ChannelList = std::vector<Channel*>;
 
@@ -24,6 +28,11 @@ namespace tinyWS_process2 {
         std::unique_ptr<Epoll> epoll_;
         std::unique_ptr<TimerQueue> timerQueue_;
         ChannelList activeChannels_;
+
+        int listenSockfd_;
+
+        BeforeEachLoopFunction beforeEachLoopFunction_;
+        AfterEachAcceptFunction afterEachAcceptFunction_;
 
     public:
         EventLoop();
@@ -45,6 +54,12 @@ namespace tinyWS_process2 {
         void updateChannel(Channel* channel);
 
         void removeChannel(Channel* channel);
+
+        void setListenSockfd(int sockfd);
+
+        void setBeforeEachLoopFunction(const BeforeEachLoopFunction& cb);
+
+        void setAfterEachLoopFunction(const AfterEachAcceptFunction& cb);
 
     private:
         void printActiveChannels() const; // for DEBUG

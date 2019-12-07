@@ -40,6 +40,7 @@ void EventLoop::loop() {
         if (status_quit_softly == 1 || status_terminate == 1 || status_child_quit == 1) {
             std::cout << "process(" << getpid() << ") quit this eventloop" << std::endl;
             running_ = false;
+            break;
         }
 
         for (auto channel : activeChannels_) {

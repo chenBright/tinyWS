@@ -202,7 +202,7 @@ void TcpConnection::handleWrite() {
             if (outputBuffer_.readableBytes() == 0) {
                 // 如果 outputBuffer_ 中没有可读数据，即数据已经发送完毕，
                 // 则立即设置 Channel 不可写（因为 Epoll 采用的是 level trigger），避免 busy loop。
-                // 还有调用写完成回调函数。
+                // 调用写完成回调函数。
                 channel_->disableWriting();
                 if (writeCompleteCallback_) {
                     writeCompleteCallback_(shared_from_this());

@@ -72,6 +72,8 @@ namespace tinyWS_process2 {
 
         void enableReading();
 
+        void disableReading();
+
         void enableWriting();
 
         void disableWriting();

@@ -44,15 +44,18 @@ int64_t Epoll::poll(int timeoutMS, ChannelList* activeChannels) {
             events_.resize(events_.size() * 2);
         }
     } else if (eventNums == 0) {
-        std::cout << "nothing happended at Process" << getpid() << std::endl;
+//        std::cout << "nothing happended in Process" << getpid() << std::endl;
     } else {
-        std::cout << "Epoll::poll()" << std::endl;
+        std::cout << "Epoll::poll() in Process" << getpid() << std::endl;
     }
 }
 
 void Epoll::updateChannel(Channel *channel) {
     std::cout << "Epoll::updateChannel() fd = " << channel->fd()
-              << " event = " << channel->getEvents() << std::endl;
+              << " event = " << channel->getEvents()
+              << ", meaing = " << channel->eventsToString()
+              << ", status = " << channel->getStatusInEpoll()
+              << " in process " << getpid() << std::endl;
 
     const int status = channel->getStatusInEpoll();
     int fd = channel->fd();
@@ -79,6 +82,7 @@ void Epoll::updateChannel(Channel *channel) {
         if (channel->isNoneEvent()) {
             // Channel 没有关心的事件，则要在 epoll 中移除该 Channel 对应的文件描述符
             update(EPOLL_CTL_DEL, channel);
+            channel->setStatusInEpoll(kDeleted);
         } else {
             update(EPOLL_CTL_MOD, channel);
         }
@@ -130,8 +134,9 @@ void Epoll::update(int operation, Channel *channel) {
     event.events = static_cast<uint32_t>(channel->getEvents());
     event.data.ptr = channel;
     int fd = channel->fd();
+    std::cout << "operation: " << operationToString(operation) << std::endl;
     if (epoll_ctl(epollfd_, operation, fd, &event) < 0) {
-        std::cout << "epoll_ctl op=" << operationToString(operation)
+        std::cout << "[ERROR] epoll_ctl op=" << operationToString(operation)
                   << " fd=" << fd << std::endl;
     }
 }
