@@ -82,6 +82,19 @@ int Acceptor::createNonblocking() {
 void Acceptor::handleRead() {
     InternetAddress peerAddress;
 
+    // 不使用"一直 accept 到 EAGAIN 为止"的方式，否则会使某个进程一直持有互斥锁。
+//    while (auto sockfd = acceptSocket_.accept(&peerAddress)) {
+//        std::cout << "sockfd: " << sockfd << "(" << getpid() << ")" << std::endl;
+//        if (sockfd < 0) {
+//            return;
+//        }
+//
+//        Socket connectionSocket(sockfd);
+//        if (newConnectionCallback_) {
+//            newConnectionCallback_(std::move(connectionSocket), peerAddress);
+//        }
+//    }
+
     auto sockfd = acceptSocket_.accept(&peerAddress);
     std::cout << "sockfd: " << sockfd << "(" << getpid() << ")" << std::endl;
     if (sockfd < 0) {
