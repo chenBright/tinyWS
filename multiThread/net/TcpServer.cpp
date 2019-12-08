@@ -70,9 +70,9 @@ void TcpServer::newConnection(Socket socket, const InternetAddress &peerAddress)
     ++nextConnectionId_;
     std::string connectionName = name_ + buf;
 
-    debug() << "TcpServer::newConnection [" << name_
-            << "] - new connection [" << connectionName
-            << "] from " << peerAddress.toIPPort() << std::endl;
+//    debug() << "TcpServer::newConnection [" << name_
+//            << "] - new connection [" << connectionName
+//            << "] from " << peerAddress.toIPPort() << std::endl;
 
     InternetAddress localAddress(InternetAddress::getLocalAddress(socket.fd()));
 
