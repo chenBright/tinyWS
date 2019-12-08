@@ -23,8 +23,8 @@ TcpServer::TcpServer(const InternetAddress& address, const std::string& name)
                        isLock_(false),
                        processPool_(new ProcessPool(4)),
                        loop_(new EventLoop()),
-                       name_(name),
                        acceptor_(new Acceptor(loop_, std::move(socketBeforeFork_), address)),
+                       name_(name),
                        nextConnectionId_(1) {
 
     acceptor_->setNewConnectionCallback(
