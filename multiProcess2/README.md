@@ -8,22 +8,14 @@ A C++ Tiny Web Server
 
 ## 技术
 
-- 主从 reactor 模式：
-    - 主 reactor 负责监听连接，当有新的连接，accept 到新的 socket 后，使用 Round Robin 方法选择从 reactor，将 socket 派发给从 reactor；
-    - 从 reactor 负责管理时间描述符（timerfd用于定时任务）、事件描述符（eventfd 用于唤醒 IO 线程）和 派发过来的 socket 文件描述符。
-- multiple reactors + thread pool (one loop per thread + threadpool)； 
-- EventLoop：使用 Epoll 水平触发的 IO 多路复用技术，非阻塞 IO；
-- 线程池：
-    - 使用多线程能发挥多核的优势；
-    - 线程池可以避免线程的频繁地创建和销毁的开销。
-- 简单的日志系统；
+- EventLoop：使用 Epoll 水平触发的模式结合非阻塞 IO；
 - 使用智能指针等 RAII 机制，来为降低内存泄漏的可能性；
 
 ## 并发模型
 
-并发模型为 multiple reactors + process pool (one loop per process + process pool)； + 非阻塞 IO，新连接使用 Round Robin 策略派发。
+所有进程监听同一个 listen sockfd，accept 到新的连接后自己处理连接的读写。所有进程通过竞争设置了`PTHREAD_PROCESS_SHARED`属性的`mutex`来获取处理 listen sockfd 的机会，保证了同一时刻只有一个进程监听 listen sockfd 的 IO 事件（只有读事件），解决了***惊群问题***。
 
-![并发模型](doc/model.png)
+
 
 
 
