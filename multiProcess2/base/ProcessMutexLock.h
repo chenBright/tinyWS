@@ -30,8 +30,9 @@ namespace tinyWS_process2 {
         }
 
         ~ProcessMutexLock() {
-            // destory ?
+            // 销毁互斥锁，释放映射的内存区域
             pthread_mutex_destroy(mutex_);
+            munmap(mutex_, sizeof(pthread_mutexattr_t));
         }
 
         void lock() {
