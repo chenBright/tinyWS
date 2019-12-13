@@ -12,11 +12,9 @@ namespace tinyWS_thread {
     // 条件变量对象
     class Condition : noncopyable {
     public:
-        /**
-         * 构造函数
-         * @param mutex 互斥量
-         */
-        explicit Condition(MutexLock &mutex) : mutex_(mutex) {
+        explicit Condition(MutexLock &mutex)
+            : mutex_(mutex),
+              cond_{} {
             assert(pthread_cond_init(&cond_, nullptr) == 0);
         }
 
@@ -50,7 +48,7 @@ namespace tinyWS_thread {
 
     private:
         MutexLock &mutex_;
-        pthread_cond_t cond_{};
+        pthread_cond_t cond_
     };
 }
 
