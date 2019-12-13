@@ -37,7 +37,7 @@ namespace tinyWS_process2 {
 
             pthread_condattr_t condattr{};
             pthread_condattr_init(&condattr);
-            // PTHREAD_PROCESS_SHARED：允许在不同进程之间共享互斥量。
+            // PTHREAD_PROCESS_SHARED：允许在不同进程之间共享条件变量。
             pthread_condattr_setpshared(&condattr, PTHREAD_PROCESS_SHARED);
             assert(pthread_cond_init(cond_, nullptr) == 0);
         }
