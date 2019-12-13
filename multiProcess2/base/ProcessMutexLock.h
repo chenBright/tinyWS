@@ -22,12 +22,16 @@ namespace tinyWS_process2 {
             // 它可以接受写向它的任何数据，但又忽略这些数据。
             int fd = open("/dev/zero", O_RDWR, 0);
 
-            pthread_mutexattr_t mutexattr{};
             // PROT_READ | PROT_WRITE：设置映射区域可读可写。
             // MAP_SHARED：父进程在调用 mmap 函数时指定了 MAP_SHARED 标志，则这些进程可共享此内存区域。从而达到了共享内存的目的。
-            mutex_ = static_cast<pthread_mutex_t*>(mmap(nullptr, sizeof(pthread_mutexattr_t), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
+            mutex_ = static_cast<pthread_mutex_t*>(mmap(nullptr,
+                                                         sizeof(pthread_mutex_t),
+                                                         PROT_READ | PROT_WRITE, MAP_SHARED,
+                                                         fd,
+                                                         0));
             close(fd); // 已经映射完成，可以关闭文件描述符。
 
+            pthread_mutexattr_t mutexattr{};
             pthread_mutexattr_init(&mutexattr);
             // PTHREAD_PROCESS_SHARED：允许在不同进程之间共享互斥量。
             pthread_mutexattr_setpshared(&mutexattr, PTHREAD_PROCESS_SHARED);
@@ -62,6 +66,15 @@ namespace tinyWS_process2 {
          */
         void unlock() {
             pthread_mutex_unlock(mutex_);
+        }
+
+        /**
+         * 获取互斥量原始指针（仅供 Condition 调用，严禁用户调用）
+         * 仅供 Condition 调用
+         * @return 互斥量原始指针
+         */
+        pthread_mutex_t* getPthreadMutexPtr() {
+            return mutex_;
         }
     };
 
