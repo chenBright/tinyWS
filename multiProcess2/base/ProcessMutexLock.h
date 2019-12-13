@@ -18,13 +18,18 @@ namespace tinyWS_process2 {
         pthread_mutex_t* mutex_;
     public:
         ProcessMutexLock() : mutex_(nullptr) {
+            // 读设备 /dev/zero 时，该设备是 0 字节的无限资源。
+            // 它可以接受写向它的任何数据，但又忽略这些数据。
             int fd = open("/dev/zero", O_RDWR, 0);
 
             pthread_mutexattr_t mutexattr{};
+            // PROT_READ | PROT_WRITE：设置映射区域可读可写。
+            // MAP_SHARED：父进程在调用 mmap 函数时指定了 MAP_SHARED 标志，则这些进程可共享此内存区域。从而达到了共享内存的目的。
             mutex_ = static_cast<pthread_mutex_t*>(mmap(nullptr, sizeof(pthread_mutexattr_t), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
-            close(fd);
+            close(fd); // 已经映射完成，可以关闭文件描述符。
 
             pthread_mutexattr_init(&mutexattr);
+            // PTHREAD_PROCESS_SHARED：允许在不同进程之间共享互斥量。
             pthread_mutexattr_setpshared(&mutexattr, PTHREAD_PROCESS_SHARED);
             pthread_mutex_init(mutex_, &mutexattr);
         }
@@ -35,16 +40,26 @@ namespace tinyWS_process2 {
             munmap(mutex_, sizeof(pthread_mutexattr_t));
         }
 
+        /**
+         * 加锁
+         */
         void lock() {
             pthread_mutex_lock(mutex_);
         }
 
+        /**
+         * 尝试加锁
+         * @return 是否加锁成功
+         */
         bool trylock() {
             int result = pthread_mutex_trylock(mutex_);
-//            std::cout << result << std::endl;
+
             return  result == 0;
         }
 
+        /**
+         * 释放锁
+         */
         void unlock() {
             pthread_mutex_unlock(mutex_);
         }

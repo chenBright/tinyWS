@@ -81,7 +81,7 @@ void httpCallback(const HttpRequest& request, HttpResponse& response) {
 //    void *mmapResult = ::mmap(nullptr,
 //            static_cast<size_t>(fileBuffer.st_size),
 //            PROT_READ, MAP_PRIVATE, fd, 0);
-//    close(fd);
+//    close(fd); // 已经映射完成，可以关闭文件描述符。
 //
 //    if (mmapResult == (void*)-1) {
 //        munmap(mmapResult, static_cast<size_t>(fileBuffer.st_size));
