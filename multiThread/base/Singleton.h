@@ -11,6 +11,8 @@
 namespace tinyWS_thread {
 
     // 参考
+    // https://segmentfault.com/q/1010000000593968
+    // https://www.cnblogs.com/loveis715/archive/2012/07/18/2598409.html
     // https://blog.csdn.net/lsaejn/article/details/78409001
     // http://kaiyuan.me/2018/05/08/sfinae/
     // https://www.jianshu.com/p/45a2410d4085
@@ -82,7 +84,7 @@ namespace tinyWS_thread {
         }
     };
 
-     // 必须在头文件中定义 static 变量
+    // 必须在头文件中定义 static 变量
     template <typename T>
     pthread_once_t Singleton<T>::ponce_ = PTHREAD_ONCE_INIT;
 
