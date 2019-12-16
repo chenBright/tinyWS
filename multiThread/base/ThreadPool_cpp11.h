@@ -14,6 +14,9 @@
 namespace tinyWS_thread {
 
     // 线程池 C++ 11 实现
+    // 参考
+    // https://wangpengcheng.github.io/2019/05/17/cplusplus_theadpool/
+    // http://www.cclk.cc/2017/11/14/c++/c++_threadpool/
     class ThreadPool_cpp11 : noncopyable {
     public:
         using Task = std::function<void()>;                             // 任务函数类型
