@@ -12,14 +12,10 @@ namespace tinyWS_thread {
         AtomicIntegerT() : value_(0) {}
 
         T get() {
-            // 可用 C++ 11 atomic 头文件：std::atomic_load 代替。
-            // 参考 https://zh.cppreference.com/w/cpp/atomic/atomic_load
             return __atomic_load_n(&value_, __ATOMIC_SEQ_CST);
         }
 
         T getAndAdd(T x) {
-            // 可用 C++ 11 atomic 头文件：std::atomic_fetch_add 代替。
-            // 参考 https://zh.cppreference.com/w/cpp/atomic/atomic_fetch_add
             return __atomic_fetch_add(&value_, x, __ATOMIC_SEQ_CST);
         }
 
@@ -48,8 +44,6 @@ namespace tinyWS_thread {
         }
 
         T getAndSet(T newValue) {
-            // 可用 C++ 11 atomic 头文件：std::atomic_exchange 代替。
-            // 参考 https://zh.cppreference.com/w/cpp/atomic/atomic_exchange
             return __atomic_exchange_n(&value_, newValue, __ATOMIC_SEQ_CST);
         }
     private:

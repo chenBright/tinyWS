@@ -63,6 +63,7 @@ pid_t Thread::gettid() {
     return static_cast<pid_t>(::syscall(__NR_gettid));
 }
 
+// 通过 void* 类型的形参，将线程对象传递过来。
 void* Thread::startThread(void *obj) {
     auto *thread = static_cast<Thread*>(obj);
     thread->runInThread();

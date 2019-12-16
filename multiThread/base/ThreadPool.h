@@ -12,6 +12,7 @@
 #include "Condition.h"
 
 namespace tinyWS_thread {
+
     class Thread;
 
     class ThreadPool : noncopyable {
@@ -23,6 +24,7 @@ namespace tinyWS_thread {
          * @param name 线程池名
          */
         explicit ThreadPool(const std::string &name = std::string());
+
         ~ThreadPool();
 
         /**
@@ -43,13 +45,13 @@ namespace tinyWS_thread {
         void run(const Task &task);
 
     private:
-        using ThreadList = std::vector<std::unique_ptr<Thread>>;       // 线程列表类型
-        MutexLock mutex_;                                               // 互斥锁
-        Condition cond_;                                                // 条件变量
-        std::string name_;                                              // 线程池名
-        ThreadList threads_;                                            // 线程列表
-        std::deque<Task> dequeue_;                                      // 任务队列（双向队列）
-        bool running_;                                                  // 线程池是否启动
+        using ThreadList = std::vector<std::unique_ptr<Thread>>;    // 线程列表类型
+        MutexLock mutex_;                                           // 互斥锁
+        Condition cond_;                                            // 条件变量
+        std::string name_;                                          // 线程池名
+        ThreadList threads_;                                        // 线程列表
+        std::deque<Task> dequeue_;                                  // 任务队列（双向队列）
+        bool running_;                                              // 线程池是否启动
 
         /**
          * 不断地从任务队列中取出任务执行
