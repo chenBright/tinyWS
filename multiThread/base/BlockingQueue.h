@@ -38,13 +38,18 @@ namespace tinyWS_thread {
             T front(std::move(queue_.front()));
             queue_.pop_front();
 
-            return std::move(front);
+            return front;
         }
 
         size_t size() const {
             MutexLockGuard lock(mutex_);
             return queue_.size();
         }
+
+        bool empty() const {
+            return size() == 0;
+        }
+
     private:
         mutable MutexLock mutex_;
         Condition notEmpty_;

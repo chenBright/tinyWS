@@ -48,7 +48,7 @@ namespace tinyWS_thread {
 
     private:
         MutexLock &mutex_;
-        pthread_cond_t cond_
+        pthread_cond_t cond_;
     };
 }
 
