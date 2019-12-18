@@ -10,7 +10,7 @@
 #include "InternetAddress.h"
 #include "Buffer.h"
 #include "type.h"
-#include "../http/HttpContext.h"
+#include "../base/any.h"
 
 namespace tinyWS_process2 {
     class EventLoop;
@@ -43,11 +43,11 @@ namespace tinyWS_process2 {
         // 但 EventLoop 只是短暂持有，在下一事件循环之前，持有的 Channel 指针已被销毁
         std::unique_ptr<Channel> channel_;
 
-        InternetAddress localAddress_;
-        InternetAddress peerAddress_;
-        Buffer inputBuffer_;
-        Buffer outputBuffer_;
-        HttpContext context_;                           // 接收到的请求的内容
+        InternetAddress localAddress_;                  // 本地地址对象
+        InternetAddress peerAddress_;                   // 客户端地址对象
+        Buffer inputBuffer_;                            // 输入缓冲区
+        Buffer outputBuffer_;                           // 输出缓冲区
+        tinyWS_process2::any context_;                  // 接收到的请求的内容
 
         ConnectionCallback connectionCallback_;         // 连接建立回调函数
         MessageCallback messageCallback_;               // 消息读取成功回调函数
@@ -69,11 +69,9 @@ namespace tinyWS_process2 {
 
         void shutdown();
 
-        // TODO moduo 使用 boost::any，因为 muduo 不单单是实现 HTTP 服务器（而且 TcpConnection 也不应该知道 HttpConnection ？）
-        // C++ 17 引入了 any
-        void setContext(const HttpContext& context);
-        const HttpContext& getContext() const;
-        HttpContext* getMutableContext();
+        void setContext(const tinyWS_process2::any &context);
+        const tinyWS_process2::any& getContext() const;
+        tinyWS_process2::any* getMutableContext();
 
         void setTcpNoDelay(bool on);
 

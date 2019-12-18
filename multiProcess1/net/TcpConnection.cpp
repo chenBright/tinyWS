@@ -87,15 +87,15 @@ void TcpConnection::shutdown() {
     }
 }
 
-void TcpConnection::setContext(const HttpContext& context) {
+void TcpConnection::setContext(const tinyWS_process1::any& context) {
     context_ = context;
 }
 
-const HttpContext& TcpConnection::getContext() const {
+const tinyWS_process1::any& TcpConnection::getContext() const {
     return context_;
 }
 
-HttpContext* TcpConnection::getMutableContext() {
+tinyWS_process1::any* TcpConnection::getMutableContext() {
     return &context_;
 }
 

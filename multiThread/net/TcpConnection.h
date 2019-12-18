@@ -62,9 +62,9 @@ namespace tinyWS_thread {
          */
         void shutdown();
 
-        void setContext(const any &context);
-        const any& getContext() const;
-        any* getMutableContext();
+        void setContext(const tinyWS_thread::any &context);
+        const tinyWS_thread::any& getContext() const;
+        tinyWS_thread::any* getMutableContext();
 
         /**
          * 禁用 Nagle 算法
@@ -154,7 +154,7 @@ namespace tinyWS_thread {
         InternetAddress peerAddress_;                   // 客户端地址对象
         Buffer inputBuffer_;                            // 输入缓冲区
         Buffer outputBuffer_;                           // 输出缓冲区
-        any context_;                           // 接收到的请求的内容
+        tinyWS_thread::any context_;                    // 接收到的请求的内容
 
         ConnectionCallback connectionCallback_;         // 连接建立回调函数
         MessageCallback messageCallback_;               // 消息读取成功回调函数
