@@ -9,7 +9,9 @@
 namespace tinyWS_thread {
 
     // std::any、any_cast（C++ 17）的简单实现。
-    // 参考
+    // std::any: https://zh.cppreference.com/w/cpp/utility/any
+    // std::any_cast: https://zh.cppreference.com/w/cpp/utility/any/any_cast
+    // 该实现参考了：
     // https://www.cnblogs.com/joeylee97/p/8877248.html
     // https://www.cnblogs.com/qicosmos/p/3420095.html
     // https://github.com/qicosmos/cosmos/blob/3cfa3cc189b49809e4fcd45644c83bc22e6b1444/Any.hpp
