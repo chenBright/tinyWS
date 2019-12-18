@@ -10,7 +10,8 @@
 #include "InternetAddress.h"
 #include "Buffer.h"
 #include "CallBack.h"
-#include "../http/HttpContext.h"
+//#include "../http/HttpContext.h"
+#include "../base/any.h"
 
 namespace tinyWS_thread {
     class EventLoop;
@@ -61,11 +62,9 @@ namespace tinyWS_thread {
          */
         void shutdown();
 
-        // TODO moduo 使用 boost::any，因为 muduo 不单单是实现 HTTP 服务器（而且 TcpConnection 也不应该知道 HttpConnection ？）
-        // C++ 17 引入了 any
-        void setContext(const HttpContext &context);
-        const HttpContext& getContext() const;
-        HttpContext* getMutableContext();
+        void setContext(const any &context);
+        const any& getContext() const;
+        any* getMutableContext();
 
         /**
          * 禁用 Nagle 算法
@@ -155,7 +154,7 @@ namespace tinyWS_thread {
         InternetAddress peerAddress_;                   // 客户端地址对象
         Buffer inputBuffer_;                            // 输入缓冲区
         Buffer outputBuffer_;                           // 输出缓冲区
-        HttpContext context_;                           // 接收到的请求的内容
+        any context_;                           // 接收到的请求的内容
 
         ConnectionCallback connectionCallback_;         // 连接建立回调函数
         MessageCallback messageCallback_;               // 消息读取成功回调函数
