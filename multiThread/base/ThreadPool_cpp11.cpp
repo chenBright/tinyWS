@@ -44,8 +44,8 @@ void ThreadPool_cpp11::stop() {
         cond_.notify_all();
     }
     // for_each 向 bind 包装好的函数传递 Thread unique_ptr，作为 this 指针传入
-    std::for_each(threads_.begin(), threads_.end(), [](ThreadList::iterator it) {
-        it->join();
+    std::for_each(threads_.begin(), threads_.end(), [](std::thread& t) {
+        t.join();
     });
 }
 
