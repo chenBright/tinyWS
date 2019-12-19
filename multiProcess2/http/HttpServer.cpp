@@ -51,7 +51,7 @@ TimerId HttpServer::runEvery(TimeType interval, const Timer::TimerCallback& cb) 
 
 void HttpServer::onMessage(const TcpConnectionPtr& connection, Buffer* buffer,
                            TimeType receiveTime) {
-    HttpContext* context = connection->getMutableContext();
+    auto context = tinyWS_process2::any_cast<HttpContext>(connection->getMutableContext());
     if (!context->parseRequest(buffer, receiveTime)) {
         // 404
         connection->send("HTTP/1.1 400 Bad Request\r\n\r\n");

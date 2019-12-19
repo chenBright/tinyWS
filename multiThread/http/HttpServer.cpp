@@ -42,7 +42,7 @@ void HttpServer::onConnection(const TcpConnectionPtr &connection) {
 
 void HttpServer::onMessage(const TcpConnectionPtr &connection, Buffer *buffer,
                            Timer::TimeType receiveTime) {
-    HttpContext *context = connection->getMutableContext();
+    auto context = tinyWS_thread::any_cast<HttpContext>(connection->getMutableContext());
     if (!context->parseRequest(buffer, receiveTime)) {
         // 404
         connection->send("HTTP/1.1 400 Bad Request\r\n\r\n");

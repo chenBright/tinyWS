@@ -73,15 +73,15 @@ void TcpConnection::shutdown() {
     }
 }
 
-void TcpConnection::setContext(const HttpContext &context) {
+void TcpConnection::setContext(const tinyWS_thread::any &context) {
     context_ = context;
 }
 
-const HttpContext& TcpConnection::getContext() const {
+const tinyWS_thread::any& TcpConnection::getContext() const {
     return context_;
 }
 
-HttpContext* TcpConnection::getMutableContext() {
+tinyWS_thread::any* TcpConnection::getMutableContext() {
     return &context_;
 }
 
