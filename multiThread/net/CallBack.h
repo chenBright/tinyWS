@@ -25,6 +25,13 @@ namespace tinyWS_thread {
 
     // "高水位"回调函数的类型
     using HighWaterMarkCallback = std::function<void(const TcpConnectionPtr&)>;
+
+    void defaultConnectionCallback(const TcpConnectionPtr& conn);
+
+    void defaultMessageCallback(const TcpConnectionPtr& conn,
+                                Buffer* buffer,
+                                Timer::TimeType receiveTime);
+
 }
 
 
