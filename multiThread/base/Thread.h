@@ -18,7 +18,7 @@ namespace tinyWS_thread {
          * @param func 线程执行函数
          * @param name 线程名
          */
-        explicit Thread(const ThreadFunction &func, const std::string &name = std::string());
+        explicit Thread(const ThreadFunction& func, const std::string& name = std::string());
 
         ~Thread();
 
@@ -71,7 +71,7 @@ namespace tinyWS_thread {
          * @param obj 线程对象
          * @return nullptr
          */
-        static void* startThread(void *obj);
+        static void* startThread(void* obj);
 
         /**
          * 在线程中指向注册的函数
