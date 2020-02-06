@@ -12,7 +12,7 @@
 
 using namespace tinyWS_thread;
 
-Thread::Thread(const Thread::ThreadFunction &func, const std::string &name)
+Thread::Thread(const Thread::ThreadFunction& func, const std::string& name)
     : started_(false),
       joined_(false),
       pthreadId_(0),
@@ -64,7 +64,7 @@ pid_t Thread::gettid() {
 }
 
 // 通过 void* 类型的形参，将线程对象传递过来。
-void* Thread::startThread(void *obj) {
+void* Thread::startThread(void* obj) {
     auto *thread = static_cast<Thread*>(obj);
     thread->runInThread();
     return nullptr;
