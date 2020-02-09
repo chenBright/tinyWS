@@ -1,6 +1,7 @@
 #include "Exception.h"
 
 #include <execinfo.h>
+#include <cxxabi.h>     // The header provides an interface to the C++ ABI.
 #include <cstdlib>
 
 using  namespace tinyWS_thread;
