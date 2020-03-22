@@ -17,6 +17,7 @@ namespace tinyWS_thread {
     // http://kaiyuan.me/2018/05/08/sfinae/
     // https://www.jianshu.com/p/45a2410d4085
     // https://zhuanlan.zhihu.com/p/21314708
+    // http://kaiyuan.me/2018/05/08/sfinae/
 
     /**
      * 判断 T 类型是否有 no_destroy 方法。
@@ -35,6 +36,7 @@ namespace tinyWS_thread {
         // 因为 test(...) 的存在，任何不匹配上一个函数的到这里都会匹配，
         // 所以声明的成员函数 test 是的返回类型是 int32_t，而不是 char。
         // sizeof(int32_t) != 1，所以 value 的值为 false。
+        // 参考 http://kaiyuan.me/2018/05/08/sfinae/
         template <class C> static char test(decltype(&C::no_destroy));
         template <class C> static int32_t test(...);
 

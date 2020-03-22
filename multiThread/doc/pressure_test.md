@@ -48,25 +48,25 @@
 
 - 短连接
 
-![短连接](pressure_test1_short.png)
+![短连接](./pressure_test1_short.png)
 
 - 长连接
 
-![长连接](pressure_test1_keep_alive.png)
+![长连接](./pressure_test1_keep_alive.png)
 
 - 长连接（禁用 Nagle 算法）
 
-![长连接（禁用 Nagle 算法）](pressure_test1_keep_alive_noNagle.png)
+![长连接（禁用 Nagle 算法）](./pressure_test1_keep_alive_noNagle.png)
 
 ### 本地主机
 
 - 短连接
 
-![短连接](/Users/chenbright/Desktop/c:c++_workspace/tinyWS/doc/pressure_test2_short.png)
+![短连接](./pressure_test2_short.png)
 
 - 长连接
 
-![长连接](/Users/chenbright/Desktop/c:c++_workspace/tinyWS/doc/pressure_test2_keep_alive.png)
+![长连接](./pressure_test2_keep_alive.png)
 
 ## 参考
 

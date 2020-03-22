@@ -63,7 +63,7 @@ void AsyncLogging::stop() {
 }
 
 void AsyncLogging::threadFunction() {
-    assert(running_ = false);
+    assert(running_ == false);
     latch_.countDown();
     LogFile output(basename_);
     BufferPtr newBuffer1(std::make_shared<Buffer>());
@@ -91,7 +91,7 @@ void AsyncLogging::threadFunction() {
             }
         }
 
-        assert(~buffersToWrite.empty());
+        assert(!buffersToWrite.empty());
 
         if (buffersToWrite.size() > 25) {
             char buffer[256];

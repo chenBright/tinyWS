@@ -36,7 +36,7 @@ namespace tinyWS_thread {
         static std::string getLogFilename();
     };
 
-#define LOG Logger(__FILE__, __LINE__).stream()
+#define LOG AsyncLogger(__FILE__, __LINE__).stream()
 }
 
 #endif //TINYWS_ASYNCLOGGER_H

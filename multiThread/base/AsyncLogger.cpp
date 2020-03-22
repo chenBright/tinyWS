@@ -51,6 +51,10 @@ AsyncLogger::~AsyncLogger() {
     output(buffer.data(), buffer.length());
 }
 
+LogStream& AsyncLogger::stream() {
+    return impl_.stream_;
+}
+
 void AsyncLogger::setLogFilename(std::string filename) {
     logFilename_ = filename;
 }
