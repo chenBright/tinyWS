@@ -18,9 +18,9 @@ EventLoop::EventLoop()
       pid_(getpid()),
       timerQueue_(new TimerQueue(this)) {
 
-    std::cout << "EventLoop created "
-              << this << " in process "
-              << pid_ << std::endl;
+//    std::cout << "EventLoop created "
+//              << this << " in process "
+//              << pid_ << std::endl;
 }
 
 EventLoop::~EventLoop() {
@@ -30,7 +30,7 @@ EventLoop::~EventLoop() {
 void EventLoop::loop() {
     running_ = true;
 
-    std::cout << "EventLoop " << this << " create looping" << std::endl;
+//    std::cout << "EventLoop " << this << " create looping" << std::endl;
 
     while (running_) {
         activeChannels_.clear();
@@ -38,7 +38,7 @@ void EventLoop::loop() {
 
         // stop this loop if get signal SIGINT SIGTERM SIGKILL SIGQUIT SIGCHLD(parent process)
         if (status_quit_softly == 1 || status_terminate == 1 || status_child_quit == 1) {
-            std::cout << "process(" << getpid() << ") quit this eventloop" << std::endl;
+//            std::cout << "process(" << getpid() << ") quit this eventloop" << std::endl;
             running_ = false;
             break;
         }
@@ -62,7 +62,7 @@ TimerId EventLoop::runAfter(TimeType delay, const Timer::TimerCallback& cb) {
 }
 
 TimerId EventLoop::runEvery(TimeType interval, const Timer::TimerCallback& cb) {
-    std::cout << timerQueue_.get() << std::endl;
+//    std::cout << timerQueue_.get() << std::endl;
     return timerQueue_->addTimer(cb, Timer::now(), interval);
 }
 
@@ -81,6 +81,6 @@ void EventLoop::removeChannel(Channel *channel) {
 
 void EventLoop::printActiveChannels() const {
     for (auto channel : activeChannels_) {
-        std::cout << "{" << channel->reventsToString() << "} " << std::endl;
+//        std::cout << "{" << channel->reventsToString() << "} " << std::endl;
     }
 }

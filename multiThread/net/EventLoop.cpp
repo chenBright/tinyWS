@@ -40,13 +40,13 @@ EventLoop::EventLoop()
       wakeupFd_(createEventfd()),
       wakeupChannel_(new Channel(this, wakeupFd_)) {
 
-    debug() << "EventLoop created "
-            << this << " in thread "
-            << threadId_ << std::endl;
+//    debug() << "EventLoop created "
+//            << this << " in thread "
+//            << threadId_ << std::endl;
 
     if (t_loopInThisThread) { // 已创建 EventLoop
-        debug(LogLevel::TRACE) << "Another EventLoop " << t_loopInThisThread
-                                     << " exists in this thread " << threadId_ << std::endl;
+//        debug(LogLevel::TRACE) << "Another EventLoop " << t_loopInThisThread
+//                                     << " exists in this thread " << threadId_ << std::endl;
     } else {
         t_loopInThisThread = this;
     }
@@ -170,7 +170,7 @@ void EventLoop::wakeup() {
     // 往 wakeupfd_ 写入一个字节的数据，唤醒 IO 线程
     ssize_t n = write(wakeupFd_, &one, sizeof(one));
     if (n != sizeof(one)) {
-        debug(LogLevel::TRACE) << "EventLoop::wakeup() writes " << n << " bytes instead of 8" << std::endl;
+//        debug(LogLevel::TRACE) << "EventLoop::wakeup() writes " << n << " bytes instead of 8" << std::endl;
     }
 }
 
@@ -210,9 +210,9 @@ void EventLoop::handleRead() {
     uint64_t one = 1;
     ssize_t n = read(wakeupFd_, &one, sizeof(one));
     if (n != sizeof(n)) {
-        debug(LogLevel::TRACE) << "EventLoop::handleRead() reads "
-                                     << n << " bytes instead of 8"
-                                     << std::endl;
+//        debug(LogLevel::TRACE) << "EventLoop::handleRead() reads "
+//                                     << n << " bytes instead of 8"
+//                                     << std::endl;
     }
 }
 

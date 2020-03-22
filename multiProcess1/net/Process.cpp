@@ -29,7 +29,7 @@ Process::Process(int fds[2])
 Process::~Process() {
     delete loop_;
 
-    std::cout << "class Process destructor" << std::endl;
+//    std::cout << "class Process destructor" << std::endl;
 }
 
 void Process::start() {
@@ -40,7 +40,7 @@ void Process::start() {
     while (running_) {
         loop_->loop();
         if (status_terminate || status_quit_softly || status_restart || status_reconfigure) {
-            std::cout << "subprocess(" << getpid() << ") quit" << std::endl;
+//            std::cout << "subprocess(" << getpid() << ") quit" << std::endl;
             running_ = false;
         }
     }
@@ -88,18 +88,18 @@ void Process::newConnection(int sockfd) {
 
 void Process::childSignalHandler(int signo) {
     pid_t pid = getpid();
-    std::cout << "[child] (" << pid << ") signal manager get signal(" << signo << ")" << std::endl;
+//    std::cout << "[child] (" << pid << ") signal manager get signal(" << signo << ")" << std::endl;
 
     switch (signo) {
         case SIGINT:
         case SIGTERM:
             status_terminate = 1;
-            std::cout << "[child] (" << pid << ") will terminate" << std::endl;
+//            std::cout << "[child] (" << pid << ") will terminate" << std::endl;
             break;
 
         case SIGQUIT:
             status_quit_softly = 1;
-            std::cout << "[child] (" << pid << ") will quit softly" << std::endl;
+//            std::cout << "[child] (" << pid << ") will quit softly" << std::endl;
             break;
 
         case SIGPIPE:
@@ -107,12 +107,12 @@ void Process::childSignalHandler(int signo) {
 
         case SIGUSR1:
             status_restart = 1;
-            std::cout << "[child] (" << pid << ") restart" << std::endl;
+//            std::cout << "[child] (" << pid << ") restart" << std::endl;
             break;
 
         case SIGUSR2:
             status_reconfigure = 1;
-            std::cout << "[child] (" << pid << ") reload" << std::endl;
+//            std::cout << "[child] (" << pid << ") reload" << std::endl;
             break;
 
         default:

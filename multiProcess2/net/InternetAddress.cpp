@@ -31,8 +31,8 @@ InternetAddress::InternetAddress(const std::string& ip, uint16_t port) : address
     address_.sin_family = AF_INET;
     address_.sin_port = htobe16(port);
     if (inet_pton(AF_INET, ip.c_str(), &address_.sin_addr) <= 0) {
-        std::cout << "InternetAddress::InternetAddress(const std::string &ip, uint16_t port)"
-                  << std::endl;
+//        std::cout << "InternetAddress::InternetAddress(const std::string &ip, uint16_t port)"
+//                  << std::endl;
     }
 }
 
@@ -79,7 +79,7 @@ sockaddr_in InternetAddress::getLocalAddress(int sockfd) {
     sockaddr_in localAddress{};
     socklen_t addressLen = sizeof(localAddress);
     if (getsockname(sockfd, reinterpret_cast<sockaddr*>(&localAddress), &addressLen) < 0) {
-        std::cout << "InternetAddress::getPeerAddress" << std::endl;
+//        std::cout << "InternetAddress::getPeerAddress" << std::endl;
     }
 
     return localAddress;
@@ -89,7 +89,7 @@ sockaddr_in InternetAddress::getPeerAddress(int sockfd) {
     sockaddr_in peerAddress{};
     socklen_t addressLen = sizeof(peerAddress);
     if (getpeername(sockfd, reinterpret_cast<sockaddr*>(&peerAddress), &addressLen) < 0) {
-        std::cout << "InternetAddress::getPeerAddress" << std::endl;
+//        std::cout << "InternetAddress::getPeerAddress" << std::endl;
     }
 
     return peerAddress;

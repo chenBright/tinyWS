@@ -75,7 +75,7 @@ int Acceptor::getSockfd() const {
 int Acceptor::createNonblocking() {
     int sockfd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
     if (sockfd < 0) {
-        std::cout << "sockets::createNonblockingOrDie" << std::endl;;
+//        std::cout << "sockets::createNonblockingOrDie" << std::endl;;
     }
 }
 
@@ -96,7 +96,7 @@ void Acceptor::handleRead() {
 //    }
 
     auto sockfd = acceptSocket_.accept(&peerAddress);
-    std::cout << "sockfd: " << sockfd << "(" << getpid() << ")" << std::endl;
+//    std::cout << "sockfd: " << sockfd << "(" << getpid() << ")" << std::endl;
     if (sockfd < 0) {
         return;
     }

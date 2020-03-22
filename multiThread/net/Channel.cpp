@@ -145,7 +145,7 @@ void Channel::handleEventWithGuard(Timer::TimeType receiveTime) {
     // 连接断开事件
     if ((revents_ & EPOLLHUP) && !(revents_ & EPOLLIN)) {
 //    if (revents_ & EPOLLHUP) {
-        debug() << "Channel::handleEvent() EPOLLHUP" << std::endl;
+//        debug() << "Channel::handleEvent() EPOLLHUP" << std::endl;
         if (closeCallback_) {
             closeCallback_();
         }

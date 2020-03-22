@@ -25,7 +25,7 @@ SocketPair::SocketPair(EventLoop* loop, int fds[2])
     fds_[0] = fds[0];
     fds_[1] = fds[1];
 
-    std::cout << "class SocketPair constructor" << std::endl;
+//    std::cout << "class SocketPair constructor" << std::endl;
 }
 
 SocketPair::~SocketPair() {
@@ -33,7 +33,7 @@ SocketPair::~SocketPair() {
         return;
     }
 
-    std::cout << "class SocketPair destructor" << std::endl;
+//    std::cout << "class SocketPair destructor" << std::endl;
 
     pipeChannel_->disableAll();
     pipeChannel_->remove();
@@ -83,9 +83,9 @@ void SocketPair::setParentSocket() {
 
     close(fds_[1]);
     isParent_ = true;
-    std::cout << "switch parent:" << getpid() << std::endl;
-
-    std::cout << "socketpair parent set connection" << std::endl;
+//    std::cout << "switch parent:" << getpid() << std::endl;
+//
+//    std::cout << "socketpair parent set connection" << std::endl;
     // TODO name
     pipeChannel_.reset(new Channel(loop_, fds_[0]));
     pipeChannel_->setReadCallback(std::bind(&SocketPair::receiveFd, this));
@@ -97,9 +97,9 @@ void SocketPair::setChildSocket() {
 
     close(fds_[0]);
     isParent_ = true;
-    std::cout << "switch child:" << getpid() << std::endl;
+//    std::cout << "switch child:" << getpid() << std::endl;
 
-    std::cout << "socketpair child set connection" << std::endl;
+//    std::cout << "socketpair child set connection" << std::endl;
     // TODO name
     pipeChannel_.reset(new Channel(loop_, fds_[1]));
     pipeChannel_->setReadCallback(std::bind(&SocketPair::handleRead, this));
@@ -110,7 +110,7 @@ void SocketPair::setChildSocket() {
 void SocketPair::sendFdToChild(Socket socket) {
     assert(nullptr != pipeChannel_ || isParent_);
 
-    std::cout << "[parent] send fd: " << socket.fd() << ", pid = " << getpid() << std::endl;
+//    std::cout << "[parent] send fd: " << socket.fd() << ", pid = " << getpid() << std::endl;
 
     sendFd(std::move(socket));
 }
@@ -118,7 +118,7 @@ void SocketPair::sendFdToChild(Socket socket) {
 void SocketPair::sendFdToParent(Socket socket) {
     assert(nullptr != pipeChannel_ || !isParent_);
 
-    std::cout << "[child] send fd: " << socket.fd() << ", pid = " << getpid() << std::endl;
+//    std::cout << "[child] send fd: " << socket.fd() << ", pid = " << getpid() << std::endl;
 
     sendFd(std::move(socket));
 }
@@ -145,7 +145,7 @@ void SocketPair::sendFd(Socket socket) {
     int cmsgsize = CMSG_LEN(sizeof(int));
     auto cmptr = (cmsghdr*)malloc(cmsgsize);
     if (cmptr == nullptr) {
-        std::cout << "[send_fd] init cmptr error" << std::endl;
+//        std::cout << "[send_fd] init cmptr error" << std::endl;
         exit(1);
     }
 
@@ -165,7 +165,7 @@ void SocketPair::sendFd(Socket socket) {
     int result = sendmsg(pipeChannel_->fd(), &msg, 0);
     free(cmptr);
     if (result == -1) {
-        std::cout << "[send_fd] sendmsg error" << std::endl;
+//        std::cout << "[send_fd] sendmsg error" << std::endl;
         exit(1);
     }
 }
@@ -193,13 +193,13 @@ int SocketPair::receiveFd() {
 
 
     if (result == -1) {
-        std::cout << "[send_fd] recvmsg error" << std::endl;
+//        std::cout << "[send_fd] recvmsg error" << std::endl;
 
         return -1;
     }
 
     int acceptFd = *(int*)CMSG_DATA(cmptr);
-    std::cout << "receive fd: " << acceptFd << ", pid = " << getpid() << std::endl;
+//    std::cout << "receive fd: " << acceptFd << ", pid = " << getpid() << std::endl;
 
 //    free(cmptr);
 
@@ -209,10 +209,10 @@ int SocketPair::receiveFd() {
 void SocketPair::handleRead() {
     int sockfd = receiveFd();
     if (sockfd < 0) {
-        std::cout << "SocketPair::handleRead error" << std::endl;
+//        std::cout << "SocketPair::handleRead error" << std::endl;
     } else if (sockfd == 0) {
         // TODO 关闭？
-        std::cout << "TcpConnection::handleRead, result = 0" << std::endl;
+//        std::cout << "TcpConnection::handleRead, result = 0" << std::endl;
 
         if (closeCallback_) {
             closeCallback_();

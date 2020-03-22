@@ -31,8 +31,8 @@ TcpConnection::TcpConnection(EventLoop* loop,
     channel_->setCloseCallback(std::bind(&TcpConnection::handleClose, this));
     channel_->setErrorCallback(std::bind(&TcpConnection::handleError, this));
 
-    std::cout << "TcpConnection::ctor[" <<  name_ << "] at " << this
-              << " fd=" << socket_->fd() << std::endl;
+//    std::cout << "TcpConnection::ctor[" <<  name_ << "] at " << this
+//              << " fd=" << socket_->fd() << std::endl;
 
     socket_->setKeepAlive(true);
 }
@@ -49,7 +49,7 @@ void TcpConnection::send(const std::string& message) {
             if (n >= 0) {
                 if (static_cast<size_t>(n) < message.size()) {
                     // 只发送了一部分数据
-                    std::cout << "I am going to write more data" << std::endl;
+//                    std::cout << "I am going to write more data" << std::endl;
                 } else {
                     if (writeCompleteCallback_) {
                         writeCompleteCallback_(shared_from_this());
@@ -59,7 +59,7 @@ void TcpConnection::send(const std::string& message) {
                 // 发送数据出错
                 n = 0;
                 if (errno != EWOULDBLOCK) {
-                    std::cout << "TcpConnection::send" << std::endl;
+//                    std::cout << "TcpConnection::send" << std::endl;
                 }
             }
 
@@ -188,7 +188,7 @@ void TcpConnection::handleRead(TimeType receiveTime) {
     } else if (n == 0) {
         handleClose();
     } else {
-        std::cout << "TcpConnection::handleError" << std::endl;
+//        std::cout << "TcpConnection::handleError" << std::endl;
         handleError();
     }
 }
@@ -229,8 +229,8 @@ void TcpConnection::handleClose() {
 void TcpConnection::handleError() {
     int err = socket_->getSocketError();
 
-    std::cout << "TcpConnection::handleError [" << name_
-              << "] - SO_ERROR = " << err << std::endl;
+//    std::cout << "TcpConnection::handleError [" << name_
+//              << "] - SO_ERROR = " << err << std::endl;
 }
 
 void TcpConnection::shutdownInSocket() {

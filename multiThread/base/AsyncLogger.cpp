@@ -40,6 +40,8 @@ void AsyncLogger::Impl::formatTime() {
     stream_ << str_t;
 }
 
+std::string AsyncLogger::logFilename_;
+
 AsyncLogger::AsyncLogger(const char* filename, int line)
     : impl_(filename, line) {
 
@@ -56,9 +58,9 @@ LogStream& AsyncLogger::stream() {
 }
 
 void AsyncLogger::setLogFilename(std::string filename) {
-    logFilename_ = filename;
+    AsyncLogger::logFilename_ = filename;
 }
 
 std::string AsyncLogger::getLogFilename() {
-    return logFilename_;
+    return AsyncLogger::logFilename_;
 }
