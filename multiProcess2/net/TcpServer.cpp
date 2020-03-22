@@ -36,7 +36,7 @@ TcpServer::TcpServer(const InternetAddress& address, const std::string& name)
 }
 
 TcpServer::~TcpServer() {
-    std::cout << "TcpServer::~TcpServer [" << name_ << "] destructing" << std::endl;
+//    std::cout << "TcpServer::~TcpServer [" << name_ << "] destructing" << std::endl;
     for (const auto& connection : connectionMap_) {
         connection.second->connectionDestroyed();
     }
@@ -57,20 +57,20 @@ void TcpServer::start() {
             loop_->loop();
 
             if (status_terminate || status_quit_softly) {
-                std::cout << "[parent]:(term/stop) I will kill all chilern" << std::endl;
+//                std::cout << "[parent]:(term/stop) I will kill all chilern" << std::endl;
                 processPool_->killAll();
                 running = false;
             }
 
             if (status_restart || status_reconfigure) {
-                std::cout << "[parent]:(restart/reload)quit and restart parent process's eventloop" << std::endl;
+//                std::cout << "[parent]:(restart/reload)quit and restart parent process's eventloop" << std::endl;
                 status_restart = status_reconfigure = 0;
 
                 // 只是单纯地重启父进程的 EVentLoop
             }
 
             if (status_child_quit) {
-                std::cout << "[parent]:child exit, I will create a new one" << std::endl;
+//                std::cout << "[parent]:child exit, I will create a new one" << std::endl;
 
                 // 重新生成新的子进程
                 pid_t pid = processPool_->createNewChildProcess();
@@ -112,9 +112,9 @@ void TcpServer::newConnectionInParent(Socket socket, const InternetAddress& peer
     ++nextConnectionId_;
     std::string connectionName = name_ + buf;
 
-    std::cout << "TcpServer::newConnection ( " << getpid() << " ) [" << name_
-              << "] - new connection [" << connectionName
-              << "] from " << peerAddress.toIPPort() << std::endl;
+//    std::cout << "TcpServer::newConnection ( " << getpid() << " ) [" << name_
+//              << "] - new connection [" << connectionName
+//              << "] from " << peerAddress.toIPPort() << std::endl;
 
     // 发送新连接的 socket 给子进程
 //    processPool_->sendToChild(std::move(socket));
@@ -168,8 +168,8 @@ void TcpServer::newConnectionInChild(EventLoop* loop, Socket socket) {
 }
 
 void TcpServer::removeConnection(const TcpConnectionPtr& connection) {
-        std::cout << "TcpServer::removeConnection [" << name_
-                  << "] - connection " << connection->name() << std::endl;
+//        std::cout << "TcpServer::removeConnection [" << name_
+//                  << "] - connection " << connection->name() << std::endl;
 
         size_t n = connectionMap_.erase(connection->name());
 
@@ -187,16 +187,16 @@ void TcpServer::reset() {
 void TcpServer::lockAcceptor() {
     bool locked = processMutexLock_.trylock();
     if (locked) {
-        std::cout << "get lock in process " << getpid() << std::endl;
+//        std::cout << "get lock in process " << getpid() << std::endl;
         isLock_ = true;
         acceptor_->listenInEpoll();
     }
 }
 
 void TcpServer::unlockAcceptor() {
-    std::cout << "unlockAcceptor in process " << getpid() << std::endl;
+//    std::cout << "unlockAcceptor in process " << getpid() << std::endl;
     if (isLock_) {
-        std::cout << "release lock in process " << getpid() << std::endl;
+//        std::cout << "release lock in process " << getpid() << std::endl;
 
         isLock_ = false;
         acceptor_->unlistenInEpoll();

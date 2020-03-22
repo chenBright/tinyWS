@@ -135,7 +135,7 @@ void Channel::handleEventWithGuard(TimeType receiveTime) {
     eventHandling_ = true;
 
     if ((revents_ & EPOLLHUP) && !(revents_ & EPOLLIN)) {
-        std::cout << "Channel::handleEvent() EPOLLHUP" << std::endl;
+//        std::cout << "Channel::handleEvent() EPOLLHUP" << std::endl;
         if (closeCallback_) {
             closeCallback_();
         }
@@ -143,7 +143,7 @@ void Channel::handleEventWithGuard(TimeType receiveTime) {
 
     // 可读事件
     if (revents_ & EPOLLIN) {
-        std::cout << "Channel::handleEvent() EPOLLIN" << std::endl;
+//        std::cout << "Channel::handleEvent() EPOLLIN" << std::endl;
     }
 
     // 异常事件

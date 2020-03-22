@@ -23,7 +23,7 @@ Epoll::Epoll(EventLoop *loop)
       epollfd_(epoll_create1(EPOLL_CLOEXEC)),
       events_(kInitEventListSize) {
     if (epollfd_ < 0) {
-        std::cout << "Epoll::Epoll" << std::endl;
+//        std::cout << "Epoll::Epoll" << std::endl;
     }
 }
 
@@ -46,16 +46,16 @@ int64_t Epoll::poll(int timeoutMS, ChannelList* activeChannels) {
     } else if (eventNums == 0) {
 //        std::cout << "nothing happended in Process" << getpid() << std::endl;
     } else {
-        std::cout << "Epoll::poll() in Process" << getpid() << std::endl;
+//        std::cout << "Epoll::poll() in Process" << getpid() << std::endl;
     }
 }
 
 void Epoll::updateChannel(Channel *channel) {
-    std::cout << "Epoll::updateChannel() fd = " << channel->fd()
-              << " event = " << channel->getEvents()
-              << ", meaing = " << channel->eventsToString()
-              << ", status = " << channel->getStatusInEpoll()
-              << " in process " << getpid() << std::endl;
+//    std::cout << "Epoll::updateChannel() fd = " << channel->fd()
+//              << " event = " << channel->getEvents()
+//              << ", meaing = " << channel->eventsToString()
+//              << ", status = " << channel->getStatusInEpoll()
+//              << " in process " << getpid() << std::endl;
 
     const int status = channel->getStatusInEpoll();
     int fd = channel->fd();
@@ -135,8 +135,8 @@ void Epoll::update(int operation, Channel *channel) {
     event.data.ptr = channel;
     int fd = channel->fd();
     if (epoll_ctl(epollfd_, operation, fd, &event) < 0) {
-        std::cout << "[ERROR] epoll_ctl op=" << operationToString(operation)
-                  << " fd=" << fd << std::endl;
+//        std::cout << "[ERROR] epoll_ctl op=" << operationToString(operation)
+//                  << " fd=" << fd << std::endl;
     }
 }
 

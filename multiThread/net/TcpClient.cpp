@@ -23,13 +23,13 @@ TcpClient::TcpClient(EventLoop *loop, const InternetAddress &serverAddress,
 
     connector_->setNewConnectionCallback(std::bind(&TcpClient::newConnection, this, _1));
 
-    debug() << "TcpClient::TcpClient[" << name_
-            << "] - connector " << connector_.get();
+//    debug() << "TcpClient::TcpClient[" << name_
+//            << "] - connector " << connector_.get();
 }
 
 TcpClient::~TcpClient() {
-    debug() << "TcpClient::~TcpClient[" << name_
-            << "] - connector " << connector_.get();
+//    debug() << "TcpClient::~TcpClient[" << name_
+//            << "] - connector " << connector_.get();
 
     TcpConnectionPtr connection;
     {
@@ -47,8 +47,8 @@ TcpClient::~TcpClient() {
 }
 
 void TcpClient::connect() {
-    debug() << "TcpClient::connect[" << name_ << "] - connecting to "
-            << connector_->serverAddress().toIPPort();
+//    debug() << "TcpClient::connect[" << name_ << "] - connecting to "
+//            << connector_->serverAddress().toIPPort();
 
     connect_ = true;
     connector_->start();
@@ -132,8 +132,8 @@ void TcpClient::removeConnection(const TcpConnectionPtr &conntion) {
     loop_->queueInLoop(
             std::bind(&TcpConnection::connectionDestroyed, conntion));
     if (retry_ && connect_) {
-        debug() << "TcpClient::connect[" << name_ << "] - Reconnecting to "
-                << connector_->serverAddress().toIPPort();
+//        debug() << "TcpClient::connect[" << name_ << "] - Reconnecting to "
+//                << connector_->serverAddress().toIPPort();
         connector_->restart();
     }
 }

@@ -27,11 +27,11 @@ Connector::Connector(EventLoop *loop, const InternetAddress &serverAddress)
       state_(kDisconnected),
       retryDelayMs_(Connector::kInitRetryDelayMs) {
 
-    debug() << "ctor[" << this << "]" << std::endl;
+//    debug() << "ctor[" << this << "]" << std::endl;
 }
 
 Connector::~Connector() {
-    debug() << "dtor[" << this << "]" << std::endl;
+//    debug() << "dtor[" << this << "]" << std::endl;
     assert(!channel_);
 }
 
@@ -72,7 +72,7 @@ void Connector::startInLoop() {
     if (connect_) {
         connect();
     } else {
-        debug() << "do not connect";
+//        debug() << "do not connect";
     }
 }
 
@@ -146,7 +146,7 @@ void Connector::connecting(int sockfd) {
 }
 
 void Connector::handleWrite() {
-    debug() << "Connector::handleWrite " << state_;
+//    debug() << "Connector::handleWrite " << state_;
 
     if (state_ == kConnecting) {
         int sockfd = removeAndResetChannel();
@@ -159,7 +159,7 @@ void Connector::handleWrite() {
                                    << ::strerror_r(err, t_errnobuf, sizeof(t_errnobuf)) << std::endl;
             retry(sockfd);
         } else if (isSelfConnect(sockfd)) {
-            debug() << "Connector::handleWrite - Self connect" << std::endl;
+//            debug() << "Connector::handleWrite - Self connect" << std::endl;
             retry(sockfd);
         } else {
             setState(kConnected);
@@ -191,13 +191,13 @@ void Connector::retry(int sockfd) {
     ::close(sockfd);
     setState(kDisconnected);
     if (connect_) {
-        debug() << "Connector::retry - Retry connecting to " << serverAddress_.toIPPort()
-                << " in " << retryDelayMs_ << " milliseconds. ";
+//        debug() << "Connector::retry - Retry connecting to " << serverAddress_.toIPPort()
+//                << " in " << retryDelayMs_ << " milliseconds. ";
         loop_->runAfter(retryDelayMs_ / 1000.0,
                         std::bind(&Connector::startInLoop, shared_from_this()));
         retryDelayMs_ = std::min(retryDelayMs_ * 2, Connector::kMaxRetryDelayMs);
     } else {
-        debug() << "do not connect" << std::endl;
+//        debug() << "do not connect" << std::endl;
     }
 }
 

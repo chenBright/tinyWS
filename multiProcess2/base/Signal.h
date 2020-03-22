@@ -65,7 +65,7 @@ namespace tinyWS_process2 {
         }
 
         ~SignalManager() {
-            std::cout << "class SignalManager destructor" << std::endl;
+//            std::cout << "class SignalManager destructor" << std::endl;
         }
 
         void addSignal(const Signal& sign) {

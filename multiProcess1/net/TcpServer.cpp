@@ -30,7 +30,7 @@ TcpServer::TcpServer(const InternetAddress &address, const std::string& name)
 }
 
 TcpServer::~TcpServer() {
-    std::cout << "TcpServer::~TcpServer [" << name_ << "] destructing" << std::endl;
+//    std::cout << "TcpServer::~TcpServer [" << name_ << "] destructing" << std::endl;
     for (const auto& connection : connectionMap_) {
         connection.second->connectionDestroyed();
     }
@@ -81,9 +81,9 @@ void TcpServer::newConnectionInParent(Socket socket, const InternetAddress& peer
     ++nextConnectionId_;
     std::string connectionName = name_ + buf;
 
-    std::cout << "TcpServer::newConnectionInParent [" << name_
-              << "] - new connection [" << connectionName
-              << "] from " << peerAddress.toIPPort() << std::endl;
+//    std::cout << "TcpServer::newConnectionInParent [" << name_
+//              << "] - new connection [" << connectionName
+//              << "] from " << peerAddress.toIPPort() << std::endl;
 
     // 发送新连接的 socket 给子进程
     processPool_->sendToChild(std::move(socket));
@@ -138,8 +138,8 @@ void TcpServer::newConnectionInChild(EventLoop* loop, Socket socket) {
 }
 
 void TcpServer::removeConnection(const TcpConnectionPtr& connection) {
-        std::cout << "TcpServer::removeConnection [" << name_
-                  << "] - connection " << connection->name() << std::endl;
+//        std::cout << "TcpServer::removeConnection [" << name_
+//                  << "] - connection " << connection->name() << std::endl;
 
         size_t n = connectionMap_.erase(connection->name());
 

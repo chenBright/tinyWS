@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
 }
 
 void test_runEvery() {
-    std::cout << "test Timer at Process " << getpid() << std::endl;
+//    std::cout << "test Timer at Process " << getpid() << std::endl;
 }
 
 void httpCallback(const HttpRequest& request, HttpResponse& response) {

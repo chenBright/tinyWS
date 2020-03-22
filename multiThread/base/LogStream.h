@@ -84,6 +84,7 @@ namespace tinyWS_thread {
         LogStream& operator<<(double);
         LogStream& operator<<(long double);
         LogStream& operator<<(char c);
+        LogStream& operator<<(char* str);
         LogStream& operator<<(const char* str);
         LogStream& operator<<(const unsigned char* str);
         LogStream& operator<<(const std::string& v);

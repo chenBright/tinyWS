@@ -27,7 +27,7 @@ ProcessPool::ProcessPool(EventLoop* loop)
 }
 
 ProcessPool::~ProcessPool() {
-    std::cout << "class ProcessPoll destructor" << std::endl;
+//    std::cout << "class ProcessPoll destructor" << std::endl;
 }
 
 void ProcessPool::setProcessNum(int processNum) {
@@ -46,12 +46,12 @@ void ProcessPool::start() {
 }
 
 void ProcessPool::killAll() {
-    std::cout << "[parent] kill " << pids_.size() << " chilern" << std::endl;
+//    std::cout << "[parent] kill " << pids_.size() << " chilern" << std::endl;
     for (const auto& pid : pids_) {
-        std::cout << "[parent] kill child(" << pid << ")" << std::endl;
+//        std::cout << "[parent] kill child(" << pid << ")" << std::endl;
         int result = ::kill(pid, SIGINT);
         if (result == 0) {
-            std::cout << "[parent] kill child (" << pid << ") successfully" << std::endl;
+//            std::cout << "[parent] kill child (" << pid << ") successfully" << std::endl;
         }
     }
     pipes_.clear();
@@ -59,19 +59,19 @@ void ProcessPool::killAll() {
 }
 
 void ProcessPool::killSoftly() {
-    std::cout << "[parent] kill " << pids_.size() << " chilern softly" << std::endl;
+//    std::cout << "[parent] kill " << pids_.size() << " chilern softly" << std::endl;
     for (const auto& pid : pids_) {
-        std::cout << "[parent] kill child(" << pid << ") softly" << std::endl;
+//        std::cout << "[parent] kill child(" << pid << ") softly" << std::endl;
         int result = ::kill(pid, SIGTERM);
         if (result == 0) {
-            std::cout << "[parent] kill child (" << pid << ") softly successfully" << std::endl;
+//            std::cout << "[parent] kill child (" << pid << ") softly successfully" << std::endl;
         }
     }
 }
 
 void ProcessPool::sendToChild(Socket socket) {
     pipes_[next_]->sendFdToChild(std::move(socket));
-    std::cout << "Process id: " << next_ << std::endl;
+//    std::cout << "Process id: " << next_ << std::endl;
     next_ = (next_ + 1) % processNum_;
 }
 
@@ -110,7 +110,7 @@ void ProcessPool::createChildAndSetParent(int processNum) {
     for (int i = 0; i < processNum; ++i) {
         int fds[2];
         if (::socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1) {
-            std::cout << "[processpool] socketpair error" << std::endl;
+//            std::cout << "[processpool] socketpair error" << std::endl;
         }
 
         // 子进程创建后，一直在函数里运行，知道进程结束。
@@ -125,13 +125,13 @@ pid_t ProcessPool::createChildProcess(int fds[2]) {
     pid_t pid = fork();
 
     if (pid < 0) {
-        std::cout  << "[processpool] fork error" << std::endl;
+//        std::cout  << "[processpool] fork error" << std::endl;
     } else if (pid > 0) {
         // 父进程
 
         forkFunction_(true); // fork 回调函数
 
-        std::cout << "[processpool] create process(" << pid << ")" << std::endl;
+//        std::cout << "[processpool] create process(" << pid << ")" << std::endl;
 
         return pid;
     }
@@ -165,13 +165,13 @@ void ProcessPool::parentStart() {
     while (running_) {
         baseLoop_->loop();
         if (status_terminate || status_quit_softly || status_child_quit) {
-            std::cout << "[parent]:(term/stop)I will kill all chilern" << std::endl;
+//            std::cout << "[parent]:(term/stop)I will kill all chilern" << std::endl;
             killAll();
             running_ = false;
             return;
         }
         if (status_restart || status_reconfigure) {
-            std::cout << "[parent]:(restart/reload)quit and restart parent process's eventloop" << std::endl;
+//            std::cout << "[parent]:(restart/reload)quit and restart parent process's eventloop" << std::endl;
             status_restart = status_reconfigure = 0;
 
             // 只是单纯地重启父进程的 EVentLoop
@@ -200,7 +200,7 @@ void ProcessPool::clearDeadChild() {
         // https://typecodes.com/cseries/kill0checkprocessifexist.html
         int isAlive = ::kill(*it, 0);
         if (isAlive == -1) {
-            std::cout << "[parent]:clear subprocess " << *it << std::endl;
+//            std::cout << "[parent]:clear subprocess " << *it << std::endl;
             pipes_.erase(pipes_.begin() + (it - pids_.begin()));
             it = pids_.erase(it);
         } else {

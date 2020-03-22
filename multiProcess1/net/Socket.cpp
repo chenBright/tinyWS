@@ -51,13 +51,13 @@ void Socket::bindAddress(const InternetAddress& localAddress) {
     sockaddr_in address = localAddress.getSockAddrInternet();
     int result = ::bind(sockfd_, reinterpret_cast<sockaddr*>(&address), sizeof(address));
     if (result < 0) {
-        std::cout << "Socket::bindAddress" << std::endl;
+//        std::cout << "Socket::bindAddress" << std::endl;
     }
 }
 
 void Socket::listen() {
     if (::listen(sockfd_, 128) < 0) {
-        std::cout << "Socket::listen" << std::endl;
+//        std::cout << "Socket::listen" << std::endl;
     }
 }
 
@@ -75,10 +75,10 @@ int Socket::accept(InternetAddress* peerAddress) {
         return connectionFd;
     } else {
         int savedErrno = errno;
-        std::cout << "Socket::accept" << std::endl;
+//        std::cout << "Socket::accept" << std::endl;
         switch (savedErrno) {
             case EAGAIN:
-                std::cout << "EAGAIN " << getpid() << std::endl;
+//                std::cout << "EAGAIN " << getpid() << std::endl;
                 break;
 
             case ECONNABORTED:
@@ -98,12 +98,12 @@ int Socket::accept(InternetAddress* peerAddress) {
             case ENOTSOCK:
             case EOPNOTSUPP:
                 // unexpected errors
-                std::cout << "unexpected error of ::accept "
-                                       << savedErrno << std::endl;
+//                std::cout << "unexpected error of ::accept "
+//                                       << savedErrno << std::endl;
                 break;
             default:
-                std::cout << "unknown error of ::accept "
-                          << savedErrno << std::endl;
+//                std::cout << "unknown error of ::accept "
+//                          << savedErrno << std::endl;
                 break;
         }
 
@@ -113,7 +113,7 @@ int Socket::accept(InternetAddress* peerAddress) {
 
 void Socket::shutdownWrite() {
     if (::shutdown(sockfd_, SHUT_RD) < 0) {
-        std::cout << "Socket::shutdownWrite" << std::endl;
+//        std::cout << "Socket::shutdownWrite" << std::endl;
     }
 }
 

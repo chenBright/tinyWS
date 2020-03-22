@@ -12,9 +12,9 @@ using namespace tinyWS_thread;
 using namespace std::placeholders;
 
 void tinyWS_thread::defaultConnectionCallback(const TcpConnectionPtr& conn) {
-    debug() << conn->localAddress().toIPPort() << " -> "
-            << conn->peerAddress().toIPPort() << " is "
-            << (conn->connected() ? "UP" : "DOWN");
+//    debug() << conn->localAddress().toIPPort() << " -> "
+//            << conn->peerAddress().toIPPort() << " is "
+//            << (conn->connected() ? "UP" : "DOWN");
 }
 
 void tinyWS_thread::defaultMessageCallback(const TcpConnectionPtr&,
