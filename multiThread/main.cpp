@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
 //    InternetAddress listenAddress(std::string("127.0.0.1"),8888); // for pressure test
     HttpServer server(&loop, listenAddress, "tinyWS");
 
-    loop.runEvery(2 * 1000 * 1000, std::bind(&test_runEvery));
+//    loop.runEvery(2 * 1000 * 1000, std::bind(&test_runEvery));
 
     server.setThreadNum(threadNums);
     server.start();
